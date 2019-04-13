@@ -55,7 +55,6 @@
     </v-layout>
 </template>
 <script>
-	import {USER_PANEL} from '../../../store/modules/user'
 	import {mapState} from 'vuex'
     export default {
 		name: "panelUsuarios",
@@ -73,7 +72,7 @@
 			})
 		},
 		beforeCreate () {
-			this.$store.dispatch(USER_PANEL)
+			this.$store.dispatch('USER_PANEL')
 		},
         methods: {
         }

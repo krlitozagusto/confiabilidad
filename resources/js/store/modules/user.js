@@ -1,6 +1,7 @@
 import axios from 'axios'
-import {LOADING} from './general'
+import {LOADING, SNACKBAR} from './general'
 export const USER_PANEL = 'USER_PANEL'
+export const CURRENT_USER = 'CURRENT_USER'
 export const ASSIGN_MODEL = 'ASSIGN_MODEL'
 export default {
 	state: {
@@ -12,27 +13,42 @@ export default {
 			name: null,
 			email: null
 		},
-		usuario: {}
+		usuario: {},
+        currentUser: null
 	},
 	getters: {
 	},
 	mutations: {
 		[ASSIGN_MODEL]: (state, model) => {
 			state.model = model
-		}
+		},
+        [CURRENT_USER]: (state, data) => {
+            state.currentUser = data
+        }
 	},
 	actions: {
+        [CURRENT_USER]: ({commit, dispatch}) => {
+            return new Promise(() => {
+                axios.post('usuarios/current')
+                    .then(response => {
+                        commit(CURRENT_USER, response.data.currentUser)
+                    })
+                    .catch(error => {
+                        commit(SNACKBAR, {color: 'error', message: `al recuperar el usuario actual`, error: error})
+                    })
+            })
+        },
 		[USER_PANEL]: ({commit, dispatch}) => {
-			dispatch(LOADING, true)
+            commit(LOADING, true)
 			return new Promise(() => {
-				axios.post('usuarios/panel')
+				axios.post('usuarios/panels')
 					.then(response => {
-						commit(ASSIGN_MODEL, response.data)
-						dispatch(LOADING, false)
+                        commit(LOADING, false)
+                        commit(ASSIGN_MODEL, response.data)
 					})
 					.catch(error => {
-						console.log('No se pudieron traer los usuarios. ' + error)
-						dispatch(LOADING, false)
+                        commit(LOADING, false)
+                        commit(SNACKBAR, {color: 'error', message: `al traer el listado de usuarios`, error: error})
 					})
 			})
 		}

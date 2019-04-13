@@ -10,7 +10,6 @@ import router from './router/index'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import store from './store/index'
-import Snotify from 'vue-snotify'
 
 axios.defaults.baseURL = 'http://confiabilidad.test/'
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
@@ -34,10 +33,8 @@ window.lodash = require('lodash')
  */
 import 'vuetify/dist/vuetify.min.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
-import 'vue-snotify/styles/material.css'
 Vue.use(Vuetify)
 Vue.use(VueAxios, axios)
-Vue.use(Snotify)
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

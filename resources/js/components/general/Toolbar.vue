@@ -7,17 +7,10 @@
             fixed
     >
         <v-toolbar-title style="width: 300px" class="ml-0 pl-3">
-            <v-toolbar-side-icon @click.stop="COMMIT_DRAWER"/>
+            <v-toolbar-side-icon @click.stop="COMMIT_DRAWER"></v-toolbar-side-icon>
             <span class="hidden-sm-and-down">Confiabilidad</span>
         </v-toolbar-title>
-        <!--<v-text-field-->
-                <!--flat-->
-                <!--solo-inverted-->
-                <!--prepend-icon="search"-->
-                <!--label="Search"-->
-                <!--class="hidden-sm-and-down"-->
-        <!--/>-->
-        <v-spacer/>
+        <v-spacer></v-spacer>
         <v-btn icon>
             <v-icon>apps</v-icon>
         </v-btn>
@@ -30,14 +23,19 @@
                     bottom
                     offset-y
             >
-                <v-btn dark color="primary" slot="activator">
-                    <v-avatar size="32px" tile>
-                        <img
+                <v-btn dark color="primary" slot="activator" class="pa-0" :loading="!user" :disabled="!user">
+                    <v-list-tile v-if="user">
+                        <v-list-tile-avatar size="32px">
+                            <img
                                 src="../../../img/avatars/avatar01.png"
                                 alt="Avatar"
-                        />
-                    </v-avatar>
-                    &nbsp;Carlos Sandoval
+                            />
+                        </v-list-tile-avatar>
+                        <v-list-tile-content class="truncate-content"  style="width: 220px !important;">
+                            <v-list-tile-title class="body-2">{{user.name}}</v-list-tile-title>
+                            <v-list-tile-sub-title class="caption">{{user.email}}</v-list-tile-sub-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
                 </v-btn>
                 <form ref="logout" :action="axios.defaults.baseURL + '/logout'" method="POST" v-show="false">
                     <input type="hidden" name="_token" :value="axios.defaults.headers.common['X-CSRF-TOKEN']" />
@@ -55,11 +53,16 @@
     </v-toolbar>
 </template>
 <script>
-	import {mapMutations} from 'vuex'
+	import {mapMutations, mapState} from 'vuex'
     export default {
 		name: "Navigation",
 		data: () => ({
 		}),
+        computed: {
+            ...mapState({
+                user: state => state.user.currentUser
+            })
+        },
         methods: {
             ...mapMutations(['COMMIT_DRAWER'])
         }

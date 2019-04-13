@@ -19,7 +19,7 @@
                     :key="key"
                     avatar
                     ripple
-                    :class="$route.name === item.nameRoute ? 'blue-grey text--withe' : ''"
+                    :class="$route.name === item.nameRoute ? 'blue darken-2 text--withe' : ''"
                     :to="{ name: item.nameRoute}"
                 >
                     <v-list-tile-avatar>

@@ -10,7 +10,7 @@
                     dark
             >
                 <v-card-text class="text-xs-center">
-                    Please stand by
+                    Procesando...
                     <v-progress-linear
                             indeterminate
                             color="white"
@@ -24,7 +24,6 @@
 <script>
 	import {mapState} from 'vuex'
     export default {
-		name: "Loading",
 		computed: {
 			...mapState({
 				dialog: state => state.general.loading
