@@ -29,7 +29,7 @@
                 </v-card-title>
                 <v-data-table
                         :headers="headers"
-                        :items="registros"
+                        :items="items"
                         :search="search"
                         rows-per-page-text="Registros por página:"
                         :rows-per-page-items="[10,20,50,{'text':'Todos','value':-1}]"
@@ -68,7 +68,7 @@
 		}),
 		computed: {
 			...mapState({
-				registros: state => state.user.model.usuarios
+				items: state => state.user.model.usuarios
 			})
 		},
 		beforeCreate () {

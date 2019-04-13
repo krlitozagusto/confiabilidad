@@ -28,16 +28,18 @@ const router = new Router({
 						title: 'Panel de usuarios'
 					},
 					component: resolve => {require(['../components/modules/usuarios/Panel'], resolve)}
-				}
+				},
+                {
+                    path: 'login',
+                    meta: {
+                        title: 'Login'
+                    }
+                }
 			]
         },
 		{
-			path:'/404',
-			component: resolve => {require(['../components/errors/Error404'], resolve)}
-		},
-		{
 			path:'*',
-			redirect:'/404'
+			redirect:'/home'
 		}
   ]
 })

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Validator;
@@ -15,6 +16,13 @@ class UsuariosController extends Controller
     {
         return response()->json([
             'usuarios'=> User::all()
+        ]);
+    }
+
+    public function currentUser()
+    {
+        return response()->json([
+            'currentUser'=> Auth::user()
         ]);
     }
 
@@ -36,11 +44,9 @@ class UsuariosController extends Controller
             $usuario = new User();
             $usuario->fill($request->all());
             $usuario->password = Hash::make('Sanmia12345');
-            $usuario->remember_token = str_random(100);
             $usuario->save();
             DB::commit();
             return response()->json([
-                'estado'=>'success',
                 'usuario' => User::where('id','=',$usuario->id)->first()
             ]);
         }catch (\Exception $exception) {
