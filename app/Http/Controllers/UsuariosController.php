@@ -24,9 +24,9 @@ class UsuariosController extends Controller
     public function newUser()
     {
         return response()->json([
-            'user'=> null,
+            'usuario'=> null,
             'roles'=> Role::all(),
-            'empleados'=> Empleado::where('estado', '=', 'Activo')->get(),
+            'empleados'=> Empleado::where([['user_id', '=', null],['estado', '=', 'Activo']])->get(),
 
         ]);
     }
@@ -38,34 +38,96 @@ class UsuariosController extends Controller
         ]);
     }
 
-    public function crearUsuario(Request $request)
+    public function registerNewUser(Request $request)
     {
         DB::beginTransaction();
         try{
             $validador = Validator ::make($request->all(),[
-                'name' => 'required|string|max:255',
+                'name' => 'required|string|max:255|unique:users',
                 'email' => 'required|string|email|max:255|unique:users',
+                'empleado' => 'required'
             ]);
             if($validador->fails()){
                 DB::rollback();
                 return response()->json([
-                    'estado'=>'validator',
                     'error'=> $validador->errors()->first()
-                ]);
+                ], 422);
             }
             $usuario = new User();
             $usuario->fill($request->all());
-            $usuario->password = Hash::make('Sanmia12345');
+            $usuario->password = Hash::make('Confiabilidad'.$request['empleado']['identificacion']);
+            $usuario->avatar = 'avatarDefault.png';
             $usuario->save();
+            $empleado = Empleado::where('identificacion','=',$request['empleado']['identificacion'])->first();
+            $empleado->user_id = $usuario->id;
+            $empleado->save();
             DB::commit();
             return response()->json([
-                'usuario' => User::where('id','=',$usuario->id)->first()
-            ]);
+                'usuario' => User::where('id','=',$usuario->id)->with('empleado')->first()
+            ], 200);
         }catch (\Exception $exception) {
             DB::rollback();
             return response()->json([
                 'error' => $exception->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function changePassword(Request $request)
+    {
+        DB::beginTransaction();
+        try{
+            $validador = Validator ::make($request->all(),[
+                'current_password' => 'required',
+                'password' => 'required|min:6|same:password',
+                'password_confirmation' => 'required|min:6|same:password'
             ]);
+            if($validador->fails()){
+                DB::rollback();
+                return response()->json([
+                    'error'=> $validador->errors()->first()
+                ], 422);
+            }
+            if(Hash::check($request->current_password, Auth::user()->password)){
+                $user = Auth::user();
+                $user->password = bcrypt($request->password);
+                $user->save();
+                DB::commit();
+                return response()->json([
+                    'usuario' => User::where('id','=',$user->id)->first()
+                ], 200);
+            }else{
+                DB::rollback();
+                return response()->json([
+                    'error' => 'La contraseña actual ingresada no coincide con la contraseña actual del usuario',
+                ], 500);
+            }
+        }catch (\Exception $exception) {
+            DB::rollback();
+            return response()->json([
+                'error' => $exception->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function resetPassword(Request $request)
+    {
+        DB::beginTransaction();
+        try{
+            $usuario = User::where('id','=',$request->id)->with('empleado')->first();
+            if ($usuario->empleado) {
+                $usuario->password = Hash::make('Confiabilidad'.$usuario->empleado->identificacion);
+            } else {
+                $usuario->password = Hash::make('Confiabilidad');
+            }
+            $usuario->save();
+            DB::commit();
+            return response()->json([], 200);
+        }catch (\Exception $exception) {
+            DB::rollback();
+            return response()->json([
+                'error' => $exception->getMessage(),
+            ], 500);
         }
     }
 
@@ -100,27 +162,6 @@ class UsuariosController extends Controller
             ]);
         }
     }
-
-    public function resetPassword(Request $request)
-    {
-        DB::beginTransaction();
-        try{
-            $usuario = User::find($request->id);
-            $usuario->password = Hash::make('Sanmia12345');
-            $usuario->save();
-            DB::commit();
-            return response()->json([
-                'estado'=>'success',
-                'usuario' => User::where('id','=',$usuario->id)->first()
-            ]);
-        }catch (\Exception $exception) {
-            DB::rollback();
-            return response()->json([
-                'error' => $exception->getMessage(),
-            ]);
-        }
-    }
-
     public function validarEmail(Request $request)
     {
         try{

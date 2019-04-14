@@ -3,6 +3,7 @@ import {LOADING, SNACKBAR} from './general'
 export const USER_PANEL = 'USER_PANEL'
 export const CURRENT_USER = 'CURRENT_USER'
 export const ASSIGN_MODEL = 'ASSIGN_MODEL'
+export const REGISTER_USER = 'REGISTER_USER'
 export default {
 	state: {
 		model: {
@@ -24,6 +25,9 @@ export default {
 		},
         [CURRENT_USER]: (state, data) => {
             state.currentUser = data
+        },
+        [REGISTER_USER]: (state, user) => {
+            state.model.usuarios.push(user)
         }
 	},
 	actions: {

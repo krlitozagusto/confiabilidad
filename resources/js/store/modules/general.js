@@ -1,11 +1,14 @@
 export const LOADING = 'LOADING'
 export const COMMIT_DRAWER = 'COMMIT_DRAWER'
 export const SNACKBAR = 'SNACKBAR'
+import { avatars } from './data'
+
 export default {
 	state: {
 		loading: false,
         snackbar: null,
-		drawer: true
+		drawer: true,
+        avatars: avatars
 	},
 	getters: {
 	},

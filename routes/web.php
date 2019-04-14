@@ -8,6 +8,9 @@ Route::group(['middleware' => 'auth'], function (){
     Route::post('/usuarios/panel', 'UsuariosController@panel');
     Route::post('/usuarios/current', 'UsuariosController@currentUser');
     Route::post('/usuarios/newuser', 'UsuariosController@newUser');
+    Route::post('/usuarios/registernewuser', 'UsuariosController@registerNewUser');
+    Route::post('/usuarios/changepassword', 'UsuariosController@changePassword');
+    Route::post('/usuarios/resetpassword', 'UsuariosController@resetPassword');
 });
 
 

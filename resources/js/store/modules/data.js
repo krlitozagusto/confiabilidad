@@ -1,0 +1,26 @@
+// indetificationTypes
+export const avatars = [
+    {value: 'avatar01.png', nombre: 'Avatar 01' },
+    {value: 'avatar02.png', nombre: 'Avatar 02' },
+    {value: 'avatar03.png', nombre: 'Avatar 03' },
+    {value: 'avatar04.png', nombre: 'Avatar 04' },
+    {value: 'avatar05.png', nombre: 'Avatar 05' },
+    {value: 'avatar051.png', nombre: 'Avatar 051' },
+    {value: 'avatar06.png', nombre: 'Avatar 06' },
+    {value: 'avatar07.png', nombre: 'Avatar 07' },
+    {value: 'avatar08.png', nombre: 'Avatar 08' },
+    {value: 'avatar09.png', nombre: 'Avatar 09' },
+    {value: 'avatar10.png', nombre: 'Avatar 10' },
+    {value: 'avatar11.png', nombre: 'Avatar 11' },
+    {value: 'avatar12.png', nombre: 'Avatar 12' },
+    {value: 'avatar13.png', nombre: 'Avatar 13' },
+    {value: 'avatar14.png', nombre: 'Avatar 14' },
+    {value: 'avatar15.png', nombre: 'Avatar 15' },
+    {value: 'avatar16.png', nombre: 'Avatar 16' },
+    {value: 'avatar17.png', nombre: 'Avatar 17' },
+    {value: 'avatar18.png', nombre: 'Avatar 18' },
+    {value: 'avatar19.png', nombre: 'Avatar 19' },
+    {value: 'avatar20.png', nombre: 'Avatar 20' },
+    {value: 'avatar21.png', nombre: 'Avatar 21' },
+    {value: 'avatarDefault.png', nombre: 'General' }
+]

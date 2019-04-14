@@ -11,6 +11,7 @@
             <span class="hidden-sm-and-down">Confiabilidad</span>
         </v-toolbar-title>
         <v-spacer></v-spacer>
+        <change-password ref="changePasswordDialog"></change-password>
         <v-btn icon @click.stop="toggleFullScreen">
             <v-icon>{{isFullScreen ? 'fullscreen_exit' : 'fullscreen'}}</v-icon>
         </v-btn>
@@ -38,6 +39,12 @@
                     <input type="hidden" name="_token" :value="axios.defaults.headers.common['X-CSRF-TOKEN']" />
                 </form>
                 <v-list class="py-0">
+                    <v-list-tile @click="changePassword">
+                        <v-icon class="mr-2">vpn_key</v-icon>
+                        <v-list-tile-content>
+                            <v-list-tile-title>Cambiar contraseña</v-list-tile-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
                     <v-list-tile @click="$refs.logout.submit()">
                         <v-icon class="mr-2">exit_to_app</v-icon>
                         <v-list-tile-content>
@@ -54,6 +61,9 @@
 	import {mapMutations, mapState} from 'vuex'
     export default {
 		name: "Toolbar",
+        components: {
+            ChangePassword: resolve => {require(['../modules/usuarios/ChangePassword'], resolve)}
+        },
 		data: () => ({
             isFullScreen: false
 		}),
@@ -64,6 +74,9 @@
 
         },
         methods: {
+            changePassword () {
+                this.$refs.changePasswordDialog.register()
+            },
             toggleFullScreen () {
                 screenfull.enabled && screenfull.toggle()
                 this.isFullScreen = !screenfull.isFullscreen
