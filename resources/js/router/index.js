@@ -30,10 +30,30 @@ const router = new Router({
 					component: resolve => {require(['../components/modules/usuarios/Panel'], resolve)}
 				},
                 {
+                    path: 'events',
+                    name: 'EventsBoard',
+                    meta: {
+                        title: 'Panel de eventos'
+                    },
+                    component: resolve => {require(['../components/modules/home/Panel'], resolve)}
+                },
+                {
+                    path: 'reports',
+                    name: 'ReportsBoard',
+                    meta: {
+                        title: 'Panel de reportes'
+                    },
+                    component: resolve => {require(['../components/modules/home/Panel'], resolve)}
+                },
+                {
                     path: 'login',
                     meta: {
                         title: 'Login'
                     }
+                },
+                {
+                    path:'*',
+                    redirect:'/home'
                 }
 			]
         },

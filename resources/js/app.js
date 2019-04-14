@@ -10,6 +10,8 @@ import router from './router/index'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import store from './store/index'
+import es from 'vee-validate/dist/locale/es'
+import VeeValidate, { Validator } from 'vee-validate'
 
 axios.defaults.baseURL = 'http://confiabilidad.test/'
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
@@ -33,8 +35,11 @@ window.lodash = require('lodash')
  */
 import 'vuetify/dist/vuetify.min.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
+
 Vue.use(Vuetify)
 Vue.use(VueAxios, axios)
+Validator.localize('es', es)
+Vue.use(VeeValidate, {locale: 'es'})
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

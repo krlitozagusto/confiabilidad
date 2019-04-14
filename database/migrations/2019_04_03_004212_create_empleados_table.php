@@ -18,6 +18,7 @@ class CreateEmpleadosTable extends Migration
             $table->string('identificacion')->unique();
             $table->string('nombre');
             $table->string('celular');
+            $table->string('direccion');
             $table->string('email');
             $table->enum('estado',['Activo','Inactivo']);
             $table->bigInteger('campo_id')->unsigned();

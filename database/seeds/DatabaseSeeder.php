@@ -17,6 +17,13 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $this->call(UsersSeeder::class);
+        $this->call(ContratosSeeder::class);
+        $this->call(TagsSeeder::class);
+        $this->call(NumeroEquiposSeeder::class);
+        $this->call(CamposSeeder::class);
+        $this->call(AreasSeeder::class);
+        $this->call(CargosSeeder::class);
+        $this->call(EmpleadosSeeder::class);
     }
 
     protected function truncateTables (array $tables){

@@ -25,6 +25,8 @@
     },
     "dependencies": {
         "material-design-icons-iconfont": "^3.0.3",
+        "screenfull": "^4.2.0",
+        "vee-validate": "^2.2.2",
         "vue-axios": "^2.1.4",
         "vue-router": "^3.0.2",
         "vuetify": "^1.5.9",

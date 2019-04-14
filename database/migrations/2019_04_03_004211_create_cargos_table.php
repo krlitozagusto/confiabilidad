@@ -15,7 +15,6 @@ class CreateCargosTable extends Migration
     {
         Schema::create('cargos', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('codigo');
             $table->string('nombre');
             $table->bigInteger('area_id')->unsigned();
             $table->foreign('area_id')->references('id')->on('areas')->onDelete('restrict');

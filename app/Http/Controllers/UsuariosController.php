@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Empleado;
+use App\Models\Role;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +17,17 @@ class UsuariosController extends Controller
     public function panel()
     {
         return response()->json([
-            'usuarios'=> User::all()
+            'usuarios'=> User::with('empleado')->get()
+        ]);
+    }
+
+    public function newUser()
+    {
+        return response()->json([
+            'user'=> null,
+            'roles'=> Role::all(),
+            'empleados'=> Empleado::where('estado', '=', 'Activo')->get(),
+
         ]);
     }
 

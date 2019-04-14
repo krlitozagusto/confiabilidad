@@ -7,6 +7,7 @@ Route::group(['middleware' => 'auth'], function (){
 //Usuarios
     Route::post('/usuarios/panel', 'UsuariosController@panel');
     Route::post('/usuarios/current', 'UsuariosController@currentUser');
+    Route::post('/usuarios/newuser', 'UsuariosController@newUser');
 });
 
 

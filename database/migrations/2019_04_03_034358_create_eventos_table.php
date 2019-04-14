@@ -15,7 +15,6 @@ class CreateEventosTable extends Migration
     {
         Schema::create('eventos', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('codigo')->unique();
             $table->dateTime('fecha_inicio');
             $table->dateTime('fecha_fin');
             $table->integer('downtime');

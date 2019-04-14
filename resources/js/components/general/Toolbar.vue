@@ -11,11 +11,8 @@
             <span class="hidden-sm-and-down">Confiabilidad</span>
         </v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn icon>
-            <v-icon>apps</v-icon>
-        </v-btn>
-        <v-btn icon>
-            <v-icon>notifications</v-icon>
+        <v-btn icon @click.stop="toggleFullScreen">
+            <v-icon>{{isFullScreen ? 'fullscreen_exit' : 'fullscreen'}}</v-icon>
         </v-btn>
         <v-toolbar-items>
             <v-menu
@@ -25,9 +22,9 @@
             >
                 <v-btn dark color="primary" slot="activator" class="pa-0" :loading="!user" :disabled="!user">
                     <v-list-tile v-if="user">
-                        <v-list-tile-avatar size="32px">
+                        <v-list-tile-avatar size="50px">
                             <img
-                                src="../../../img/avatars/avatar01.png"
+                                :src="`/images/avatars/${user.avatar}`"
                                 alt="Avatar"
                             />
                         </v-list-tile-avatar>
@@ -53,17 +50,24 @@
     </v-toolbar>
 </template>
 <script>
+    import screenfull from 'screenfull'
 	import {mapMutations, mapState} from 'vuex'
     export default {
-		name: "Navigation",
+		name: "Toolbar",
 		data: () => ({
+            isFullScreen: false
 		}),
         computed: {
             ...mapState({
                 user: state => state.user.currentUser
-            })
+            }),
+
         },
         methods: {
+            toggleFullScreen () {
+                screenfull.enabled && screenfull.toggle()
+                this.isFullScreen = !screenfull.isFullscreen
+            },
             ...mapMutations(['COMMIT_DRAWER'])
         }
     }

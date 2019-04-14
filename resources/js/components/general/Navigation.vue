@@ -48,6 +48,18 @@
                     nameRoute: 'HomeBoard'
                 },
                 {
+                    icon: 'today',
+                    text: 'Eventos',
+                    subheader: false,
+                    nameRoute: 'EventsBoard'
+                },
+                {
+                    icon: 'assignment_returned',
+                    text: 'Reportes',
+                    subheader: false,
+                    nameRoute: 'ReportsBoard'
+                },
+                {
                     icon: null,
                     text: 'Administración',
                     subheader: true,

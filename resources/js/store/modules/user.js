@@ -41,7 +41,7 @@ export default {
 		[USER_PANEL]: ({commit, dispatch}) => {
             commit(LOADING, true)
 			return new Promise(() => {
-				axios.post('usuarios/panels')
+				axios.post('usuarios/panel')
 					.then(response => {
                         commit(LOADING, false)
                         commit(ASSIGN_MODEL, response.data)
