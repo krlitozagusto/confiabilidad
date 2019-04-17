@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Evento extends Model
 {
+    public function tipo_evento()
+    {
+        return $this->belongsTo(TipoEvento::class);
+    }
+
     public function tipo_mantenimiento()
     {
         return $this->belongsTo(TipoMantenimiento::class);

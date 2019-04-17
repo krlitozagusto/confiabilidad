@@ -126,7 +126,7 @@
                                 console.log('el response', response)
                                 this.$store.commit('LOADING', false)
                                 this.$store.commit('SNACKBAR', {color: 'success', message: `Usuario registrado correctamente`})
-                                this.$store.commit('REGISTER_USER', response.data.usuario)
+                                this.$store.commit('RELOAD_TABLE', 'tablaUsuarios')
                                 this.close()
                             })
                             .catch(error => {

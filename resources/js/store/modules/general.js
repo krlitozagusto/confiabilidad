@@ -1,5 +1,6 @@
 export const LOADING = 'LOADING'
 export const COMMIT_DRAWER = 'COMMIT_DRAWER'
+export const RELOAD_TABLE = 'RELOAD_TABLE'
 export const SNACKBAR = 'SNACKBAR'
 import { avatars } from './data'
 
@@ -8,11 +9,17 @@ export default {
 		loading: false,
         snackbar: null,
 		drawer: true,
-        avatars: avatars
+        avatars: avatars,
+        tablas: {
+            tablaUsuarios: 0
+        }
 	},
 	getters: {
 	},
 	mutations: {
+        [RELOAD_TABLE]: (state, tabla) => {
+            state.tablas[tabla] = state.tablas[tabla] + 1
+        },
 		[LOADING]: (state, show) => {
 			state.loading = show
 		},

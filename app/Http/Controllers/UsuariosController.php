@@ -11,14 +11,52 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Validator;
 use Illuminate\Validation\Rule;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Resources\Json\Resource;
+use Illuminate\Support\Facades\Input;
+use Spatie\QueryBuilder\Filter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class UsuariosController extends Controller
 {
+
+    public function index()
+    {
+        $perPage = Input::get('per_page');
+
+        $query = QueryBuilder::for(User::class)
+            ->allowedFilters([
+                Filter::scope('search'),
+                'name',
+                'email'
+            ]);
+
+        if($perPage){
+            return new Resource($query->paginate($perPage));
+        }
+        dd($query->get());
+        return new Resource($query->get());
+    }
+
     public function panel()
     {
-        return response()->json([
-            'usuarios'=> User::with('empleado')->get()
-        ]);
+//        return response()->json([
+//            'usuarios'=> User::with('empleado')->get()
+//        ]);
+        $perPage = Input::get('per_page');
+
+        $query = QueryBuilder::for(User::class)
+            ->with('empleado')
+            ->allowedFilters([
+                Filter::scope('search'),
+                'name',
+                'email'
+            ]);
+
+        if($perPage){
+            return new Resource($query->paginate($perPage));
+        }
+        return new Resource($query->get());
     }
 
     public function newUser()

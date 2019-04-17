@@ -17,42 +17,12 @@
                         <span>Crear usuario</span>
                     </v-tooltip>
                 </v-toolbar>
-                <v-card-title>
-                    <v-spacer/>
-                    <v-text-field
-                            v-model="search"
-                            append-icon="search"
-                            label="Buscar"
-                            single-line
-                            hide-details
-                    />
-                </v-card-title>
-                <v-data-table
-                        :headers="headers"
-                        :items="items"
-                        :search="search"
-                        rows-per-page-text="Registros por página:"
-                        :rows-per-page-items="[10,20,50,{'text':'Todos','value':-1}]"
-                >
-                    <template slot="items" slot-scope="props">
-                        <td class="text-xs-left">{{ props.item.name }}</td>
-                        <td class="text-xs-left">{{ props.item.email }}</td>
-                        <td class="text-xs-left">{{ props.item.empleado && props.item.empleado.identificacion }}</td>
-                        <td class="text-xs-left">{{ props.item.empleado && props.item.empleado.nombre }}</td>
-                        <td class="text-xs-left">{{ props.item.empleado && props.item.empleado.celular }}</td>
-                        <td class="text-xs-center">
-                            <v-tooltip top>
-                                <v-btn icon slot="activator" @click.stop="resetPassword(props.item)">
-                                    <v-icon color="success">settings_backup_restore</v-icon>
-                                </v-btn>
-                                <span>Reestablecer contraseña</span>
-                            </v-tooltip>
-                        </td>
-                    </template>
-                    <v-alert  slot="no-results" :value="true" color="error" icon="warning">
-                        Lo sentimos, no tenemos registros para mostrar. <v-icon>sentiment_very_dissatisfied</v-icon>
-                    </v-alert>
-                </v-data-table>
+                <data-table
+                    ref="tablaUsuarios"
+                    v-model="dataTable"
+                    @resetOption="item => resetOptions(item)"
+                    @resetPassword="item => resetPassword(item)"
+                ></data-table>
             </v-card>
         </v-flex>
         <confirmation-dialog
@@ -70,30 +40,63 @@
     export default {
 		name: "Panel",
         components: {
+            DataTable: resolve => {require(['../../general/DataTable'], resolve)},
             RegisterDialog: resolve => {require(['./RegisterDialog'], resolve)},
             ConfirmationDialog: resolve => {require(['../../general/ConfirmationDialog'], resolve)}
         },
 		data: () => ({
             selectedItem: null,
-			search: '',
-			headers: [
-				{ text: 'Alias', value: 'name' },
-				{ text: 'Correo electrónico', value: 'email' },
-                { text: 'Identificacion', value: 'empleado.identificacion', sortable: false },
-                { text: 'Nombre', value: 'empleado.nombre', sortable: false },
-                { text: 'Celular', value: 'empleado.celular', sortable: false },
-				{ text: 'Opciones', value: 'id', sortable: false, align: 'center' }
-			],
+            dataTable: {
+                nameItemState: 'tablaUsuarios',
+                route: 'usuarios/panel',
+                makeHeaders: [
+                    {
+                        text: 'Alias',
+                        align: 'left',
+                        sortable: false,
+                        value: 'name'
+                    },
+                    {
+                        text: 'Correo Electrónico',
+                        align: 'left',
+                        sortable: false,
+                        value: 'email'
+                    },
+                    {
+                        text: 'Identificación',
+                        align: 'left',
+                        sortable: true,
+                        value: 'empleado.identificacion'
+                    },
+                    {
+                        text: 'Nombre',
+                        align: 'left',
+                        sortable: true,
+                        value: 'empleado.nombre'
+                    },
+                    {
+                        text: 'Celular',
+                        align: 'left',
+                        sortable: true,
+                        value: 'empleado.celular'
+                    },
+                    {
+                        text: 'Opciones',
+                        align: 'center',
+                        sortable: false,
+                        actions: true,
+                        singlesActions: true,
+                        classData: 'text-xs-center'
+                    }
+                ]
+            }
 		}),
-		computed: {
-			...mapState({
-				items: state => state.user.model.usuarios
-			})
-		},
-		beforeCreate () {
-			this.$store.dispatch('USER_PANEL')
-		},
         methods: {
+            resetOptions (item) {
+                item.options = []
+                item.options.push({event: 'resetPassword', icon: 'settings_backup_restore', tooltip: 'Reestablecer contraseña', color: 'success'})
+                return item
+            },
             resetPassword (item) {
                 this.selectedItem = item
                 this.$refs.dialogConfirm.open()

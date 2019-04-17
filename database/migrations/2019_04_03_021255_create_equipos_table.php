@@ -17,6 +17,7 @@ class CreateEquiposTable extends Migration
             $table->bigIncrements('id');
             $table->string('nombre');
             $table->string('denominacion');
+            $table->string('descripcion');
             $table->bigInteger('tag_id')->unsigned();
             $table->bigInteger('numero_equipo_id')->unsigned();
             $table->bigInteger('valoracion_ram_id')->unsigned();

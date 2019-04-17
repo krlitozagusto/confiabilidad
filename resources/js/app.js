@@ -26,6 +26,17 @@ require('./bootstrap')
 
 window.Vue = require('vue')
 window.lodash = require('lodash')
+window.toProperty = (obj, array) => {
+    if (obj && array) {
+        while (array.length) {
+            if (!obj) return null
+            obj = obj[array.shift()]
+        }
+        return obj
+    } else {
+        return null
+    }
+}
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
