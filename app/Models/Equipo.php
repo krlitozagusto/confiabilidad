@@ -11,6 +11,11 @@ class Equipo extends Model
         return $this->hasMany(ImagenEquipo::class);
     }
 
+    public function eventos()
+    {
+        return $this->hasMany(Evento::class);
+    }
+
     public function ubicacion_tecnica()
     {
         return $this->belongsTo(UbicacionTecnica::class);

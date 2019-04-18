@@ -16,6 +16,11 @@ class Evento extends Model
         return $this->belongsTo(TipoMantenimiento::class);
     }
 
+    public function equipo()
+    {
+        return $this->belongsTo(Equipo::class);
+    }
+
     public function modo_fallas()
     {
         return $this->belongsToMany(ModoFalla::class);
@@ -47,4 +52,17 @@ class Evento extends Model
     }
 
     protected $hidden = ['created_at','updated_at'];
+
+    public function scopeSearch(Builder $builder,$search) : Builder
+    {
+        return $builder->where(function($query) use($search){
+            $query->orWhereHas('tipo_evento',function ($query) use ($search) {
+                $query->where('nombre','like','%'.$search.'%');
+
+            });
+        })->orWhere(function($query) use ($search){
+            $query->where('id','like','%'.$search.'%')
+                ->orWhere('estado','like','%'.$search.'%');
+        });
+    }
 }

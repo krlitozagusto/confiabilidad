@@ -13,7 +13,7 @@ class CreateTipoEventoTable extends Migration
      */
     public function up()
     {
-        Schema::create('tipo_evento', function (Blueprint $table) {
+        Schema::create('tipo_eventos', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('nombre');
             $table->timestamps();
@@ -27,6 +27,6 @@ class CreateTipoEventoTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tipo_evento');
+        Schema::dropIfExists('tipo_eventos');
     }
 }

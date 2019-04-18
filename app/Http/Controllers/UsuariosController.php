@@ -20,24 +20,6 @@ use Spatie\QueryBuilder\QueryBuilder;
 class UsuariosController extends Controller
 {
 
-    public function index()
-    {
-        $perPage = Input::get('per_page');
-
-        $query = QueryBuilder::for(User::class)
-            ->allowedFilters([
-                Filter::scope('search'),
-                'name',
-                'email'
-            ]);
-
-        if($perPage){
-            return new Resource($query->paginate($perPage));
-        }
-        dd($query->get());
-        return new Resource($query->get());
-    }
-
     public function panel()
     {
 //        return response()->json([
@@ -48,10 +30,9 @@ class UsuariosController extends Controller
         $query = QueryBuilder::for(User::class)
             ->with('empleado')
             ->allowedFilters([
-                Filter::scope('search'),
-                'name',
-                'email'
-            ]);
+                Filter::scope('search')
+            ])
+            ->allowedSorts('name','email');
 
         if($perPage){
             return new Resource($query->paginate($perPage));
@@ -195,30 +176,6 @@ class UsuariosController extends Controller
             ]);
         }catch (\Exception $exception) {
             DB::rollback();
-            return response()->json([
-                'error' => $exception->getMessage(),
-            ]);
-        }
-    }
-    public function validarEmail(Request $request)
-    {
-        try{
-            $response = false;
-            $validador = Validator::make($request->all(), [
-                'email' => [
-                    'required ',
-                    Rule::unique('users')->ignore($request->id)
-                ]
-            ]);
-            if ($validador->fails()) {
-                $response = true;
-            }else if($response->id){
-                $response = false;
-            }
-            return response()->json([
-                'estado' => $response,
-            ]);
-        }catch (\Exception $exception) {
             return response()->json([
                 'error' => $exception->getMessage(),
             ]);

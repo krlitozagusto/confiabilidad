@@ -35,7 +35,7 @@ const router = new Router({
                     meta: {
                         title: 'Panel de eventos'
                     },
-                    component: resolve => {require(['../components/modules/home/Panel'], resolve)}
+                    component: resolve => {require(['../components/modules/eventos/Panel'], resolve)}
                 },
                 {
                     path: 'reports',

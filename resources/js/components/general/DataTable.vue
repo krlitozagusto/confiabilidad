@@ -564,7 +564,7 @@
           this.activePetition = false
           await this.reloadHeaders()
           let stringFilters = await this.stringFilters()
-          let stringSort = this.value.pagination.sortBy ? (`&Sort=${(this.value.pagination.descending ? '-' : '')}${this.value.pagination.sortBy}`) : ''
+          let stringSort = this.value.pagination.sortBy ? (`&sort=${(this.value.pagination.descending ? '-' : '')}${this.value.pagination.sortBy}`) : ''
           this.axios.post(this.value.route + (this.value.route.indexOf('?') > -1 ? '&' : '?') + 'per_page=' + this.value.pagination.per_page + stringFilters + stringSort + '&page=' + this.value.pagination.current_page + '&filter[search]=' + ((this.value.search === null || typeof this.value.search === 'undefined') ? '' : this.value.search))
             .then((response) => {
                 console.log('el response del datatable', response)

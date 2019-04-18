@@ -11,7 +11,8 @@ export default {
 		drawer: true,
         avatars: avatars,
         tablas: {
-            tablaUsuarios: 0
+            tablaUsuarios: 0,
+            tablaEventos: 0
         }
 	},
 	getters: {
