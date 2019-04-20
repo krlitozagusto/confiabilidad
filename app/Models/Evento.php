@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
 class Evento extends Model
 {
@@ -58,7 +60,6 @@ class Evento extends Model
         return $builder->where(function($query) use($search){
             $query->orWhereHas('tipo_evento',function ($query) use ($search) {
                 $query->where('nombre','like','%'.$search.'%');
-
             });
         })->orWhere(function($query) use ($search){
             $query->where('id','like','%'.$search.'%')

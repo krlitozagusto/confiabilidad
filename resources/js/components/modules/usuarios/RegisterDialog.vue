@@ -123,7 +123,6 @@
                         this.$store.commit('LOADING', true)
                         axios.post('usuarios/registernewuser', this.usuario)
                             .then(response => {
-                                console.log('el response', response)
                                 this.$store.commit('LOADING', false)
                                 this.$store.commit('SNACKBAR', {color: 'success', message: `Usuario registrado correctamente`})
                                 this.$store.commit('RELOAD_TABLE', 'tablaUsuarios')

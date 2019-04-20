@@ -19,7 +19,7 @@ class CreateEventosTable extends Migration
             $table->dateTime('fecha_inicio');
             $table->dateTime('fecha_fin');
             $table->integer('downtime');
-            $table->enum('estado',['Registrado','Terminado']);
+            $table->enum('estado',['Registrado','Terminado','Anulado']);
             $table->tinyInteger('contractual')->unsigned();
             $table->tinyInteger('programado')->unsigned();
             $table->bigInteger('tipo_evento_id')->unsigned();

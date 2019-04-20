@@ -22,17 +22,18 @@
                     v-model="dataTable"
                     @resetOption="item => resetOptions(item)"
                     @editEvent="item => editEvent(item)"
+                    @cancelEvent="item => cancelEvent(item)"
                 ></data-table>
             </v-card>
         </v-flex>
         <confirmation-dialog
             ref="dialogConfirm"
             heading="¿Seguro de continuar?"
-            :message="`¿Está seguro de continuar con la eliminación del evento <strong>${selectedItem && selectedItem.id}</strong>?`"
-            @onConfirm="submitDeleteEvent"
+            :message="`¿Está seguro de continuar con la anulación del evento <strong>${selectedItem && selectedItem.id}</strong>?`"
+            @onConfirm="submitCancelEvent"
         >
         </confirmation-dialog>
-        <!--<register-dialog ref="registerDialog"></register-dialog>-->
+        <register-dialog ref="registerDialog"></register-dialog>
     </v-layout>
 </template>
 <script>
@@ -40,7 +41,7 @@
 		name: "Panel",
         components: {
             DataTable: resolve => {require(['../../general/DataTable'], resolve)},
-            // RegisterDialog: resolve => {require(['./RegisterDialog'], resolve)},
+            RegisterDialog: resolve => {require(['./RegisterDialog'], resolve)},
             ConfirmationDialog: resolve => {require(['../../general/ConfirmationDialog'], resolve)}
         },
 		data: () => ({
@@ -108,24 +109,26 @@
         methods: {
             resetOptions (item) {
                 item.options = []
-                item.options.push({event: 'editEvent', icon: 'edit', tooltip: 'Editar evento', color: 'warning'})
+                if (item.estado === 'Registrado') item.options.push({event: 'editEvent', icon: 'edit', tooltip: 'Editar evento', color: 'warning'})
+                if (item.estado === 'Registrado') item.options.push({event: 'cancelEvent', icon: 'cancel', tooltip: 'Anular evento', color: 'error'})
                 return item
             },
-            resetPassword (item) {
+            cancelEvent (item) {
                 this.selectedItem = item
                 this.$refs.dialogConfirm.open()
             },
-            submitDeleteEvent () {
+            submitCancelEvent () {
                 this.$store.commit('LOADING', true)
-                this.axios.post('usuarios/resetpassword', {id: this.selectedItem.id})
+                this.axios.post('eventos/cancelevent', {id: this.selectedItem.id})
                     .then(response => {
                         this.$store.commit('LOADING', false)
                         this.$refs.dialogConfirm.close()
-                        this.$store.commit('SNACKBAR', {color: 'success', message: `La contraseña del usuario ${this.selectedItem.name} se reestableció correctamente`})
+                        this.$store.commit('SNACKBAR', {color: 'success', message: `El evento número ${this.selectedItem.name} se anuló correctamente`})
+                        this.$store.commit('RELOAD_TABLE', 'tablaEventos')
                     })
                     .catch(error => {
                         this.$store.commit('LOADING', false)
-                        this.$store.commit('SNACKBAR', {color: 'error', message: `al reestablecer la contraseña del usuario ${this.selectedItem.name}`, error: error})
+                        this.$store.commit('SNACKBAR', {color: 'error', message: `al anular el evento número ${this.selectedItem.id}`, error: error})
                     })
             },
             editEvent (evento) {

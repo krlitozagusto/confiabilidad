@@ -56,7 +56,6 @@ class User extends Authenticatable
             $query->orWhereHas('empleado',function ($query) use ($search) {
                 $query->where('nombre','like','%'.$search.'%')
                     ->orWhere('identificacion','like','%'.$search.'%');
-
             });
         })->orWhere(function($query) use ($search){
             $query->where('name','like','%'.$search.'%')
