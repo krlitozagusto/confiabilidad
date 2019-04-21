@@ -10,6 +10,7 @@ import router from './router/index'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import store from './store/index'
+import moment from 'moment'
 import es from 'vee-validate/dist/locale/es'
 import VeeValidate, { Validator } from 'vee-validate'
 
@@ -51,6 +52,8 @@ Vue.use(Vuetify)
 Vue.use(VueAxios, axios)
 Validator.localize('es', es)
 Vue.use(VeeValidate, {locale: 'es'})
+moment.locale('es')
+Vue.prototype.moment = moment
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

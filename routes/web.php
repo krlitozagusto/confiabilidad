@@ -19,8 +19,7 @@ Route::group(['middleware' => 'auth'], function (){
     Route::post('/eventos/newevent', 'EventosController@newEvent');
     Route::post('/eventos/editevent', 'EventosController@editEvent');
 
-    Route::post('/eventos/registernewevent', 'EventosController@registerNewEvent');
-    Route::post('/eventos/registereditevent', 'EventosController@registerEditEvent');
+    Route::post('/eventos/registerevent', 'EventosController@registerEvent');
 
     Route::post('/eventos/cancelevent', 'EventosController@cancelEvent');
 

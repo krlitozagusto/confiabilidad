@@ -132,7 +132,7 @@
                     })
             },
             editEvent (evento) {
-                console.log('el evento', evento)
+                this.$refs.registerDialog.register(evento.id)
             },
 		    newEvent () {
                 this.$refs.registerDialog.register()

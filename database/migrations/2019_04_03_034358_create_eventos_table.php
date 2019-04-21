@@ -17,7 +17,9 @@ class CreateEventosTable extends Migration
             $table->bigIncrements('id');
             $table->dateTime('fecha_registro');
             $table->dateTime('fecha_inicio');
-            $table->dateTime('fecha_fin');
+            $table->dateTime('fecha_fin')->nullable();
+            $table->dateTime('fecha_inicio_reparacion')->nullable();
+            $table->dateTime('fecha_fin_reparacion')->nullable();
             $table->integer('downtime');
             $table->enum('estado',['Registrado','Terminado','Anulado']);
             $table->tinyInteger('contractual')->unsigned();

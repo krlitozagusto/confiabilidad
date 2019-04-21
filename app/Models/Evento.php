@@ -23,9 +23,9 @@ class Evento extends Model
         return $this->belongsTo(Equipo::class);
     }
 
-    public function modo_fallas()
+    public function fallas()
     {
-        return $this->belongsToMany(ModoFalla::class);
+        return $this->hasMany(Falla::class);
     }
 
     public function orden_trabajos()
@@ -43,7 +43,7 @@ class Evento extends Model
         return $this->hasMany(Impacto::class);
     }
 
-    public function evento_hijos()
+    public function eventos_hijos()
     {
         return $this->hasMany(Evento::class, 'evento_padre_id');
     }
@@ -54,6 +54,20 @@ class Evento extends Model
     }
 
     protected $hidden = ['created_at','updated_at'];
+    protected $fillable = [
+        'fecha_registro',
+        'fecha_inicio',
+        'fecha_fin',
+        'fecha_inicio_reparacion',
+        'fecha_fin_reparacion',
+        'estado',
+        'contractual',
+        'programado',
+        'tipo_evento_id',
+        'tipo_mantenimiento_id',
+        'equipo_id',
+        'evento_padre_id'
+    ];
 
     public function scopeSearch(Builder $builder,$search) : Builder
     {
