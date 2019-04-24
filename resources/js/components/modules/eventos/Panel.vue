@@ -23,6 +23,7 @@
                     @resetOption="item => resetOptions(item)"
                     @editEvent="item => editEvent(item)"
                     @cancelEvent="item => cancelEvent(item)"
+                    @commentEvent="item => commentEvent(item)"
                 ></data-table>
             </v-card>
         </v-flex>
@@ -111,7 +112,10 @@
                 item.options = []
                 if (item.estado === 'Registrado') item.options.push({event: 'editEvent', icon: 'edit', tooltip: 'Editar evento', color: 'warning'})
                 if (item.estado === 'Registrado') item.options.push({event: 'cancelEvent', icon: 'cancel', tooltip: 'Anular evento', color: 'error'})
+                if (item.estado === 'Registrado') item.options.push({event: 'commentEvent', icon: 'comment', tooltip: 'Comentar evento', color: 'info'})
                 return item
+            },
+            commentEvent (item) {
             },
             cancelEvent (item) {
                 this.selectedItem = item
