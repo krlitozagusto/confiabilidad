@@ -11,16 +11,6 @@ class Campo extends Model
         return $this->hasMany(Planta::class);
     }
 
-    public function tag()
-    {
-        return $this->belongsTo(Tag::class);
-    }
-
-    public function numero_equipo()
-    {
-        return $this->belongsTo(NumeroEquipo::class);
-    }
-
     public function contrato()
     {
         return $this->belongsTo(Contrato::class);

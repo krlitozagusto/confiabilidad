@@ -18,13 +18,11 @@ class CreateEquiposTable extends Migration
             $table->string('nombre');
             $table->string('denominacion');
             $table->string('descripcion');
-            $table->bigInteger('tag_id')->unsigned();
-            $table->bigInteger('numero_equipo_id')->unsigned();
+            $table->string('tag')->unique();
+            $table->string('numero_equipo')->unique();
             $table->bigInteger('valoracion_ram_id')->unsigned();
             $table->bigInteger('centro_costo_id')->unsigned();
             $table->bigInteger('ubicacion_tecnica_id')->unsigned();
-            $table->foreign('tag_id')->references('id')->on('tags')->onDelete('restrict');
-            $table->foreign('numero_equipo_id')->references('id')->on('numero_equipos')->onDelete('restrict');
             $table->foreign('valoracion_ram_id')->references('id')->on('valoracion_rams')->onDelete('restrict');
             $table->foreign('centro_costo_id')->references('id')->on('centro_costos')->onDelete('restrict');
             $table->foreign('ubicacion_tecnica_id')->references('id')->on('ubicacion_tecnicas')->onDelete('restrict');

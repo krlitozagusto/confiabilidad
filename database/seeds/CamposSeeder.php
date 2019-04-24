@@ -16,8 +16,8 @@ class CamposSeeder extends Seeder
                 'id' => 1,
                 'nombre'=>'Cupiagua',
                 'centro'=>'1064',
-                'tag_id'=>1,
-                'numero_equipo_id'=>1,
+                'tag'=>'XL-P-102',
+                'numero_equipo'=>'10061895',
                 'contrato_id'=>1
             ]
         );

@@ -99,7 +99,7 @@ class EventosController extends Controller
     public function postulador()
     {
         $query = QueryBuilder::for(Evento::class)
-            ->with('tipo_evento', 'equipo.tag')
+            ->with('tipo_evento', 'equipo')
             ->where('evento_padre_id', '=', null)
             ->allowedFilters([
                 Filter::exact('estado'),

@@ -16,15 +16,5 @@ class Planta extends Model
         return $this->belongsTo(Campo::class);
     }
 
-    public function tag()
-    {
-        return $this->belongsTo(Tag::class);
-    }
-
-    public function numero_equipo()
-    {
-        return $this->belongsTo(NumeroEquipo::class);
-    }
-
     protected $hidden = ['created_at','updated_at'];
 }

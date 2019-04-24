@@ -15,8 +15,8 @@ class SistemasSeeder extends Seeder
             [
                 'id' => 1,
                 'nombre'=>'Sistema 1',
-                'tag_id'=>3,
-                'numero_equipo_id'=>3,
+                'tag'=>'XL-P-102-1-1',
+                'numero_equipo'=>'10061895-1-1',
                 'planta_id'=>1
             ]
         );

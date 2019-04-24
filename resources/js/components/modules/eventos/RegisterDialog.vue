@@ -164,7 +164,7 @@
                                       <v-list-tile>
                                         <v-list-tile-content>
                                           <v-list-tile-title>{{value.nombre}}</v-list-tile-title>
-                                          <v-list-tile-sub-title class=caption>Tag: {{ value.tag.codigo }}</v-list-tile-sub-title>
+                                          <v-list-tile-sub-title class=caption>Tag: {{ value.tag }}</v-list-tile-sub-title>
                                         </v-list-tile-content>
                                       </v-list-tile>
                                       `,

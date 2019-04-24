@@ -14,7 +14,7 @@ class EquiposController extends Controller
     public function postulador()
     {
         $query = QueryBuilder::for(Equipo::class)
-            ->with('tag', 'numero_equipo', 'ubicacion_tecnica')
+            ->with('ubicacion_tecnica')
             ->allowedFilters([
                 Filter::scope('search')
             ]);

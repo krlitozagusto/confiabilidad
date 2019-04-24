@@ -16,15 +16,5 @@ class Sistema extends Model
         return $this->belongsTo(Planta::class);
     }
 
-    public function tag()
-    {
-        return $this->belongsTo(Tag::class);
-    }
-
-    public function numeroequipo()
-    {
-        return $this->belongsTo(NumeroEquipo::class);
-    }
-
     protected $hidden = ['created_at','updated_at'];
 }

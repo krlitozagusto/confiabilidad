@@ -22,16 +22,6 @@ class Equipo extends Model
         return $this->belongsTo(UbicacionTecnica::class);
     }
 
-    public function tag()
-    {
-        return $this->belongsTo(Tag::class);
-    }
-
-    public function numero_equipo()
-    {
-        return $this->belongsTo(NumeroEquipo::class);
-    }
-
     public function valoracion_ram()
     {
         return $this->belongsTo(ValoracionRam::class);
@@ -53,21 +43,16 @@ class Equipo extends Model
     {
         return $builder->where(function($query) use($search){
             $query
-                ->orWhereHas('tag',function ($query) use ($search) {
-                    $query->where('codigo','like','%'.$search.'%');
-                })
-                ->orWhereHas('numero_equipo',function ($query) use ($search) {
-                    $query->where('codigo','like','%'.$search.'%');
-                })
                 ->orWhereHas('ubicacion_tecnica',function ($query) use ($search) {
                     $query->where('nombre','like','%'.$search.'%')
-                        ->orWhereHas('tag',function ($query) use ($search) {
-                            $query->where('codigo','like','%'.$search.'%');
-                        });
+                        ->orWhere('tag','like','%'.$search.'%')
+                        ->orWhere('numero_equipo','like','%'.$search.'%');
                 });
         })->orWhere(function($query) use ($search){
             $query->where('descripcion','like','%'.$search.'%')
-                ->orWhere('nombre','like','%'.$search.'%');
+                ->orWhere('nombre','like','%'.$search.'%')
+                ->orWhere('tag','like','%'.$search.'%')
+                ->orWhere('numero_equipo','like','%'.$search.'%');
         });
     }
 }
