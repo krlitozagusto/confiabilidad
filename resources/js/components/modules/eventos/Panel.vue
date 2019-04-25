@@ -113,16 +113,17 @@
         methods: {
             resetOptions (item) {
                 item.options = []
-                if (item.estado === 'Registrado') item.options.push({event: 'editEvent', icon: 'edit', tooltip: 'Editar evento', color: 'warning'})
-                if (item.estado === 'Registrado') item.options.push({event: 'cancelEvent', icon: 'cancel', tooltip: 'Anular evento', color: 'error'})
-                if (item.estado === 'Registrado') item.options.push({event: 'commentEvent', icon: 'comment', tooltip: 'Comentar evento', color: 'info'})
                 item.options.push({event: 'detailEvent', icon: 'details', tooltip: 'Detalle evento', color: 'primary'})
+                if (item.estado === 'Registrado') item.options.push({event: 'editEvent', icon: 'edit', tooltip: 'Editar evento', color: 'warning'})
+                if (item.estado === 'Registrado') item.options.push({event: 'commentEvent', icon: 'comment', tooltip: 'Comentar evento', color: 'info'})
+                if (item.estado === 'Registrado') item.options.push({event: 'cancelEvent', icon: 'cancel', tooltip: 'Anular evento', color: 'error'})
                 return item
             },
             detailEvent (evento) {
                 this.$refs.detailDialog.register(evento.id)
             },
-            commentEvent (item) {
+            commentEvent (evento) {
+                this.$refs.detailDialog.register(evento.id, 'Comentarios')
             },
             cancelEvent (item) {
                 this.selectedItem = item

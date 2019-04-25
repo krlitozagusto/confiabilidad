@@ -12,98 +12,44 @@
                 <v-divider></v-divider>
                 <v-card-text>
                     <v-container class="pa-0" fluid grid-list-md>
-                        <v-layout row wrap>
-                            <v-flex xs12 sm6 md3>
-                                <v-switch
-                                    readonly
-                                    ripple
-                                    label="Es evento principal"
-                                    :false-value="0"
-                                    :true-value="1"
-                                    v-model="esPrincipal"
-                                ></v-switch>
+                        <v-layout>
+                            <v-flex xs12>
+                                <v-tabs
+                                    v-model="tabActiva"
+                                    centered
+                                    color="cyan"
+                                    slider-color="yellow"
+                                    dark
+                                >
+                                    <v-tab
+                                        v-for="(tab, index) in tabs"
+                                        :key="index"
+                                        :href="`#tab-${index}`"
+                                    >
+                                        {{ tab.title }}
+                                    </v-tab>
+                                </v-tabs>
+                                <v-tabs-items v-model="tabActiva">
+                                    <v-tab-item
+                                        v-for="(tab, index) in tabs"
+                                        :key="index"
+                                        :value="`tab-${index}`"
+                                    >
+                                        <v-card flat>
+                                            <v-card-text>
+                                                <component :is="tab.component" v-model="evento" :es-principal="esPrincipal" :type="tab.type"></component>
+                                            </v-card-text>
+                                        </v-card>
+                                    </v-tab-item>
+                                </v-tabs-items>
                             </v-flex>
-                            <input-detail-flex
-                                flex-class="xs12 sm6 md3"
-                                label="Tipo evento"
-                                :text="evento.tipo_evento && evento.tipo_evento.nombre"
-                            />
-                            <input-detail-flex
-                                flex-class="xs12 sm6 md3"
-                                prepend-icon="event"
-                                label="Fecha registro"
-                                :text="evento.fecha_registro"
-                            />
-                            <input-detail-flex
-                                v-if="!esPrincipal"
-                                flex-class="xs12 sm6 md3"
-                                prepend-icon="beenhere"
-                                label="Evento principal"
-                                :text="evento.evento_padre.id"
-                            />
-                            <input-detail-flex
-                                flex-class="xs12 sm12 md6"
-                                label="Equipo"
-                                :text="evento.equipo && evento.equipo.nombre"
-                                :hint="evento.equipo && evento.equipo.tag"
-                            />
-                            <input-detail-flex
-                                flex-class="xs12 sm6 md3"
-                                prepend-icon="event"
-                                label="Fecha inicio"
-                                :text="evento.fecha_inicio"
-                            />
-                            <input-detail-flex
-                                flex-class="xs12 sm6 md3"
-                                prepend-icon="event"
-                                label="Fecha fin"
-                                :text="evento.fecha_fin"
-                            />
-                            <input-detail-flex
-                                flex-class="xs12 sm6 md2"
-                                label="Tipo mantenimiento"
-                                :text="evento.tipo_mantenimiento && evento.tipo_mantenimiento.nombre"
-                            />
-                            <v-flex dflex>
-                                <v-switch
-                                    readonly
-                                    ripple
-                                    label="Contractual"
-                                    :false-value="0"
-                                    :true-value="1"
-                                    v-model="evento.contractual"
-                                ></v-switch>
-                            </v-flex>
-                            <v-flex dflex>
-                                <v-switch
-                                    readonly
-                                    ripple
-                                    label="Programado"
-                                    :false-value="0"
-                                    :true-value="1"
-                                    v-model="evento.programado"
-                                ></v-switch>
-                            </v-flex>
-                            <input-detail-flex
-                                flex-class="xs12 sm6 md3"
-                                prepend-icon="event"
-                                label="Fecha inicio reparación"
-                                :text="evento.fecha_inicio_reparacion"
-                            />
-                            <input-detail-flex
-                                flex-class="xs12 sm6 md3"
-                                prepend-icon="event"
-                                label="Fecha fin reparación"
-                                :text="evento.fecha_fin_reparacion"
-                            />
                         </v-layout>
                     </v-container>
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-card-actions>
-                    <v-btn flat @click="close">Cancelar</v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" dark @click="submit">Registrar</v-btn>
+                    <v-btn flat @click="close">Cerrar</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -114,49 +60,12 @@
 		name: "DetailDialog",
         components: {
             PostuladorV2: resolve => {require(['../../general/PostuladorV2'], resolve)},
-            InputDetailFlex: resolve => {require(['../../general/InputDetailFlex'], resolve)}
+            InputDetailFlex: resolve => {require(['../../general/InputDetailFlex'], resolve)},
+            DetailGeneral: resolve => {require(['./components/DetailGeneral'], resolve)}
         },
 		data: () => ({
-            fechaRegistro: {
-                menu: false,
-                minDate: '1900-01-01',
-                maxDate: new Date().toISOString().substr(0, 10)
-            },
-            horaRegistro: {
-                menu: false
-            },
-            fechaInicio: {
-                menu: false,
-                minDate: '1900-01-01',
-                maxDate: new Date().toISOString().substr(0, 10)
-            },
-            horaInicio: {
-                menu: false
-            },
-            fechaFin: {
-                menu: false,
-                minDate: '1900-01-01',
-                maxDate: new Date().toISOString().substr(0, 10)
-            },
-            horaFin: {
-                menu: false
-            },
-            fechaInicioReparacion: {
-                menu: false,
-                minDate: '1900-01-01',
-                maxDate: new Date().toISOString().substr(0, 10)
-            },
-            horaInicioReparacion: {
-                menu: false
-            },
-            fechaFinReparacion: {
-                menu: false,
-                minDate: '1900-01-01',
-                maxDate: new Date().toISOString().substr(0, 10)
-            },
-            horaFinReparacion: {
-                menu: false
-            },
+            tabActiva: 'tab-0',
+            tabs: [],
             evento: null,
             makeEvento: {
                 id: null,
@@ -192,27 +101,32 @@
 		computed: {
 		},
         whatch: {
-		    'open' (val) {
-            }
         },
 		created () {
 		    this.resetModel()
 		},
         methods: {
-            register (id) {
+            register (id, type = 'Detalle') {
                 this.open = true
                 this.$store.commit('LOADING', true)
                 this.axios.post(`eventos/get`, {id: id})
                     .then(response => {
-                        console.log('detalle', response)
                         this.esPrincipal = response.data.evento.evento_padre_id ? 0 : 1
+                        if (type === 'Comentarios') this.tabs.push({type: type, title: 'Comentarios', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
+                        this.tabs.push({type: type, title: 'Datos generales', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
+                        if (response.data.evento.eventos_hijos.length) this.tabs.push({type: type, title: 'Eventos secundarios', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
+                        this.tabs.push({type: type, title: 'Orden de trabajo', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
+                        this.tabs.push({type: type, title: 'Fallas', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
+                        this.tabs.push({type: type, title: 'Impactos', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
+                        this.tabs.push({type: type, title: 'Gastos', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
+                        if (type !== 'Comentarios')this.tabs.push({type: type, title: 'Comentarios', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
                         this.evento = response.data.evento
                         this.$store.commit('LOADING', false)
                         this.open = true
                     })
                     .catch(error => {
                         this.$store.commit('LOADING', false)
-                        this.$store.commit('SNACKBAR', {color: 'error', message: `al traer los datos para el formulario de registro de evento`, error: error})
+                        this.$store.commit('SNACKBAR', {color: 'error', message: `al traer los datos del evento ${id}`, error: error})
                     })
             },
             close () {
@@ -221,43 +135,9 @@
                     this.resetModel()
                 }, 300)
             },
-            submit () {
-                this.$validator.validateAll().then(result => {
-                    if (result) {
-                        this.$store.commit('LOADING', true)
-                        let data = {
-                            id: this.evento.id,
-                            fecha_registro: this.evento.fecha_registro && this.evento.hora_registro ? `${this.evento.fecha_registro} ${this.evento.hora_registro}` : null,
-                            fecha_inicio: this.evento.fecha_inicio && this.evento.hora_inicio ? `${this.evento.fecha_inicio} ${this.evento.hora_inicio}` : null,
-                            fecha_fin: this.evento.fecha_fin && this.evento.hora_fin ? `${this.evento.fecha_fin} ${this.evento.hora_fin}` : null,
-                            fecha_inicio_reparacion: this.evento.fecha_inicio_reparacion && this.evento.hora_inicio_reparacion ? `${this.evento.fecha_inicio_reparacion} ${this.evento.hora_inicio_reparacion}` : null,
-                            fecha_fin_reparacion: this.evento.fecha_fin_reparacion && this.evento.hora_fin_reparacion ? `${this.evento.fecha_fin_reparacion} ${this.evento.hora_fin_reparacion}` : null,
-                            downtime: null,
-                            estado: 'Registrado',
-                            contractual: this.evento.contractual,
-                            programado: this.evento.programado,
-                            tipo_evento_id: this.evento.tipo_evento_id,
-                            tipo_mantenimiento_id: this.evento.tipo_mantenimiento_id,
-                            equipo_id: this.evento.equipo_id,
-                            evento_padre_id: !this.esPrincipal ? this.evento.evento_padre_id : null,
-                            user_id: this.evento.user_id
-                        }
-                        axios.post(`eventos/registerevent`, data)
-                            .then(response => {
-                                this.$store.commit('LOADING', false)
-                                this.$store.commit('SNACKBAR', {color: 'success', message: `evento registrado correctamente`})
-                                this.$store.commit('RELOAD_TABLE', 'tablaEventos')
-                                this.close()
-                            })
-                            .catch(error => {
-                                this.$store.commit('LOADING', false)
-                                this.$store.commit('SNACKBAR', {color: 'error', message: `al registrar el evento`, error: error})
-                            })
-                    }
-                })
-            },
             resetModel () {
                 this.evento = window.lodash.clone(this.makeEvento)
+                this.tabs = []
                 this.$validator.reset()
             }
         }
