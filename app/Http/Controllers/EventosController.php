@@ -45,6 +45,13 @@ class EventosController extends Controller
         ]);
     }
 
+    public function getEvent(Request $request)
+    {
+        return response()->json([
+            'evento' => Evento::where('id','=',$request->id)->with('evento_padre', 'tipo_evento', 'tipo_mantenimiento', 'eventos_hijos', 'equipo')->first()
+        ]);
+    }
+
     public function editEvent(Request $request)
     {
         return response()->json([

@@ -24,6 +24,7 @@
                     @editEvent="item => editEvent(item)"
                     @cancelEvent="item => cancelEvent(item)"
                     @commentEvent="item => commentEvent(item)"
+                    @detailEvent="item => detailEvent(item)"
                 ></data-table>
             </v-card>
         </v-flex>
@@ -35,6 +36,7 @@
         >
         </confirmation-dialog>
         <register-dialog ref="registerDialog"></register-dialog>
+        <detail-dialog ref="detailDialog"></detail-dialog>
     </v-layout>
 </template>
 <script>
@@ -43,7 +45,8 @@
         components: {
             DataTable: resolve => {require(['../../general/DataTable'], resolve)},
             RegisterDialog: resolve => {require(['./RegisterDialog'], resolve)},
-            ConfirmationDialog: resolve => {require(['../../general/ConfirmationDialog'], resolve)}
+            ConfirmationDialog: resolve => {require(['../../general/ConfirmationDialog'], resolve)},
+            DetailDialog: resolve => {require(['./DetailDialog'], resolve)}
         },
 		data: () => ({
             selectedItem: null,
@@ -113,7 +116,11 @@
                 if (item.estado === 'Registrado') item.options.push({event: 'editEvent', icon: 'edit', tooltip: 'Editar evento', color: 'warning'})
                 if (item.estado === 'Registrado') item.options.push({event: 'cancelEvent', icon: 'cancel', tooltip: 'Anular evento', color: 'error'})
                 if (item.estado === 'Registrado') item.options.push({event: 'commentEvent', icon: 'comment', tooltip: 'Comentar evento', color: 'info'})
+                item.options.push({event: 'detailEvent', icon: 'details', tooltip: 'Detalle evento', color: 'primary'})
                 return item
+            },
+            detailEvent (evento) {
+                this.$refs.detailDialog.register(evento.id)
             },
             commentEvent (item) {
             },
