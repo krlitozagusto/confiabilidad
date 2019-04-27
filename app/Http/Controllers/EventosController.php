@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comentario;
 use App\Models\Evento;
 use App\Models\TipoEvento;
 use App\Models\TipoMantenimiento;
@@ -48,7 +49,14 @@ class EventosController extends Controller
     public function getEvent(Request $request)
     {
         return response()->json([
-            'evento' => Evento::where('id','=',$request->id)->with('evento_padre', 'tipo_evento', 'tipo_mantenimiento', 'eventos_hijos', 'equipo')->first()
+            'evento' => Evento::where('id','=',$request->id)->with([
+                'evento_padre',
+                'tipo_evento',
+                'tipo_mantenimiento',
+                'eventos_hijos',
+                'equipo',
+                'comentarios.usuario'
+            ])->first()
         ]);
     }
 
@@ -92,6 +100,39 @@ class EventosController extends Controller
             DB::commit();
             return response()->json([
                 'evento' => Evento::where('id','=',$evento->id)->with('tipo_evento', 'equipo')->first()
+            ], 200);
+        }catch (\Exception $exception) {
+            DB::rollback();
+            return response()->json([
+                'error' => $exception->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function registerComment(Request $request)
+    {
+        DB::beginTransaction();
+        try{
+            $validador = Validator ::make($request->all(),[
+                'evento_id'=>'required',
+                'descripcion'=>'required'
+            ]);
+            if($validador->fails()){
+                DB::rollback();
+                return response()->json([
+                    'error'=> $validador->errors()->first()
+                ], 422);
+            }
+            $comentario = new Comentario();
+            $comentario->evento_id = $request['evento_id'];
+            $comentario->descripcion = $request['descripcion'];
+            $comentario->descripcion = $request['descripcion'];
+            $comentario->fecha = new \DateTime();
+            $comentario->user_id = Auth::id();
+            $comentario->save();
+            DB::commit();
+            return response()->json([
+                'comentario' => Comentario::where('id','=',$comentario->id)->with('usuario')->first()
             ], 200);
         }catch (\Exception $exception) {
             DB::rollback();

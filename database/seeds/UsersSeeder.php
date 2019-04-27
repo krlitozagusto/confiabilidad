@@ -19,13 +19,6 @@ class UsersSeeder extends Seeder
                 'email'=>'sandovalcarlosaugusto@gmail.com',
                 'password'=>bcrypt('Admin12345'),
                 'avatar'=>'avatar01.png'
-            ],
-            [
-                'id' => 2,
-                'name'=>'humbertoTorres',
-                'email'=>'torreslombana@gmail.com',
-                'password'=>bcrypt('Admin12345'),
-                'avatar'=>'avatar02.png'
             ]
         );
         DB::table('users')->insert($rows);

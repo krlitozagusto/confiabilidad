@@ -3,7 +3,7 @@
         <v-dialog v-model="open" fullscreen hide-overlay transition="dialog-bottom-transition" persistent>
             <v-card>
                 <v-card-title>
-                    <span class="headline">Detalle del evento No. <strong>{{evento.id}}</strong></span>
+                    <span class="headline">Detalle del equipo No. <strong>{{evento.id}}</strong></span>
                     <v-spacer></v-spacer>
                     <v-btn flat icon @click="close">
                         <v-icon>close</v-icon>
@@ -112,14 +112,8 @@
                 this.axios.post(`eventos/get`, {id: id})
                     .then(response => {
                         this.esPrincipal = response.data.evento.evento_padre_id ? 0 : 1
-                        if (type === 'Comentarios') this.tabs.push({type: type, title: 'Comentarios', component: resolve => {require(['./components/DetailComentarios'], resolve)}})
                         this.tabs.push({type: type, title: 'Datos generales', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
-                        if (response.data.evento.eventos_hijos.length) this.tabs.push({type: type, title: 'Eventos secundarios', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
-                        this.tabs.push({type: type, title: 'Orden de trabajo', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
-                        this.tabs.push({type: type, title: 'Fallas', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
-                        this.tabs.push({type: type, title: 'Impactos', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
-                        this.tabs.push({type: type, title: 'Gastos', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
-                        if (type !== 'Comentarios')this.tabs.push({type: type, title: 'Comentarios', component: resolve => {require(['./components/DetailComentarios'], resolve)}})
+                        this.tabs.push({type: type, title: 'Eventos', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
                         this.evento = response.data.evento
                         this.$store.commit('LOADING', false)
                         this.open = true

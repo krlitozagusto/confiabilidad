@@ -12,7 +12,8 @@ export default {
         avatars: avatars,
         tablas: {
             tablaUsuarios: 0,
-            tablaEventos: 0
+            tablaEventos: 0,
+            tablaEquipos: 0
         }
 	},
 	getters: {

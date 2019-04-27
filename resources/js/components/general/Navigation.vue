@@ -54,6 +54,12 @@
                     nameRoute: 'EventsBoard'
                 },
                 {
+                    icon: 'today',
+                    text: 'Equipos',
+                    subheader: false,
+                    nameRoute: 'MachinesBoard'
+                },
+                {
                     icon: 'assignment_returned',
                     text: 'Reportes',
                     subheader: false,

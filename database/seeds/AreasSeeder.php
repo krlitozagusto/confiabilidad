@@ -14,8 +14,24 @@ class AreasSeeder extends Seeder
         $rows = array(
             [
                 'id' => 1,
-                'codigo'=>'YINS',
-                'nombre'=> 'Instrumentación'
+                'codigo'=>'1',
+                'nombre'=> 'Administrativa'
+            ],[
+                'id' => 2,
+                'codigo'=>'2',
+                'nombre'=> 'Mantenimiento'
+            ],[
+                'id' => 3,
+                'codigo'=>'3',
+                'nombre'=> 'Ingenieria'
+            ],[
+                'id' => 4,
+                'codigo'=>'4',
+                'nombre'=> 'Gerencia'
+            ],[
+                'id' => 5,
+                'codigo'=>'5',
+                'nombre'=> 'Cliente'
             ]
         );
         DB::table('areas')->insert($rows);

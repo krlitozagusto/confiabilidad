@@ -3,6 +3,8 @@
 namespace App;
 
 use App\Models\Empleado;
+use App\Models\Evento;
+use App\Models\Comentario;
 use App\Models\Role;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -23,6 +25,15 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class)->withTimestamps();
     }
 
+    public function comentarios()
+    {
+        return $this->hasMany(Comentario::class);
+    }
+
+    public function eventos()
+    {
+        return $this->hasMany(Evento::class);
+    }
     /**
      * The attributes that are mass assignable.
      *

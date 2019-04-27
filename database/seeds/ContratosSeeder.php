@@ -14,10 +14,10 @@ class ContratosSeeder extends Seeder
         $rows = array(
             [
                 'id' => 1,
-                'numero'=>'CT2541',
-                'descripcion'=>'Casanare',
-                'fecha'=>'2018-05-23',
-                'plazo_dias'=>730
+                'numero'=>'1038050A',
+                'descripcion'=>'Mantenimiento Facilidades',
+                'fecha'=>'2018-06-30',
+                'plazo_dias'=>2555
             ]
         );
         DB::table('contratos')->insert($rows);

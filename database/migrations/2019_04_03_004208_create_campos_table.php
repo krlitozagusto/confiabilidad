@@ -17,8 +17,6 @@ class CreateCamposTable extends Migration
             $table->bigIncrements('id');
             $table->string('nombre');
             $table->string('centro')->unique();
-            $table->string('tag')->unique();
-            $table->string('numero_equipo')->unique();
             $table->bigInteger('contrato_id')->unsigned();
             $table->foreign('contrato_id')->references('id')->on('contratos')->onDelete('restrict');
             $table->timestamps();

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -13,6 +14,11 @@ class Evento extends Model
         return $this->belongsTo(TipoEvento::class);
     }
 
+    public function usuario()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function tipo_mantenimiento()
     {
         return $this->belongsTo(TipoMantenimiento::class);
@@ -21,6 +27,11 @@ class Evento extends Model
     public function equipo()
     {
         return $this->belongsTo(Equipo::class);
+    }
+
+    public function comentarios()
+    {
+        return $this->hasMany(Comentario::class);
     }
 
     public function fallas()

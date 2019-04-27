@@ -38,6 +38,14 @@ const router = new Router({
                     component: resolve => {require(['../components/modules/eventos/Panel'], resolve)}
                 },
                 {
+                    path: 'machines',
+                    name: 'MachinesBoard',
+                    meta: {
+                        title: 'Panel de equipos'
+                    },
+                    component: resolve => {require(['../components/modules/equipos/Panel'], resolve)}
+                },
+                {
                     path: 'reports',
                     name: 'ReportsBoard',
                     meta: {
