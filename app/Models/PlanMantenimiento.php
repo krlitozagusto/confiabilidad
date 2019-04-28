@@ -8,7 +8,7 @@ class PlanMantenimiento extends Model
 {
     public function equipos()
     {
-        return $this->hasMany(Equipo::class);
+        return $this->belongsTo(Equipo::class);
     }
 
     protected $hidden = ['created_at','updated_at'];

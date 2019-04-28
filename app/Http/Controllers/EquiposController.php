@@ -39,4 +39,17 @@ class EquiposController extends Controller
             ]);
         return new Resource($query->get());
     }
+
+    public function getMachine(Request $request)
+    {
+        return response()->json([
+            'equipo' => Equipo::where('id','=',$request->id)->with([
+                'ubicacion_tecnica',
+                'eventos.tipo_evento',
+                'valoracion_ram',
+                'planes_mantenimiento',
+                'centro_costo'
+            ])->first()
+        ]);
+    }
 }

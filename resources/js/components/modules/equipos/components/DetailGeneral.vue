@@ -1,99 +1,74 @@
 <template>
     <v-layout row wrap v-if="value">
-        <v-flex xs12 sm6 md3>
-            <v-switch
-                readonly
-                ripple
-                label="Es evento principal"
-                :false-value="0"
-                :true-value="1"
-                v-model="esPrincipal"
-            ></v-switch>
-        </v-flex>
         <input-detail-flex
-            flex-class="xs12 sm6 md3"
-            label="Tipo evento"
-            :text="value.tipo_evento && value.tipo_evento.nombre"
-        />
-        <input-detail-flex
-            flex-class="xs12 sm6 md3"
-            prepend-icon="event"
-            label="Fecha registro"
-            :text="value.fecha_registro"
-        />
-        <input-detail-flex
-            flex-class="xs12 sm6 md3"
-            label="Estado"
-            :text="value.estado"
-        />
-        <input-detail-flex
-            v-if="!esPrincipal"
-            flex-class="xs12 sm6 md3"
-            prepend-icon="beenhere"
-            label="Evento principal"
-            :text="value.evento_padre.id"
+            flex-class="xs12 sm12 md6"
+            label="Ubicación técnica"
+            :text="value.ubicacion_tecnica && value.ubicacion_tecnica.nombre"
+            :hint="`Tag: ${value.ubicacion_tecnica && value.ubicacion_tecnica.tag}`"
         />
         <input-detail-flex
             flex-class="xs12 sm12 md6"
-            label="Equipo"
-            :text="value.equipo && value.equipo.nombre"
-            :hint="value.equipo && value.equipo.tag"
+            label="Nombre"
+            :text="value.nombre"
         />
         <input-detail-flex
-            flex-class="xs12 sm6 md3"
-            prepend-icon="event"
-            label="Fecha inicio"
-            :text="value.fecha_inicio"
+            flex-class="xs12 sm12 md6"
+            label="Denominación"
+            :text="value.denominacion"
         />
         <input-detail-flex
-            flex-class="xs12 sm6 md3"
-            prepend-icon="event"
-            label="Fecha fin"
-            :text="value.fecha_fin"
+            flex-class="xs12 sm12 md6"
+            label="Descripción"
+            :text="value.descripcion"
         />
         <input-detail-flex
-            flex-class="xs12 sm6 md2"
-            label="Tipo mantenimiento"
-            :text="value.tipo_mantenimiento && value.tipo_mantenimiento.nombre"
+            flex-class="xs12 sm12 md6"
+            label="Tag"
+            :text="value.tag"
         />
-        <v-flex dflex>
-            <v-switch
-                readonly
-                ripple
-                label="Contractual"
-                :false-value="0"
-                :true-value="1"
-                v-model="value.contractual"
-            ></v-switch>
+        <input-detail-flex
+            flex-class="xs12 sm12 md6"
+            label="Número de equipo"
+            :text="value.numero_equipo"
+        />
+        <input-detail-flex
+            flex-class="xs12 sm6 md4"
+            label="Valoración RAM"
+            :text="value.valoracion_ram && value.valoracion_ram.nombre"
+        />
+        <input-detail-flex
+            flex-class="xs12 sm6 md4"
+            label="Centro de costo"
+            :text="value.centro_costo && value.centro_costo.nombre"
+        />
+        <v-flex xs12>
+            <div class="title text-xs-center grey--text" v-if="!value.planes_mantenimiento.length">No hay planes de mantenimiento registrados para éste equipo.</div>
+            <v-list three-line v-else>
+                <template v-for="(plan, index) in value.planes_mantenimiento">
+                    <v-list-tile
+                        :key="index"
+                        avatar
+                        @click=""
+                    >
+                        <v-list-tile-avatar color="teal" class="white--text">
+                            {{index + 1}}
+                        </v-list-tile-avatar>
+                        <v-list-tile-content>
+                            <v-list-tile-title v-html="plan.frecuencia"></v-list-tile-title>
+                            <v-list-tile-sub-title v-html="plan.numero_plan"></v-list-tile-sub-title>
+                            <v-list-tile-sub-title v-html="plan.descripcion"></v-list-tile-sub-title>
+                        </v-list-tile-content>
+                    </v-list-tile>
+                    <v-divider></v-divider>
+                </template>
+            </v-list>
         </v-flex>
-        <v-flex dflex>
-            <v-switch
-                readonly
-                ripple
-                label="Programado"
-                :false-value="0"
-                :true-value="1"
-                v-model="value.programado"
-            ></v-switch>
-        </v-flex>
-        <input-detail-flex
-            flex-class="xs12 sm6 md3"
-            prepend-icon="event"
-            label="Fecha inicio reparación"
-            :text="value.fecha_inicio_reparacion"
-        />
-        <input-detail-flex
-            flex-class="xs12 sm6 md3"
-            prepend-icon="event"
-            label="Fecha fin reparación"
-            :text="value.fecha_fin_reparacion"
-        />
     </v-layout>
 </template>
 <script>
     export default {
-        props: ['value', 'esPrincipal', 'type'],
-		name: "DetailDialog",
+        props: ['value', 'type'],
+		name: "DetailGeneral",
         components: {
             InputDetailFlex: resolve => {require(['../../../general/InputDetailFlex'], resolve)}
         },

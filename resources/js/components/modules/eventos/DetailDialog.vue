@@ -34,6 +34,7 @@
                                         v-for="(tab, index) in tabs"
                                         :key="index"
                                         :value="`tab-${index}`"
+                                        lazy
                                     >
                                         <v-card flat>
                                             <v-card-text>
@@ -56,12 +57,13 @@
     </v-layout>
 </template>
 <script>
+    import DetailGeneral from './components/DetailGeneral'
     export default {
 		name: "DetailDialog",
         components: {
             PostuladorV2: resolve => {require(['../../general/PostuladorV2'], resolve)},
             InputDetailFlex: resolve => {require(['../../general/InputDetailFlex'], resolve)},
-            DetailGeneral: resolve => {require(['./components/DetailGeneral'], resolve)}
+            DetailGeneral
         },
 		data: () => ({
             tabActiva: 'tab-0',

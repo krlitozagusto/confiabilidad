@@ -55,7 +55,7 @@
                 route: 'eventos/panel',
                 makeHeaders: [
                     {
-                        text: 'Concecutivo',
+                        text: 'Id',
                         align: 'center',
                         sortable: true,
                         value: 'id',

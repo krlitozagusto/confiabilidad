@@ -1,9 +1,9 @@
 <template>
     <v-layout row justify-center>
         <v-dialog v-model="open" fullscreen hide-overlay transition="dialog-bottom-transition" persistent>
-            <v-card>
+            <v-card v-if="equipo">
                 <v-card-title>
-                    <span class="headline">Detalle del equipo No. <strong>{{evento.id}}</strong></span>
+                    <span class="headline">Detalle del equipo No. <strong>{{equipo.id}}</strong></span>
                     <v-spacer></v-spacer>
                     <v-btn flat icon @click="close">
                         <v-icon>close</v-icon>
@@ -34,10 +34,11 @@
                                         v-for="(tab, index) in tabs"
                                         :key="index"
                                         :value="`tab-${index}`"
+                                        lazy
                                     >
                                         <v-card flat>
                                             <v-card-text>
-                                                <component :is="tab.component" v-model="evento" :es-principal="esPrincipal" :type="tab.type"></component>
+                                                <component :is="tab.component" v-model="equipo" :type="tab.type"></component>
                                             </v-card-text>
                                         </v-card>
                                     </v-tab-item>
@@ -60,42 +61,29 @@
 		name: "DetailDialog",
         components: {
             PostuladorV2: resolve => {require(['../../general/PostuladorV2'], resolve)},
-            InputDetailFlex: resolve => {require(['../../general/InputDetailFlex'], resolve)},
-            DetailGeneral: resolve => {require(['./components/DetailGeneral'], resolve)}
+            InputDetailFlex: resolve => {require(['../../general/InputDetailFlex'], resolve)}
         },
 		data: () => ({
-            tabActiva: 'tab-0',
+            tabActiva: '0',
             tabs: [],
-            evento: null,
-            makeEvento: {
+            equipo: null,
+            makeEquipo: {
                 id: null,
-                fecha_registro: null,
-                hora_registro: null,
-                fecha_inicio: null,
-                hora_inicio: null,
-                fecha_fin: null,
-                hora_fin: null,
-                fecha_inicio_reparacion: null,
-                hora_inicio_reparacion: null,
-                fecha_fin_reparacion: null,
-                hora_fin_reparacion: null,
-                downtime: null,
-                estado: 'Registrado',
-                contractual: 0,
-                programado: 0,
-                tipo_evento_id: null,
-                tipo_mantenimiento_id: null,
-                equipo_id: null,
-                evento_padre_id: null,
-                user_id: null,
+                nombre: null,
+                denominacion: null,
+                descripcion: null,
+                tag: null,
+                numero_equipo: null,
+                valoracion_ram_id: null,
+                centro_costo_id: null,
+                ubicacion_tecnica_id: null,
                 // Auxiliares
-                eventos_hijos: [],
-                evento_padre: null,
-                equipo: null,
-                tipo_evento: null,
-                tipo_mantenimiento: null
+                eventos: [],
+                valoracion_ram: null,
+                centro_costo: null,
+                ubicacion_tecnica: null,
+                planes_mantenimiento: []
             },
-            esPrincipal: 1,
             open: false
 		}),
 		computed: {
@@ -104,23 +92,23 @@
         },
 		created () {
 		    this.resetModel()
+            this.tabs.push({type: 'Detalle', title: 'Datos generales', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
+            this.tabs.push({type: 'Detalle', title: 'Eventos', component: resolve => {require(['./components/DetailEventos'], resolve)}})
 		},
         methods: {
             register (id, type = 'Detalle') {
                 this.open = true
                 this.$store.commit('LOADING', true)
-                this.axios.post(`eventos/get`, {id: id})
+                this.axios.post(`equipos/get`, {id: id})
                     .then(response => {
-                        this.esPrincipal = response.data.evento.evento_padre_id ? 0 : 1
-                        this.tabs.push({type: type, title: 'Datos generales', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
-                        this.tabs.push({type: type, title: 'Eventos', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
-                        this.evento = response.data.evento
+                        this.equipo = response.data.equipo
                         this.$store.commit('LOADING', false)
+                        this.tabActiva = 'tab-0'
                         this.open = true
                     })
                     .catch(error => {
                         this.$store.commit('LOADING', false)
-                        this.$store.commit('SNACKBAR', {color: 'error', message: `al traer los datos del evento ${id}`, error: error})
+                        this.$store.commit('SNACKBAR', {color: 'error', message: `al traer los datos del equipo ${id}`, error: error})
                     })
             },
             close () {
@@ -130,8 +118,7 @@
                 }, 300)
             },
             resetModel () {
-                this.evento = window.lodash.clone(this.makeEvento)
-                this.tabs = []
+                this.equipo = window.lodash.clone(this.makeEquipo)
                 this.$validator.reset()
             }
         }

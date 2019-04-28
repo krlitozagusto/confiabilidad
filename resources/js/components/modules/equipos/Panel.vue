@@ -9,13 +9,6 @@
                             Consulta y detalle
                         </small>
                     </v-toolbar-title>
-                    <!--<v-spacer/>-->
-                    <!--<v-tooltip top>-->
-                        <!--<v-btn icon slot="activator" @click.stop="newEvent">-->
-                            <!--<v-icon>add</v-icon>-->
-                        <!--</v-btn>-->
-                        <!--<span>Crear evento</span>-->
-                    <!--</v-tooltip>-->
                 </v-toolbar>
                 <data-table
                     ref="tablaEquipos"

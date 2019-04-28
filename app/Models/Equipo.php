@@ -27,9 +27,9 @@ class Equipo extends Model
         return $this->belongsTo(ValoracionRam::class);
     }
 
-    public function plan_mantenimiento()
+    public function planes_mantenimiento()
     {
-        return $this->belongsTo(PlanMantenimiento::class);
+        return $this->hasMany(PlanMantenimiento::class);
     }
 
     public function centro_costo()
