@@ -16,7 +16,7 @@ class UbicacionTecnicasSeeder extends Seeder
                 'id' => 1,
                 'nombre'=>'Ubicación 1',
                 'tag'=>'XL-P-102-1-1-1',
-                'numero_equipo'=>'10061895-1-1-1',
+                'descripcion'=>'descripción 10061895-1-1-1',
                 'sistema_id'=>1
             ]
         );

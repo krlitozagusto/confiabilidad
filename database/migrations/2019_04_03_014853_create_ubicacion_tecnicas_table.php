@@ -17,7 +17,7 @@ class CreateUbicacionTecnicasTable extends Migration
             $table->bigIncrements('id');
             $table->string('nombre');
             $table->string('tag')->unique();
-            $table->string('numero_equipo')->unique();
+            $table->string('descripcion');
             $table->bigInteger('sistema_id')->unsigned();
             $table->foreign('sistema_id')->references('id')->on('sistemas')->onDelete('restrict');
             $table->timestamps();

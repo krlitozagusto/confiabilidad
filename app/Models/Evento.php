@@ -73,7 +73,6 @@ class Evento extends Model
         'fecha_fin_reparacion',
         'estado',
         'contractual',
-        'programado',
         'tipo_evento_id',
         'tipo_mantenimiento_id',
         'equipo_id',

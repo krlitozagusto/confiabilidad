@@ -17,8 +17,8 @@ class CreatePlantasTable extends Migration
             $table->bigIncrements('id');
             $table->string('nombre');
             $table->string('emplazamiento')->unique();
-            $table->string('tag')->unique();
-            $table->string('numero_equipo')->unique();
+            $table->string('centro_emplazamiento');
+            $table->string('descripcion');
             $table->bigInteger('campo_id')->unsigned();
             $table->foreign('campo_id')->references('id')->on('campos')->onDelete('restrict');
             $table->timestamps();

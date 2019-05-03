@@ -81,7 +81,6 @@ class EventosController extends Controller
                 'fecha_fin_reparacion'=>'date',
                 'estado'=>'required|string',
                 'contractual'=>'required|boolean',
-                'programado'=>'required|boolean',
                 'tipo_evento_id'=>'required|integer',
                 'tipo_mantenimiento_id'=>'required|integer',
                 'equipo_id'=>'required|integer'

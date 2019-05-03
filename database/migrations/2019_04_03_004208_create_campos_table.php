@@ -16,7 +16,7 @@ class CreateCamposTable extends Migration
         Schema::create('campos', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('nombre');
-            $table->string('centro')->unique();
+            $table->string('codigo')->unique();
             $table->bigInteger('contrato_id')->unsigned();
             $table->foreign('contrato_id')->references('id')->on('contratos')->onDelete('restrict');
             $table->timestamps();

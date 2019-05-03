@@ -1,10 +1,10 @@
 <template>
     <v-layout column v-if="value">
         <v-flex xs12>
-            <div class="title text-xs-center grey--text" v-if="!value.comentarios.length">No hay comentarios registrados para éste evento.</div>
-            <v-card v-else>
+            <v-card>
                 <v-card-text>
                     <v-textarea
+                        v-if="type === 'Comentarios'"
                         v-model="comentario"
                         prepend-icon="comment"
                         box
@@ -33,7 +33,9 @@
                             <span>Enviar comentario</span>
                         </v-tooltip>
                     </v-textarea>
+                    <div class="title text-xs-center grey--text" v-if="!value.comentarios.length">No hay comentarios registrados para éste evento.</div>
                     <v-timeline
+                        v-else
                         align-top
                         dense
                     >

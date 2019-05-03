@@ -21,9 +21,8 @@ class CreateEventosTable extends Migration
             $table->dateTime('fecha_inicio_reparacion')->nullable();
             $table->dateTime('fecha_fin_reparacion')->nullable();
             $table->integer('downtime');
-            $table->enum('estado',['Registrado','Terminado','Anulado']);
+            $table->enum('estado',['Registrado','Cerrado','Anulado']);
             $table->tinyInteger('contractual')->unsigned();
-            $table->tinyInteger('programado')->unsigned();
             $table->bigInteger('tipo_evento_id')->unsigned();
             $table->bigInteger('tipo_mantenimiento_id')->unsigned();
             $table->bigInteger('equipo_id')->unsigned();

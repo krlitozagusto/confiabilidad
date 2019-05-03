@@ -258,7 +258,7 @@
                                         label="fecha fin"
                                         v-model="evento.fecha_fin"
                                         name="fecha fin"
-                                        v-validate="'required|date_format:yyyy-MM-dd|date_between:' + fechaFin.minDate + ',' + fechaFin.maxDate + ',true'"
+                                        v-validate="(soloGuardar ? '' : 'required|') + 'date_format:yyyy-MM-dd|date_between:' + fechaFin.minDate + ',' + fechaFin.maxDate + ',true'"
                                         :error-messages="errors.collect('fecha fin')"
                                         readonly
                                     ></v-text-field>
@@ -293,7 +293,7 @@
                                         label="Hora fin"
                                         v-model="evento.hora_fin"
                                         name="Hora fin"
-                                        v-validate="'required'"
+                                        v-validate="soloGuardar ? '' : 'required'"
                                         :error-messages="errors.collect('Hora fin')"
                                         readonly
                                     ></v-text-field>
@@ -331,15 +331,6 @@
                                     v-model="evento.contractual"
                                 ></v-switch>
                             </v-flex>
-                            <v-flex dflex>
-                                <v-switch
-                                    ripple
-                                    label="Programado"
-                                    :false-value="0"
-                                    :true-value="1"
-                                    v-model="evento.programado"
-                                ></v-switch>
-                            </v-flex>
                             <v-flex xs12 sm6 md3>
                                 <v-menu
                                     ref="fechaInicioReparacion"
@@ -357,7 +348,7 @@
                                         label="fecha inicio reparación"
                                         v-model="evento.fecha_inicio_reparacion"
                                         name="fecha inicio reparación"
-                                        v-validate="'required|date_format:yyyy-MM-dd|date_between:' + fechaInicioReparacion.minDate + ',' + fechaInicioReparacion.maxDate + ',true'"
+                                        v-validate="(soloGuardar ? '' : 'required|') + 'date_format:yyyy-MM-dd|date_between:' + fechaInicioReparacion.minDate + ',' + fechaInicioReparacion.maxDate + ',true'"
                                         :error-messages="errors.collect('fecha inicio reparación')"
                                         readonly
                                     ></v-text-field>
@@ -392,7 +383,7 @@
                                         label="Hora inicio reparación"
                                         v-model="evento.hora_inicio_reparacion"
                                         name="Hora inicio reparación"
-                                        v-validate="'required'"
+                                        v-validate="soloGuardar ? '' : 'required'"
                                         :error-messages="errors.collect('Hora inicio reparación')"
                                         readonly
                                     ></v-text-field>
@@ -426,7 +417,7 @@
                                         label="fecha fin reparación"
                                         v-model="evento.fecha_fin_reparacion"
                                         name="fecha fin reparación"
-                                        v-validate="'required|date_format:yyyy-MM-dd|date_between:' + fechaFinReparacion.minDate + ',' + fechaFinReparacion.maxDate + ',true'"
+                                        v-validate="(soloGuardar ? '' : 'required|') + 'date_format:yyyy-MM-dd|date_between:' + fechaFinReparacion.minDate + ',' + fechaFinReparacion.maxDate + ',true'"
                                         :error-messages="errors.collect('fecha fin reparación')"
                                         readonly
                                     ></v-text-field>
@@ -461,7 +452,7 @@
                                         label="Hora fin reparación"
                                         v-model="evento.hora_fin_reparacion"
                                         name="Hora fin reparación"
-                                        v-validate="'required'"
+                                        v-validate="soloGuardar ? '' : 'required'"
                                         :error-messages="errors.collect('Hora fin reparación')"
                                         readonly
                                     ></v-text-field>
@@ -485,16 +476,25 @@
                 <v-card-actions>
                     <v-btn flat @click="close">Cancelar</v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn color="primary" dark @click="submit">Registrar</v-btn>
+                    <v-btn color="primary" dark @click="saveAndEventClose">Registrar y cerrar evento</v-btn>
+                    <v-btn color="primary" dark @click="save">Registrar</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
+        <confirmation-dialog
+            ref="dialogCloseConfirm"
+            heading="¿Seguro de continuar?"
+            :message="`¿Está seguro de continuar con el cierre de éste evento?`"
+            @onConfirm="submit"
+        >
+        </confirmation-dialog>
     </v-layout>
 </template>
 <script>
     export default {
 		name: "RegisterDialog",
         components: {
+            ConfirmationDialog: resolve => {require(['../../general/ConfirmationDialog'], resolve)},
             PostuladorV2: resolve => {require(['../../general/PostuladorV2'], resolve)}
         },
 		data: () => ({
@@ -538,6 +538,7 @@
             horaFinReparacion: {
                 menu: false
             },
+            soloGuardar: 1,
             evento: null,
             makeEvento: {
                 id: null,
@@ -554,7 +555,6 @@
                 downtime: null,
                 estado: 'Registrado',
                 contractual: 0,
-                programado: 0,
                 tipo_evento_id: null,
                 tipo_mantenimiento_id: null,
                 equipo_id: null,
@@ -626,6 +626,22 @@
                     this.resetModel()
                 }, 300)
             },
+            async save () {
+                this.soloGuardar = 1
+                this.evento.estado = 'Registrado'
+                await this.$validator.reset()
+                this.submit()
+            },
+            async saveAndEventClose () {
+                this.soloGuardar = 0
+                this.evento.estado = 'Cerrado'
+                await this.$validator.reset()
+                this.$validator.validateAll().then(result => {
+                    if (result) {
+                        this.$refs.dialogCloseConfirm.open()
+                    }
+                })
+            },
             submit () {
                 this.$validator.validateAll().then(result => {
                     if (result) {
@@ -638,9 +654,8 @@
                             fecha_inicio_reparacion: this.evento.fecha_inicio_reparacion && this.evento.hora_inicio_reparacion ? `${this.evento.fecha_inicio_reparacion} ${this.evento.hora_inicio_reparacion}` : null,
                             fecha_fin_reparacion: this.evento.fecha_fin_reparacion && this.evento.hora_fin_reparacion ? `${this.evento.fecha_fin_reparacion} ${this.evento.hora_fin_reparacion}` : null,
                             downtime: null,
-                            estado: 'Registrado',
+                            estado: this.evento.estado,
                             contractual: this.evento.contractual,
-                            programado: this.evento.programado,
                             tipo_evento_id: this.evento.tipo_evento_id,
                             tipo_mantenimiento_id: this.evento.tipo_mantenimiento_id,
                             equipo_id: this.evento.equipo_id,
@@ -652,6 +667,7 @@
                                 this.$store.commit('LOADING', false)
                                 this.$store.commit('SNACKBAR', {color: 'success', message: `evento registrado correctamente`})
                                 this.$store.commit('RELOAD_TABLE', 'tablaEventos')
+                                this.$refs.dialogCloseConfirm.close()
                                 this.close()
                             })
                             .catch(error => {

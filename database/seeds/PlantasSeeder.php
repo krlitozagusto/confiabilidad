@@ -16,8 +16,8 @@ class PlantasSeeder extends Seeder
                 'id' => 1,
                 'nombre'=>'Planta 1',
                 'emplazamiento'=>'emplaza1',
-                'tag'=>'XL-P-102-1',
-                'numero_equipo'=>'10061895-1',
+                'centro_emplazamiento'=>'10061895-1',
+                'descripcion'=>'XL-P-102-1',
                 'campo_id'=>1
             ]
         );

@@ -15,7 +15,9 @@ class CreatePuestoTrabajosTable extends Migration
     {
         Schema::create('puesto_trabajos', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->string('codigo');
             $table->string('nombre');
+            $table->string('descripcion');
             $table->timestamps();
         });
     }

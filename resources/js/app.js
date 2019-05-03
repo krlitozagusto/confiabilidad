@@ -14,7 +14,8 @@ import moment from 'moment'
 import es from 'vee-validate/dist/locale/es'
 import VeeValidate, { Validator } from 'vee-validate'
 
-axios.defaults.baseURL = 'http://confiabilidad.test/'
+// axios.defaults.baseURL = 'http://confiabilidad.test/'
+axios.defaults.baseURL = window.location.origin
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest'
 let token = document.head.querySelector('meta[name="csrf-token"]')
 if (token) {

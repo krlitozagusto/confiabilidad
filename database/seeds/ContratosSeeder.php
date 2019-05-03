@@ -16,8 +16,7 @@ class ContratosSeeder extends Seeder
                 'id' => 1,
                 'numero'=>'1038050A',
                 'descripcion'=>'Mantenimiento Facilidades',
-                'fecha'=>'2018-06-30',
-                'plazo_dias'=>2555
+                'fecha'=>'2018-06-30'
             ]
         );
         DB::table('contratos')->insert($rows);

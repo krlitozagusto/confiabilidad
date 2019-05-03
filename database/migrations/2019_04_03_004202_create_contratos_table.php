@@ -18,7 +18,6 @@ class CreateContratosTable extends Migration
             $table->string('numero', 15);
             $table->string('descripcion');
             $table->date('fecha');
-            $table->integer('plazo_dias');
             $table->timestamps();
         });
     }

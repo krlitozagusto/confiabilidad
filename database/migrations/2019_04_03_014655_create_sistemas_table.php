@@ -17,7 +17,7 @@ class CreateSistemasTable extends Migration
             $table->bigIncrements('id');
             $table->string('nombre');
             $table->string('tag')->unique();
-            $table->string('numero_equipo')->unique();
+            $table->string('descripcion');
             $table->bigInteger('planta_id')->unsigned();
             $table->foreign('planta_id')->references('id')->on('plantas')->onDelete('restrict');
             $table->timestamps();
