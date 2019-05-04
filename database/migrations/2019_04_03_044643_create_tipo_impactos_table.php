@@ -15,7 +15,7 @@ class CreateTipoImpactosTable extends Migration
     {
         Schema::create('tipo_impactos', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->string('abreviatura', 6);
+            $table->string('medida');
             $table->string('nombre');
             $table->text('descripcion');
             $table->timestamps();

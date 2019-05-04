@@ -58,12 +58,18 @@
 </template>
 <script>
     import DetailGeneral from './components/DetailGeneral'
+    import DetailOrdenTrabajo from './components/DetailOrdenTrabajo'
+    import DetailFallas from './components/DetailFallas'
+    import DetailImpactos from './components/DetailImpactos'
+    import InputDetailFlex from '../../general/InputDetailFlex'
     export default {
 		name: "DetailDialog",
         components: {
-            PostuladorV2: resolve => {require(['../../general/PostuladorV2'], resolve)},
-            InputDetailFlex: resolve => {require(['../../general/InputDetailFlex'], resolve)},
-            DetailGeneral
+            InputDetailFlex,
+            DetailGeneral,
+            DetailOrdenTrabajo,
+            DetailFallas,
+            DetailImpactos
         },
 		data: () => ({
             tabActiva: 'tab-0',
@@ -84,7 +90,6 @@
                 downtime: null,
                 estado: 'Registrado',
                 contractual: 0,
-                programado: 0,
                 tipo_evento_id: null,
                 tipo_mantenimiento_id: null,
                 equipo_id: null,
@@ -92,6 +97,9 @@
                 user_id: null,
                 // Auxiliares
                 eventos_hijos: [],
+                fallas: [],
+                impactos: [],
+                orden_trabajos: [],
                 evento_padre: null,
                 equipo: null,
                 tipo_evento: null,
@@ -115,11 +123,11 @@
                     .then(response => {
                         this.esPrincipal = response.data.evento.evento_padre_id ? 0 : 1
                         if (type === 'Comentarios') this.tabs.push({type: type, title: 'Comentarios', component: resolve => {require(['./components/DetailComentarios'], resolve)}})
-                        this.tabs.push({type: type, title: 'Datos generales', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
+                        this.tabs.push({type: type, title: 'Datos generales', component: DetailGeneral})
                         if (response.data.evento.eventos_hijos.length) this.tabs.push({type: type, title: 'Eventos secundarios', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
-                        this.tabs.push({type: type, title: 'Orden de trabajo', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
-                        this.tabs.push({type: type, title: 'Fallas', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
-                        this.tabs.push({type: type, title: 'Impactos', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
+                        this.tabs.push({type: type, title: 'Orden de trabajo', component: DetailOrdenTrabajo})
+                        this.tabs.push({type: type, title: 'Fallas', component: DetailFallas})
+                        this.tabs.push({type: type, title: 'Impactos', component: DetailImpactos})
                         this.tabs.push({type: type, title: 'Gastos', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
                         if (type !== 'Comentarios')this.tabs.push({type: type, title: 'Comentarios', component: resolve => {require(['./components/DetailComentarios'], resolve)}})
                         this.evento = response.data.evento

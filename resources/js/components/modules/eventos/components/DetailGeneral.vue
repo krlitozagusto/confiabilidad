@@ -51,12 +51,7 @@
             label="Fecha fin"
             :text="value.fecha_fin"
         />
-        <input-detail-flex
-            flex-class="xs12 sm6 md2"
-            label="Tipo mantenimiento"
-            :text="value.tipo_mantenimiento && value.tipo_mantenimiento.nombre"
-        />
-        <v-flex dflex>
+        <v-flex xs12 sm6 md3>
             <v-switch
                 readonly
                 ripple
@@ -66,16 +61,11 @@
                 v-model="value.contractual"
             ></v-switch>
         </v-flex>
-        <v-flex dflex>
-            <v-switch
-                readonly
-                ripple
-                label="Programado"
-                :false-value="0"
-                :true-value="1"
-                v-model="value.programado"
-            ></v-switch>
-        </v-flex>
+        <input-detail-flex
+            flex-class="xs12 sm6 md3"
+            label="Tipo mantenimiento"
+            :text="value.tipo_mantenimiento && value.tipo_mantenimiento.nombre"
+        />
         <input-detail-flex
             flex-class="xs12 sm6 md3"
             prepend-icon="event"
@@ -93,7 +83,7 @@
 <script>
     export default {
         props: ['value', 'esPrincipal', 'type'],
-		name: "DetailDialog",
+		name: "DetailGeneral",
         components: {
             InputDetailFlex: resolve => {require(['../../../general/InputDetailFlex'], resolve)}
         },

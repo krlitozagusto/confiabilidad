@@ -55,7 +55,10 @@ class EventosController extends Controller
                 'tipo_mantenimiento',
                 'eventos_hijos',
                 'equipo',
-                'comentarios.usuario'
+                'comentarios.usuario',
+                'orden_trabajos.puesto_trabajo',
+                'fallas.modo_falla',
+                'impactos.tipo_impacto'
             ])->first()
         ]);
     }
