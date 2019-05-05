@@ -85,7 +85,7 @@
         props: ['value', 'esPrincipal', 'type'],
 		name: "DetailGeneral",
         components: {
-            InputDetailFlex: resolve => {require(['../../../general/InputDetailFlex'], resolve)}
+            InputDetailFlex: resolve => {require(['../../../../general/InputDetailFlex'], resolve)}
         },
 		data: () => ({
 		}),

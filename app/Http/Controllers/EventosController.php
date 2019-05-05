@@ -79,9 +79,6 @@ class EventosController extends Controller
             $validador = Validator ::make($request->all(),[
                 'fecha_registro'=>'required|date',
                 'fecha_inicio'=>'required|date',
-                'fecha_fin'=>'date',
-                'fecha_inicio_reparacion'=>'date',
-                'fecha_fin_reparacion'=>'date',
                 'estado'=>'required|string',
                 'contractual'=>'required|boolean',
                 'tipo_evento_id'=>'required|integer',

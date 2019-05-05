@@ -5,7 +5,7 @@
                 <v-data-table
                     :headers="headers"
                     :items="value.fallas"
-                    no-data-text="No hay fallas registradas para éste evento"
+                    no-data-text="No hay fallas registradas para éste evento."
                     hide-actions
                 >
                     <template slot="items" slot-scope="props">

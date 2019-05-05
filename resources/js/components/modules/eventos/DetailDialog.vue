@@ -2,7 +2,7 @@
     <v-layout row justify-center>
         <v-dialog v-model="open" fullscreen hide-overlay transition="dialog-bottom-transition" persistent>
             <v-card>
-                <v-card-title>
+                <v-card-title class="py-0">
                     <span class="headline">Detalle del evento No. <strong>{{evento.id}}</strong></span>
                     <v-spacer></v-spacer>
                     <v-btn flat icon @click="close">
@@ -57,15 +57,13 @@
     </v-layout>
 </template>
 <script>
-    import DetailGeneral from './components/DetailGeneral'
-    import DetailOrdenTrabajo from './components/DetailOrdenTrabajo'
-    import DetailFallas from './components/DetailFallas'
-    import DetailImpactos from './components/DetailImpactos'
-    import InputDetailFlex from '../../general/InputDetailFlex'
+    import DetailGeneral from './components/detail/DetailGeneral'
+    import DetailOrdenTrabajo from './components/detail/DetailOrdenTrabajo'
+    import DetailFallas from './components/detail/DetailFallas'
+    import DetailImpactos from './components/detail/DetailImpactos'
     export default {
 		name: "DetailDialog",
         components: {
-            InputDetailFlex,
             DetailGeneral,
             DetailOrdenTrabajo,
             DetailFallas,
@@ -122,14 +120,14 @@
                 this.axios.post(`eventos/get`, {id: id})
                     .then(response => {
                         this.esPrincipal = response.data.evento.evento_padre_id ? 0 : 1
-                        if (type === 'Comentarios') this.tabs.push({type: type, title: 'Comentarios', component: resolve => {require(['./components/DetailComentarios'], resolve)}})
+                        if (type === 'Comentarios') this.tabs.push({type: type, title: 'Comentarios', component: resolve => {require(['./components/detail/DetailComentarios'], resolve)}})
                         this.tabs.push({type: type, title: 'Datos generales', component: DetailGeneral})
-                        if (response.data.evento.eventos_hijos.length) this.tabs.push({type: type, title: 'Eventos secundarios', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
+                        if (response.data.evento.eventos_hijos.length) this.tabs.push({type: type, title: 'Eventos secundarios', component: resolve => {require(['./components/detail/DetailGeneral'], resolve)}})
                         this.tabs.push({type: type, title: 'Orden de trabajo', component: DetailOrdenTrabajo})
                         this.tabs.push({type: type, title: 'Fallas', component: DetailFallas})
                         this.tabs.push({type: type, title: 'Impactos', component: DetailImpactos})
-                        this.tabs.push({type: type, title: 'Gastos', component: resolve => {require(['./components/DetailGeneral'], resolve)}})
-                        if (type !== 'Comentarios')this.tabs.push({type: type, title: 'Comentarios', component: resolve => {require(['./components/DetailComentarios'], resolve)}})
+                        this.tabs.push({type: type, title: 'Gastos', component: resolve => {require(['./components/detail/DetailGeneral'], resolve)}})
+                        if (type !== 'Comentarios')this.tabs.push({type: type, title: 'Comentarios', component: resolve => {require(['./components/detail/DetailComentarios'], resolve)}})
                         this.evento = response.data.evento
                         this.$store.commit('LOADING', false)
                         this.open = true
