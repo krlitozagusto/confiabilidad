@@ -16,7 +16,6 @@ class CreateImpactosTable extends Migration
         Schema::create('impactos', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->float('cantidad');
-            $table->float('total');
             $table->bigInteger('evento_id')->unsigned();
             $table->bigInteger('tipo_impacto_id')->unsigned();
             $table->foreign('evento_id')->references('id')->on('eventos')->onDelete('restrict');

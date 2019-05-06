@@ -66,7 +66,14 @@ class EventosController extends Controller
     public function editEvent(Request $request)
     {
         return response()->json([
-            'evento' => Evento::where('id','=',$request->id)->with('evento_padre', 'eventos_hijos', 'equipo')->first(),
+            'evento' => Evento::where('id','=',$request->id)->with([
+                'evento_padre',
+                'eventos_hijos',
+                'equipo',
+                'orden_trabajos',
+                'fallas',
+                'impactos'
+            ])->first(),
             'tiposEvento'=> TipoEvento::all(),
             'tiposMantenimiento'=> TipoMantenimiento::all()
         ]);

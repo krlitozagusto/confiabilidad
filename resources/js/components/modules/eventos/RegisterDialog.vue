@@ -66,11 +66,13 @@
 </template>
 <script>
     import RegisterGeneral from './components/register/RegisterGeneral'
+    import RegisterOrdenTrabajo from './components/register/RegisterOrdenTrabajo'
     export default {
 		name: "RegisterDialog",
         components: {
             ConfirmationDialog: resolve => {require(['../../general/ConfirmationDialog'], resolve)},
-            RegisterGeneral
+            RegisterGeneral,
+            RegisterOrdenTrabajo
         },
 		data: () => ({
             open: false,
@@ -109,6 +111,12 @@
                 tipo_evento: null,
                 tipo_mantenimiento: null
             },
+            makeOrden: {
+                numero_orden: null,
+                descripcion: null,
+                numero_aviso: null,
+                puesto_trabajo_id: null
+            },
             complementos:{
                 tiposEvento: [],
                 tiposMantenimiento: []
@@ -122,7 +130,7 @@
         },
 		created () {
             this.tabs.push({title: 'Datos generales', component: RegisterGeneral})
-            this.tabs.push({title: 'Orden de trabajo', component: RegisterGeneral})
+            this.tabs.push({title: 'Orden de trabajo', component: RegisterOrdenTrabajo})
             this.tabs.push({title: 'Fallas', component: RegisterGeneral})
             this.tabs.push({title: 'Impactos', component: RegisterGeneral})
             this.tabs.push({title: 'Gastos', component: RegisterGeneral})
@@ -135,6 +143,9 @@
                 petition
                     .then(response => {
                         if (response.data.evento) {
+                            if (!response.data.evento.orden_trabajos.length) {
+                                response.data.evento.orden_trabajos.push(window.lodash.clone(this.makeOrden))
+                            }
                             if (response.data.evento.fecha_registro) {
                                 response.data.evento.hora_registro = this.moment(response.data.evento.fecha_registro).format('HH:mm')
                                 response.data.evento.fecha_registro = this.moment(response.data.evento.fecha_registro).format('YYYY-MM-DD')
