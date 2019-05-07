@@ -12,15 +12,14 @@
         </v-flex>
         <v-flex xs12 sm6 md3>
             <v-select
-                ke="selectTipo"
-                label="Tipo value"
+                label="Tipo"
                 :items="complementos.tiposEvento"
                 v-model="value.tipo_evento_id"
                 item-value="id"
                 item-text="nombre"
-                name="Tipo value"
+                name="Tipo"
                 v-validate="'required'"
-                :error-messages="errors.collect('Tipo value')"
+                :error-messages="errors.collect('Tipo')"
             ></v-select>
         </v-flex>
         <v-flex xs12 sm6 md3>
@@ -99,17 +98,17 @@
                 no-data="Busqueda por número o nombre de equipo."
                 item-value="id"
                 item-text="id"
-                label="value principal"
+                label="Evento principal"
                 entidad="eventos/postulador"
                 v-model="value.evento_padre"
                 @changeid="val => value.evento_padre_id = val"
                 no-btn-create
                 no-btn-edit
-                name="value primario"
+                name="evento principal"
                 route-params="filter[estado]=Registrado"
                 rules="required"
                 v-validate="'required'"
-                :error-messages="errors.collect('value primario')"
+                :error-messages="errors.collect('evento principal')"
                 :slot-data='{
                                       template:`
                                       <v-list-tile v-if="value.equipo">

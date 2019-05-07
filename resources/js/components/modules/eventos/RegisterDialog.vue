@@ -1,6 +1,6 @@
 <template>
     <v-layout>
-        <v-dialog v-model="open" fullscreen hide-overlay transition="dialog-bottom-transition" persistent scrollable>
+        <v-dialog v-model="open" fullscreen hide-overlay transition="dialog-bottom-transition" persistent>
             <v-card>
                 <v-card-title class="py-0">
                     <span class="headline">{{evento.id ? 'Edición de evento' : 'Nuevo evento'}}</span>
@@ -111,15 +111,10 @@
                 tipo_evento: null,
                 tipo_mantenimiento: null
             },
-            makeOrden: {
-                numero_orden: null,
-                descripcion: null,
-                numero_aviso: null,
-                puesto_trabajo_id: null
-            },
             complementos:{
                 tiposEvento: [],
-                tiposMantenimiento: []
+                tiposMantenimiento: [],
+                puestosTrabajo: []
             }
 		}),
 		computed: {
@@ -143,9 +138,6 @@
                 petition
                     .then(response => {
                         if (response.data.evento) {
-                            if (!response.data.evento.orden_trabajos.length) {
-                                response.data.evento.orden_trabajos.push(window.lodash.clone(this.makeOrden))
-                            }
                             if (response.data.evento.fecha_registro) {
                                 response.data.evento.hora_registro = this.moment(response.data.evento.fecha_registro).format('HH:mm')
                                 response.data.evento.fecha_registro = this.moment(response.data.evento.fecha_registro).format('YYYY-MM-DD')
@@ -171,6 +163,7 @@
                         }
                         this.complementos.tiposEvento = response.data.tiposEvento
                         this.complementos.tiposMantenimiento = response.data.tiposMantenimiento
+                        this.complementos.puestosTrabajo = response.data.puestosTrabajo
                         this.$store.commit('LOADING', false)
                         this.open = true
                     })
@@ -234,6 +227,7 @@
                 this.evento = window.lodash.clone(this.makeEvento)
                 this.complementos.tiposEvento = []
                 this.complementos.tiposMantenimiento = []
+                this.complementos.puestosTrabajo = []
                 this.esPrincipal = 1
                 this.soloGuardar = 1
                 this.tabActiva = 'tab-0'

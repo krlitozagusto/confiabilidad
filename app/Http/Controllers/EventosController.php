@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comentario;
 use App\Models\Evento;
+use App\Models\PuestoTrabajo;
 use App\Models\TipoEvento;
 use App\Models\TipoMantenimiento;
 use Illuminate\Http\Request;
@@ -42,7 +43,8 @@ class EventosController extends Controller
         return response()->json([
             'evento'=> null,
             'tiposEvento'=> TipoEvento::all(),
-            'tiposMantenimiento'=> TipoMantenimiento::all()
+            'tiposMantenimiento'=> TipoMantenimiento::all(),
+            'puestosTrabajo'=> PuestoTrabajo::all()
         ]);
     }
 
@@ -75,7 +77,8 @@ class EventosController extends Controller
                 'impactos'
             ])->first(),
             'tiposEvento'=> TipoEvento::all(),
-            'tiposMantenimiento'=> TipoMantenimiento::all()
+            'tiposMantenimiento'=> TipoMantenimiento::all(),
+            'puestosTrabajo'=> PuestoTrabajo::all()
         ]);
     }
 
