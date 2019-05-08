@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comentario;
 use App\Models\Evento;
+use App\Models\OrdenTrabajo;
 use App\Models\PuestoTrabajo;
 use App\Models\TipoEvento;
 use App\Models\TipoMantenimiento;
@@ -101,15 +102,35 @@ class EventosController extends Controller
                     'error'=> $validador->errors()->first()
                 ], 422);
             }
-            $evento = $request['id'] ? Evento::where('id','=',$request['id'])->first() : new Evento();
+            $requestjson = json_decode($request->getContent());
+            $evento = $requestjson->id ? Evento::where('id','=',$requestjson->id)->first() : new Evento();
             $evento->fill($request->all());
             $evento->downtime = 0;
             $evento->user_id = Auth::id();
             $evento->save();
+            //Las ordenes de trabajo
+            $ordenes = OrdenTrabajo::where('evento_id', '=', $evento->id)->get();
+            if ($ordenes->count()) {
+                foreach ($ordenes as $orden) {
+                    if (!$orden->delete()) {
+                        DB::rollback();
+                        return response()->json([
+                            'error'=> 'La orden no se pudo editar.'
+                        ], 422);
+                    }
+                }
+            }
+            foreach ($requestjson->orden_trabajos as $ot) {
+                $orden_trabajo = new OrdenTrabajo();
+                $orden_trabajo->evento_id = $evento->id;
+                $orden_trabajo->numero_orden = $ot->numero_orden;
+                $orden_trabajo->numero_aviso = $ot->numero_aviso;
+                $orden_trabajo->descripcion = $ot->descripcion;
+                $orden_trabajo->puesto_trabajo_id = $ot->puesto_trabajo_id;
+                $orden_trabajo->save();
+            }
             DB::commit();
-            return response()->json([
-                'evento' => Evento::where('id','=',$evento->id)->with('tipo_evento', 'equipo')->first()
-            ], 200);
+            return response()->json([true], 200);
         }catch (\Exception $exception) {
             DB::rollback();
             return response()->json([

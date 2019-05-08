@@ -67,10 +67,11 @@
 <script>
     import RegisterGeneral from './components/register/RegisterGeneral'
     import RegisterOrdenTrabajo from './components/register/RegisterOrdenTrabajo'
+    import ConfirmationDialog from '../../general/ConfirmationDialog'
     export default {
 		name: "RegisterDialog",
         components: {
-            ConfirmationDialog: resolve => {require(['../../general/ConfirmationDialog'], resolve)},
+            ConfirmationDialog,
             RegisterGeneral,
             RegisterOrdenTrabajo
         },
@@ -166,6 +167,9 @@
                         this.complementos.puestosTrabajo = response.data.puestosTrabajo
                         this.$store.commit('LOADING', false)
                         this.open = true
+                        this.$nextTick(() => {
+                            this.tabActiva = 'tab-0'
+                        })
                     })
                     .catch(error => {
                         this.$store.commit('LOADING', false)
@@ -207,11 +211,11 @@
                         tipo_mantenimiento_id: this.evento.tipo_mantenimiento_id,
                         equipo_id: this.evento.equipo_id,
                         evento_padre_id: !this.esPrincipal ? this.evento.evento_padre_id : null,
+                        orden_trabajos: this.evento.orden_trabajos,
                         user_id: this.evento.user_id
                     }
                     axios.post(`eventos/registerevent`, data)
                         .then(response => {
-                            this.$store.commit('LOADING', false)
                             this.$store.commit('SNACKBAR', {color: 'success', message: `evento registrado correctamente`})
                             this.$store.commit('RELOAD_TABLE', 'tablaEventos')
                             this.$refs.dialogCloseConfirm.close()
@@ -224,13 +228,12 @@
                 }
             },
             resetModel () {
-                this.evento = window.lodash.clone(this.makeEvento)
+                this.evento =  JSON.parse(JSON.stringify(this.makeEvento))
                 this.complementos.tiposEvento = []
                 this.complementos.tiposMantenimiento = []
                 this.complementos.puestosTrabajo = []
                 this.esPrincipal = 1
                 this.soloGuardar = 1
-                this.tabActiva = 'tab-0'
                 this.resetForms()
             },
             async resetForms () {
