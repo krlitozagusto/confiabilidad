@@ -23,7 +23,7 @@
                 </v-toolbar>
                 <v-container fluid grid-list-md class="pa-2">
                     <v-layout row wrap>
-                        <v-flex xs12 sm12 md6>
+                        <v-flex xs12 sm12 md7>
                             <v-treeview
                                 ref="arbol"
                                 :active.sync="active"
@@ -42,37 +42,39 @@
                             </v-treeview>
                             <div v-if="!arbolVisible" class="text-xs-center title grey--text">No hay coincidencias de busqueda</div>
                         </v-flex>
-                        <v-flex xs12 sm12 md6>
-                            El detalle
+                        <v-flex xs12 sm12 md5>
+                            <template v-if="details">
+                                <v-list-tile>
+                                    <v-list-tile-avatar>
+                                        <v-icon color="info" left>{{details.icon}}</v-icon>
+                                    </v-list-tile-avatar>
+                                    <v-list-tile-content>
+                                        <v-list-tile-title>Detalle de {{details.type}} </v-list-tile-title>
+                                    </v-list-tile-content>
+                                    <v-list-tile-action v-if="details.type === 'equipo'">
+                                        <v-tooltip top>
+                                            <v-btn flat icon color="indigo" slot="activator" @click.stop="detailEquipo(details.id)">
+                                                <v-icon>details</v-icon>
+                                            </v-btn>
+                                            <span>Mas detalle</span>
+                                        </v-tooltip>
+                                    </v-list-tile-action>
+                                </v-list-tile>
+                                <v-divider class="mb-3"></v-divider>
+                                <input-detail-flex
+                                        v-for="(prop, index) in details.registros"
+                                        :key="`prop${index}`"
+                                        :flex-class="prop.flexClass"
+                                        :label="prop.label"
+                                        :text="prop.text"
+                                        :hint="prop.hint"
+                                        :prepend-icon="prop.icon"
+                                />
+                            </template>
+                            <div v-else class="text-xs-center title grey--text mt-4">No hay un item seleccionado</div>
                         </v-flex>
                     </v-layout>
                 </v-container>
-<!--                <data-table-->
-<!--                    ref="tablaEquipos"-->
-<!--                    v-model="dataTable"-->
-<!--                    @resetOption="item => resetOptions(item)"-->
-<!--                    @detailMachine="item => detailMachine(item)"-->
-<!--                ></data-table>-->
-<!--                <v-treeview-->
-<!--                    :active.sync="active"-->
-<!--                    :items="items"-->
-<!--                    :load-children="getItems"-->
-<!--                    :open.sync="open"-->
-<!--                    activatable-->
-<!--                    active-class="primary&#45;&#45;text"-->
-<!--                    class="grey lighten-5"-->
-<!--                    open-on-click-->
-<!--                    transition-->
-<!--                >-->
-<!--                    <template slot="prepend" slot-scope="{ item, active }">-->
-<!--                        <v-icon-->
-<!--                            v-if="!item.children"-->
-<!--                            :color="active ? 'primary' : ''"-->
-<!--                        >-->
-<!--                            add-->
-<!--                        </v-icon>-->
-<!--                    </template>-->
-<!--                </v-treeview>-->
             </v-card>
         </v-flex>
         <detail-dialog ref="detailDialog"></detail-dialog>
@@ -82,7 +84,7 @@
     export default {
 		name: "Panel",
         components: {
-            DataTable: resolve => {require(['../../general/DataTable'], resolve)},
+            InputDetailFlex: resolve => {require(['../../general/InputDetailFlex'], resolve)},
             DetailDialog: resolve => {require(['./DetailDialog'], resolve)}
         },
 		data: () => ({
@@ -93,60 +95,8 @@
             open: [],
             openAll: true,
             selectedItem: null,
-            arbolVisible: true,
-            dataTable: {
-                nameItemState: 'tablaEquipos',
-                route: 'equipos/panel',
-                makeHeaders: [
-                    {
-                        text: 'Concecutivo',
-                        align: 'center',
-                        sortable: true,
-                        value: 'id',
-                        classData: 'text-xs-center'
-                    },
-                    {
-                        text: 'Nombre',
-                        align: 'left',
-                        sortable: true,
-                        value: 'nombre'
-                    },
-                    {
-                        text: 'Denominación',
-                        align: 'left',
-                        sortable: false,
-                        value: 'denominacion'
-                    },
-                    {
-                        text: 'Tag',
-                        align: 'left',
-                        sortable: false,
-                        value: 'tag'
-                    },
-                    {
-                        text: 'Núm. equipo',
-                        align: 'left',
-                        sortable: false,
-                        value: 'numero_equipo',
-                        tooltip: 'Número de equipo'
-                    },
-                    {
-                        text: 'Val. RAM',
-                        align: 'left',
-                        sortable: false,
-                        value: 'valoracion_ram.nombre',
-                        tooltip: 'Valoración Ram'
-                    },
-                    {
-                        text: 'Opciones',
-                        align: 'center',
-                        sortable: false,
-                        actions: true,
-                        singlesActions: true,
-                        classData: 'text-xs-center'
-                    }
-                ]
-            }
+            details: null,
+            arbolVisible: true
 		}),
         watch: {
 		  async 'search' (val) {
@@ -156,14 +106,77 @@
               }
           },
             'active' (val) {
-		      // this.selected =
-              console.log('activo wt', val)
+		      if (val.length) {
+		          let registro = val[0]
+                  this.details = {
+                      id: registro.objeto.id,
+                      icon: registro.icon,
+                      type: registro.type,
+                      registros: []
+                  }
+		          switch (registro.type) {
+                      case 'contrato': {
+                          this.details.registros = [
+                              {label: 'Número', text: registro.objeto.numero, hint: null, icon: null, flexClass: null},
+                              {label: 'Fecha', text: registro.objeto.fecha, hint: null, icon: null, flexClass: null},
+                              {label: 'Descripción', text: registro.objeto.descripcion, hint: null, icon: null, flexClass: null}
+                          ]
+                          break
+                      }
+                      case 'campo': {
+                          this.details.registros = [
+                              {label: 'Código', text: registro.objeto.codigo, hint: null, icon: null, flexClass: null},
+                              {label: 'Nombre', text: registro.objeto.nombre, hint: null, icon: null, flexClass: null}
+                          ]
+                          break
+                      }
+                      case 'planta': {
+                          this.details.registros = [
+                              {label: 'Nombre', text: registro.objeto.nombre, hint: null, icon: null, flexClass: null},
+                              {label: 'Eplazamiento', text: registro.objeto.emplazamiento, hint: `Centro: ${!!registro.objeto.centro_emplazamiento ? registro.objeto.centro_emplazamiento : 'No registra'}`, icon: null, flexClass: null},
+                              {label: 'Descripción', text: registro.objeto.descripcion, hint: null, icon: null, flexClass: null}
+                          ]
+                          break
+                      }
+                      case 'sistema': {
+                          this.details.registros = [
+                              {label: 'Nombre', text: registro.objeto.nombre, hint: null, icon: null, flexClass: null},
+                              {label: 'Tag', text: registro.objeto.tag, hint: null, icon: null, flexClass: null},
+                              {label: 'Descripción', text: registro.objeto.descripcion, hint: null, icon: null, flexClass: null}
+                          ]
+                          break
+                      }
+                      case 'ubicación técnica': {
+                          this.details.registros = [
+                              {label: 'Nombre', text: registro.objeto.nombre, hint: null, icon: null, flexClass: null},
+                              {label: 'Tag', text: registro.objeto.tag, hint: null, icon: null, flexClass: null},
+                              {label: 'Descripción', text: registro.objeto.descripcion, hint: null, icon: null, flexClass: null}
+                          ]
+                          break
+                      }
+                      case 'equipo': {
+                          this.details.registros = [
+                              {label: 'Nombre', text: registro.objeto.nombre, hint: null, icon: null, flexClass: null},
+                              {label: 'Tag', text: registro.objeto.tag, hint: null, icon: null, flexClass: null},
+                              {label: 'Número', text: registro.objeto.numero_equipo, hint: null, icon: null, flexClass: null},
+                              {label: 'Denominación', text: registro.objeto.denominacion, hint: null, icon: null, flexClass: null},
+                              {label: 'Descripción', text: registro.objeto.descripcion, hint: null, icon: null, flexClass: null}
+                          ]
+                          break
+                      }
+                  }
+              } else {
+                  this.details = null
+              }
           }
         },
         created () {
 		  this.getContratos()
         },
         methods: {
+		    detailEquipo (id) {
+                this.$refs.detailDialog.register(id)
+            },
             getContratos () {
                 axios.post(`equipos/getcontratos`,)
                     .then(response => {
@@ -178,7 +191,7 @@
                                     let campo = {
                                         id: `campo${ca.id}`,
                                         type: `campo`,
-                                        name: `Campo código ${ca.codigo} - ${ca.nombre}`,
+                                        name: `Campo ${ca.codigo} - ${ca.nombre}`,
                                         objeto: ca,
                                         icon: 'place',
                                         children: !ca.plantas.length ? [] : ca.plantas.map(pl => {
@@ -198,7 +211,7 @@
                                                         children: !sis.ubicacion_tecnicas.length ? [] : sis.ubicacion_tecnicas.map(ut => {
                                                             let utecnica = {
                                                                 id: `utecnica${ut.id}`,
-                                                                type: `ut`,
+                                                                type: `ubicación técnica`,
                                                                 name: `Tag: ${ut.tag} - ${ut.nombre}`,
                                                                 objeto: ut,
                                                                 icon: 'my_location',
@@ -237,14 +250,6 @@
                     .catch(error => {
                         this.$store.commit('SNACKBAR', {color: 'error', message: `al traer los contratos para el arbol`, error: error})
                     })
-            },
-            resetOptions (item) {
-                item.options = []
-                item.options.push({event: 'detailMachine', icon: 'details', tooltip: 'Detalle equipo', color: 'primary'})
-                return item
-            },
-            detailMachine (equipo) {
-                this.$refs.detailDialog.register(equipo.id)
             }
         }
     }

@@ -2,8 +2,8 @@
     <v-layout row justify-center>
         <v-dialog v-model="open" fullscreen hide-overlay transition="dialog-bottom-transition" persistent>
             <v-card v-if="equipo">
-                <v-card-title>
-                    <span class="headline">Detalle del equipo No. <strong>{{equipo.id}}</strong></span>
+                <v-card-title class="py-0">
+                    <span class="headline">Detalle de equipo</span>
                     <v-spacer></v-spacer>
                     <v-btn flat icon @click="close">
                         <v-icon>close</v-icon>
