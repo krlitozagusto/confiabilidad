@@ -30,6 +30,8 @@ Route::group(['middleware' => 'auth'], function (){
     Route::post('/equipos/postulador', 'EquiposController@postulador');
 
     Route::post('/equipos/get', 'EquiposController@getMachine');
+
+    Route::post('/equipos/getcontratos', 'EquiposController@getContratos');
 });
 
 

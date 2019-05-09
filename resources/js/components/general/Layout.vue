@@ -44,4 +44,8 @@
     .truncate-content {
         contain: size !important;
     }
+
+    .cursor-pointer{
+        cursor: pointer !important;
+    }
 </style>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Contrato;
 use Illuminate\Http\Request;
 use App\Models\Equipo;
 use Spatie\QueryBuilder\Filter;
@@ -50,6 +51,15 @@ class EquiposController extends Controller
                 'planes_mantenimiento',
                 'centro_costo'
             ])->first()
+        ]);
+    }
+
+    public function getContratos()
+    {
+        return response()->json([
+            'contratos' => Contrato::with([
+                'campos.plantas.sistemas.ubicacion_tecnicas.equipos'
+            ])->get()
         ]);
     }
 }
