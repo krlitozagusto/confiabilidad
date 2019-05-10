@@ -67,13 +67,12 @@
 <script>
     import RegisterGeneral from './components/register/RegisterGeneral'
     import RegisterOrdenTrabajo from './components/register/RegisterOrdenTrabajo'
+    import RegisterFallas from './components/register/RegisterFallas'
     import ConfirmationDialog from '../../general/ConfirmationDialog'
     export default {
 		name: "RegisterDialog",
         components: {
-            ConfirmationDialog,
-            RegisterGeneral,
-            RegisterOrdenTrabajo
+            ConfirmationDialog
         },
 		data: () => ({
             open: false,
@@ -127,7 +126,7 @@
 		created () {
             this.tabs.push({title: 'Datos generales', component: RegisterGeneral})
             this.tabs.push({title: 'Orden de trabajo', component: RegisterOrdenTrabajo})
-            this.tabs.push({title: 'Fallas', component: RegisterGeneral})
+            this.tabs.push({title: 'Fallas', component: RegisterFallas})
             this.tabs.push({title: 'Impactos', component: RegisterGeneral})
             this.tabs.push({title: 'Gastos', component: RegisterGeneral})
             this.resetModel()

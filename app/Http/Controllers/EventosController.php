@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Comentario;
 use App\Models\Evento;
+use App\Models\ModoFalla;
 use App\Models\OrdenTrabajo;
 use App\Models\PuestoTrabajo;
 use App\Models\TipoEvento;
@@ -45,7 +46,8 @@ class EventosController extends Controller
             'evento'=> null,
             'tiposEvento'=> TipoEvento::all(),
             'tiposMantenimiento'=> TipoMantenimiento::all(),
-            'puestosTrabajo'=> PuestoTrabajo::all()
+            'puestosTrabajo'=> PuestoTrabajo::all(),
+            'modosFalla'=> ModoFalla::all()
         ]);
     }
 
@@ -79,7 +81,9 @@ class EventosController extends Controller
             ])->first(),
             'tiposEvento'=> TipoEvento::all(),
             'tiposMantenimiento'=> TipoMantenimiento::all(),
-            'puestosTrabajo'=> PuestoTrabajo::all()
+            'puestosTrabajo'=> PuestoTrabajo::all(),
+            'puestosTrabajo'=> PuestoTrabajo::all(),
+            'modosFalla'=> ModoFalla::all()
         ]);
     }
 
