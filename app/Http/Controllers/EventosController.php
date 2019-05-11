@@ -8,6 +8,8 @@ use App\Models\ModoFalla;
 use App\Models\OrdenTrabajo;
 use App\Models\PuestoTrabajo;
 use App\Models\TipoEvento;
+use App\Models\TipoGasto;
+use App\Models\TipoImpacto;
 use App\Models\TipoMantenimiento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -47,7 +49,9 @@ class EventosController extends Controller
             'tiposEvento'=> TipoEvento::all(),
             'tiposMantenimiento'=> TipoMantenimiento::all(),
             'puestosTrabajo'=> PuestoTrabajo::all(),
-            'modosFalla'=> ModoFalla::all()
+            'modosFalla'=> ModoFalla::all(),
+            'tiposImpacto'=> TipoImpacto::all(),
+            'tiposGasto'=> TipoGasto::all()
         ]);
     }
 
@@ -77,13 +81,16 @@ class EventosController extends Controller
                 'equipo',
                 'orden_trabajos',
                 'fallas',
-                'impactos'
+                'impactos',
+                'gastos'
             ])->first(),
             'tiposEvento'=> TipoEvento::all(),
             'tiposMantenimiento'=> TipoMantenimiento::all(),
             'puestosTrabajo'=> PuestoTrabajo::all(),
             'puestosTrabajo'=> PuestoTrabajo::all(),
-            'modosFalla'=> ModoFalla::all()
+            'modosFalla'=> ModoFalla::all(),
+            'tiposImpacto'=> TipoImpacto::all(),
+            'tiposGasto'=> TipoGasto::all()
         ]);
     }
 

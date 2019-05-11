@@ -68,6 +68,8 @@
     import RegisterGeneral from './components/register/RegisterGeneral'
     import RegisterOrdenTrabajo from './components/register/RegisterOrdenTrabajo'
     import RegisterFallas from './components/register/RegisterFallas'
+    import RegisterImpactos from './components/register/RegisterImpactos'
+    import RegisterGastos from './components/register/RegisterGastos'
     import ConfirmationDialog from '../../general/ConfirmationDialog'
     export default {
 		name: "RegisterDialog",
@@ -103,9 +105,10 @@
                 user_id: null,
                 // Auxiliares
                 eventos_hijos: [],
+                orden_trabajos: [],
                 fallas: [],
                 impactos: [],
-                orden_trabajos: [],
+                gastos: [],
                 evento_padre: null,
                 equipo: null,
                 tipo_evento: null,
@@ -114,7 +117,10 @@
             complementos:{
                 tiposEvento: [],
                 tiposMantenimiento: [],
-                puestosTrabajo: []
+                puestosTrabajo: [],
+                modosFalla: [],
+                tiposImpacto: [],
+                tiposGasto: []
             }
 		}),
 		computed: {
@@ -127,8 +133,8 @@
             this.tabs.push({title: 'Datos generales', component: RegisterGeneral})
             this.tabs.push({title: 'Orden de trabajo', component: RegisterOrdenTrabajo})
             this.tabs.push({title: 'Fallas', component: RegisterFallas})
-            this.tabs.push({title: 'Impactos', component: RegisterGeneral})
-            this.tabs.push({title: 'Gastos', component: RegisterGeneral})
+            this.tabs.push({title: 'Impactos', component: RegisterImpactos})
+            this.tabs.push({title: 'Gastos', component: RegisterGastos})
             this.resetModel()
 		},
         methods: {
@@ -164,6 +170,9 @@
                         this.complementos.tiposEvento = response.data.tiposEvento
                         this.complementos.tiposMantenimiento = response.data.tiposMantenimiento
                         this.complementos.puestosTrabajo = response.data.puestosTrabajo
+                        this.complementos.modosFalla = response.data.modosFalla
+                        this.complementos.tiposImpacto = response.data.tiposImpacto
+                        this.complementos.tiposGasto = response.data.tiposGasto
                         this.$store.commit('LOADING', false)
                         this.open = true
                         this.$nextTick(() => {
@@ -231,6 +240,9 @@
                 this.complementos.tiposEvento = []
                 this.complementos.tiposMantenimiento = []
                 this.complementos.puestosTrabajo = []
+                this.complementos.modosFalla = []
+                this.complementos.tiposImpacto = []
+                this.complementos.tiposGasto = []
                 this.esPrincipal = 1
                 this.soloGuardar = 1
                 this.resetForms()
