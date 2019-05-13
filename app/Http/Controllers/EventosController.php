@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Comentario;
 use App\Models\Evento;
+use App\Models\Falla;
+use App\Models\Gasto;
+use App\Models\Impacto;
 use App\Models\ModoFalla;
 use App\Models\OrdenTrabajo;
 use App\Models\PuestoTrabajo;
@@ -59,15 +62,18 @@ class EventosController extends Controller
     {
         return response()->json([
             'evento' => Evento::where('id','=',$request->id)->with([
-                'evento_padre',
+                'evento_padre.equipo',
+                'evento_padre.tipo_evento',
                 'tipo_evento',
                 'tipo_mantenimiento',
-                'eventos_hijos',
+                'eventos_hijos.equipo',
+                'eventos_hijos.tipo_evento',
                 'equipo',
                 'comentarios.usuario',
                 'orden_trabajos.puesto_trabajo',
                 'fallas.modo_falla',
-                'impactos.tipo_impacto'
+                'impactos.tipo_impacto',
+                'gastos.tipo_gasto'
             ])->first()
         ]);
     }
@@ -80,9 +86,9 @@ class EventosController extends Controller
                 'eventos_hijos',
                 'equipo',
                 'orden_trabajos',
-                'fallas',
-                'impactos',
-                'gastos'
+                'fallas.modo_falla',
+                'impactos.tipo_impacto',
+                'gastos.tipo_gasto'
             ])->first(),
             'tiposEvento'=> TipoEvento::all(),
             'tiposMantenimiento'=> TipoMantenimiento::all(),
@@ -119,6 +125,7 @@ class EventosController extends Controller
             $evento->downtime = 0;
             $evento->user_id = Auth::id();
             $evento->save();
+            
             //Las ordenes de trabajo
             $ordenes = OrdenTrabajo::where('evento_id', '=', $evento->id)->get();
             if ($ordenes->count()) {
@@ -131,14 +138,79 @@ class EventosController extends Controller
                     }
                 }
             }
-            foreach ($requestjson->orden_trabajos as $ot) {
+            foreach ($requestjson->orden_trabajos as $item) {
                 $orden_trabajo = new OrdenTrabajo();
                 $orden_trabajo->evento_id = $evento->id;
-                $orden_trabajo->numero_orden = $ot->numero_orden;
-                $orden_trabajo->numero_aviso = $ot->numero_aviso;
-                $orden_trabajo->descripcion = $ot->descripcion;
-                $orden_trabajo->puesto_trabajo_id = $ot->puesto_trabajo_id;
+                $orden_trabajo->numero_orden = $item->numero_orden;
+                $orden_trabajo->numero_aviso = $item->numero_aviso;
+                $orden_trabajo->descripcion = $item->descripcion;
+                $orden_trabajo->puesto_trabajo_id = $item->puesto_trabajo_id;
                 $orden_trabajo->save();
+            }
+
+            //Las fallas
+            $fallas_old = Falla::where('evento_id', '=', $evento->id)->get();
+            if ($fallas_old->count()) {
+                foreach ($fallas_old as $falla_old) {
+                    if (!$falla_old->delete()) {
+                        DB::rollback();
+                        return response()->json([
+                            'error'=> 'Las fallas no se pudieron actualizar.'
+                        ], 422);
+                    }
+                }
+            }
+            foreach ($requestjson->fallas as $item) {
+                $falla = new Falla();
+                $falla->evento_id = $evento->id;
+                $falla->sintoma = $item->sintoma;
+                $falla->sistema = $item->sistema;
+                $falla->parte = $item->parte;
+                $falla->accion_correctiva = $item->accion_correctiva;
+                $falla->modo_falla_id = $item->modo_falla_id;
+                $falla->save();
+            }
+
+            //Los Impactos
+            $impactos_old = Impacto::where('evento_id', '=', $evento->id)->get();
+            if ($impactos_old->count()) {
+                foreach ($impactos_old as $impacto_old) {
+                    if (!$impacto_old->delete()) {
+                        DB::rollback();
+                        return response()->json([
+                            'error'=> 'Los impactos no se pudieron actualizar.'
+                        ], 422);
+                    }
+                }
+            }
+            foreach ($requestjson->impactos as $item) {
+                $impacto = new Impacto();
+                $impacto->evento_id = $evento->id;
+                $impacto->cantidad = $item->cantidad;
+                $impacto->tipo_impacto_id = $item->tipo_impacto_id;
+                $impacto->save();
+            }
+
+            //Los Gastos
+            $gastos_old = Gasto::where('evento_id', '=', $evento->id)->get();
+            if ($gastos_old->count()) {
+                foreach ($gastos_old as $gasto_old) {
+                    if (!$gasto_old->delete()) {
+                        DB::rollback();
+                        return response()->json([
+                            'error'=> 'Los gastos no se pudieron actualizar.'
+                        ], 422);
+                    }
+                }
+            }
+            foreach ($requestjson->gastos as $item) {
+                $gasto = new Gasto();
+                $gasto->evento_id = $evento->id;
+                $gasto->cantidad = $item->cantidad;
+                $gasto->valor = $item->valor;
+                $gasto->observaciones = $item->observaciones;
+                $gasto->tipo_gasto_id = $item->tipo_gasto_id;
+                $gasto->save();
             }
             DB::commit();
             return response()->json([true], 200);

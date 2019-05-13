@@ -15,8 +15,8 @@ class CreateGastosTable extends Migration
     {
         Schema::create('gastos', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->float('cantidad');
-            $table->float('valor');
+            $table->double('cantidad');
+            $table->double('valor');
             $table->text('observaciones');
             $table->bigInteger('evento_id')->unsigned()->nullable();
             $table->bigInteger('tipo_gasto_id')->unsigned()->nullable();

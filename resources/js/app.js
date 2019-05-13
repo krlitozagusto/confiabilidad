@@ -62,6 +62,14 @@ Vue.prototype.moment = moment
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
+Vue.mixin({
+    methods: {
+        currency: (valor) => {
+            return new Intl.NumberFormat('es-CO', {style: 'currency', currency: 'COP'}).format(valor)
+        }
+    }
+})
+
 const app = new Vue({
     el: '#app',
     store,

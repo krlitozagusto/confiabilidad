@@ -5,15 +5,20 @@
                 <v-data-table
                     :headers="headers"
                     :items="value.impactos"
-                    no-data-text="No hay impactos registradas para éste evento."
+                    no-data-text="No hay impactos registrados para éste evento."
                     hide-actions
                 >
                     <template slot="items" slot-scope="props">
-                        <td>{{ props.item.modo_falla.codigo }} - {{props.item.modo_falla.descripcion}}</td>
-                        <td>{{ props.item.sistema }}</td>
-                        <td>{{ props.item.parte }}</td>
-                        <td>{{ props.item.sintoma }}</td>
-                        <td>{{ props.item.accion_correctiva }}</td>
+                        <td>
+                            <v-list-tile>
+                                <v-list-tile-content>
+                                    <v-list-tile-title>{{props.item.tipo_impacto.nombre}}</v-list-tile-title>
+                                    <v-list-tile-sub-title class="caption">{{props.item.tipo_impacto.descripcion}}</v-list-tile-sub-title>
+                                </v-list-tile-content>
+                            </v-list-tile>
+                        </td>
+                        <td class="text-xs-center">{{ props.item.tipo_impacto.medida }}</td>
+                        <td>{{ props.item.cantidad }}</td>
                     </template>
                 </v-data-table>
             </v-card>
@@ -29,22 +34,17 @@
 		data: () => ({
             headers: [
                 {
-                    text: 'Impacto',
+                    text: 'Tipo',
                     align: 'left',
                     sortable: false
                 },
                 {
-                    text: 'Cantidad',
+                    text: 'Unidad de medida',
                     align: 'center',
                     sortable: false
                 },
                 {
-                    text: 'Unidad medida',
-                    align: 'left',
-                    sortable: false
-                },
-                {
-                    text: 'Costo total',
+                    text: 'cantidad',
                     align: 'left',
                     sortable: false
                 }

@@ -219,8 +219,11 @@
                         tipo_mantenimiento_id: this.evento.tipo_mantenimiento_id,
                         equipo_id: this.evento.equipo_id,
                         evento_padre_id: !this.esPrincipal ? this.evento.evento_padre_id : null,
+                        user_id: this.evento.user_id,
                         orden_trabajos: this.evento.orden_trabajos,
-                        user_id: this.evento.user_id
+                        fallas: this.evento.fallas,
+                        impactos: this.evento.impactos,
+                        gastos: this.evento.gastos
                     }
                     axios.post(`eventos/registerevent`, data)
                         .then(response => {
