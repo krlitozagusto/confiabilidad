@@ -51,7 +51,7 @@ const router = new Router({
                     meta: {
                         title: 'Panel de reportes'
                     },
-                    component: resolve => {require(['../components/modules/home/Panel'], resolve)}
+                    component: resolve => {require(['../components/modules/reportes/Panel'], resolve)}
                 },
                 {
                     path: 'login',
