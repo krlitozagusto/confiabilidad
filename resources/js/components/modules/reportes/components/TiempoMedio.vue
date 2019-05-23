@@ -1,10 +1,10 @@
 <template>
     <v-layout row justify-center>
-        <v-dialog v-model="dialog" scrollable max-width="600px">
+        <v-dialog v-model="dialog" scrollable persistent max-width="600px">
             <v-card>
                 <v-card-title class="title"><strong>Tiempo medio</strong></v-card-title>
                 <v-divider></v-divider>
-                <v-card-text style="height: 600px;">
+                <v-card-text>
                     <v-container class="pa-0" fluid grid-list-md>
                         <v-layout row wrap>
                             <v-flex xs12>
@@ -121,8 +121,9 @@
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-card-actions>
+                    <v-btn flat @click="dialog = false">Cerrar</v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" flat @click="dialog = false">Cerrar</v-btn>
+                    <v-btn color="blue darken-1" class="white--text" @click="submit">Ejecutar</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -151,6 +152,15 @@
         methods: {
 		    open () {
 		        this.dialog = true
+            },
+            submit () {
+                axios.post(`reportes/tiempomedio`, this.data)
+                    .then(response => {
+                        console.log('el response del reporte', response)
+                    })
+                    .catch(error => {
+                        this.$store.commit('SNACKBAR', {color: 'error', message: `al generar el reporte`, error: error})
+                    })
             }
         }
 	}
