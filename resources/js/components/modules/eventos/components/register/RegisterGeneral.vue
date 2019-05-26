@@ -74,7 +74,7 @@
                     label="Hora registro"
                     v-model="value.hora_registro"
                     name="Hora registro"
-                    v-validate="'required'"
+                    v-validate="value.fecha_registro ? 'required' : ''"
                     :error-messages="errors.collect('Hora registro')"
                     readonly
                 ></v-text-field>
@@ -211,7 +211,7 @@
                     label="Hora inicio"
                     v-model="value.hora_inicio"
                     name="Hora inicio"
-                    v-validate="'required'"
+                    v-validate="value.fecha_inicio ? 'required' : ''"
                     :error-messages="errors.collect('Hora inicio')"
                     readonly
                 ></v-text-field>
@@ -280,7 +280,7 @@
                     label="Hora fin"
                     v-model="value.hora_fin"
                     name="Hora fin"
-                    v-validate="soloGuardar ? '' : 'required'"
+                    v-validate="value.fecha_fin ? 'required' : ''"
                     :error-messages="errors.collect('Hora fin')"
                     readonly
                 ></v-text-field>
@@ -297,7 +297,7 @@
                 ></v-time-picker>
             </v-menu>
         </v-flex>
-        <v-flex xs12 sm6 md6>
+        <v-flex xs12 sm6 md9>
             <v-select
                 label="Tipo mantenimiento"
                 :items="complementos.tiposMantenimiento"
@@ -309,7 +309,7 @@
                 :error-messages="errors.collect('Tipo mantenimiento')"
             ></v-select>
         </v-flex>
-        <v-flex dflex>
+        <v-flex xs12 sm6 md3>
             <v-switch
                 ripple
                 label="Contractual"
@@ -370,7 +370,7 @@
                     label="Hora inicio reparación"
                     v-model="value.hora_inicio_reparacion"
                     name="Hora inicio reparación"
-                    v-validate="soloGuardar ? '' : 'required'"
+                    v-validate="value.fecha_inicio_reparacion ? 'required' : ''"
                     :error-messages="errors.collect('Hora inicio reparación')"
                     readonly
                 ></v-text-field>
@@ -439,7 +439,7 @@
                     label="Hora fin reparación"
                     v-model="value.hora_fin_reparacion"
                     name="Hora fin reparación"
-                    v-validate="soloGuardar ? '' : 'required'"
+                    v-validate="value.fecha_fin_reparacion ? 'required' : ''"
                     :error-messages="errors.collect('Hora fin reparación')"
                     readonly
                 ></v-text-field>
