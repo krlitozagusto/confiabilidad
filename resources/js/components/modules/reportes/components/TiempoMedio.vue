@@ -1,6 +1,6 @@
 <template>
     <v-layout row justify-center>
-        <v-dialog v-model="dialog" scrollable persistent max-width="600px">
+        <v-dialog v-model="dialog" scrollable persistent max-width="800px">
             <v-card>
                 <v-card-title class="title"><strong>Tiempo medio</strong></v-card-title>
                 <v-divider></v-divider>
@@ -24,7 +24,7 @@
                                     :error-messages="errors.collect('Equipo')"
                                     :slot-data='{
                                       template:`
-                                      <v-list-tile>
+                                      <v-list-tile class="content-v-list-tile-p0" style="width: 100% !important">
                                         <v-list-tile-content>
                                           <v-list-tile-title>{{value.nombre}}</v-list-tile-title>
                                           <v-list-tile-sub-title class=caption>Tag: {{ value.tag }}</v-list-tile-sub-title>
@@ -35,7 +35,7 @@
                                      }'
                                     :slot-selection='{
                                       template:`
-                                      <v-list-tile>
+                                      <v-list-tile class="content-v-list-tile-p0" style="width: 100% !important">
                                         <v-list-tile-content>
                                           <v-list-tile-title>{{value.nombre}}</v-list-tile-title>
                                           <v-list-tile-sub-title class=caption>Tag: {{ value.tag }}</v-list-tile-sub-title>
@@ -117,13 +117,45 @@
                                 </v-menu>
                             </v-flex>
                         </v-layout>
+                        <v-expansion-panel v-if="result">
+                            <v-expansion-panel-content>
+                                <template slot="header">
+                                    <v-list-tile class="content-v-list-tile-p0" style="width: 100% !important">
+                                        <v-list-tile-content>
+                                            <v-list-tile-title>Entre fallas: </v-list-tile-title>
+                                            <v-list-tile-title>Entre reparaciones: </v-list-tile-title>
+                                        </v-list-tile-content>
+                                    </v-list-tile>
+                                </template>
+                                <v-card>
+                                    <v-card-title><strong>Tiempo intervalo: {{result.total_tiempo_intervalo}}</strong></v-card-title>
+                                    <v-data-table
+                                        :headers="headers"
+                                        :items="result.registros"
+                                        no-data-text="No hay eventos en el rango seleccionado."
+                                        hide-actions
+                                    >
+                                        <template slot="items" slot-scope="props">
+                                            <td>{{props.item.evento.tipo_evento.nombre}}</td>
+                                            <td>{{props.item.evento.fecha_inicio ? moment(props.item.evento.fecha_inicio).format('YYYY-MM-DD HH:mm') : ''}}</td>
+                                            <td>{{props.item.evento.fecha_fin ? moment(props.item.evento.fecha_fin).format('YYYY-MM-DD HH:mm') : ''}}</td>
+                                            <td>{{props.item.evento.tiempo_falla}}</td>
+                                        </template>
+                                        <template slot="footer">
+                                            <td :colspan="3" class="text-xs-right"><strong>Total</strong></td>
+                                            <td>{{result.total_tiempo_falla}}</td>
+                                        </template>
+                                    </v-data-table>
+                                </v-card>
+                            </v-expansion-panel-content>
+                        </v-expansion-panel>
                     </v-container>
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-card-actions>
-                    <v-btn flat @click="dialog = false">Cerrar</v-btn>
+                    <v-btn flat :loading="loading" @click="dialog = false">Cerrar</v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" class="white--text" @click="submit">Ejecutar</v-btn>
+                    <v-btn color="blue darken-1" :loading="loading" class="white--text" @click="submit">Ejecutar</v-btn>
                 </v-card-actions>
             </v-card>
         </v-dialog>
@@ -137,30 +169,63 @@
             PostuladorV2: resolve => {require(['../../../general/PostuladorV2'], resolve)}
         },
         data: () => ({
+            loading: false,
             dialog: false,
             menuInicio: false,
             menuFin: false,
             minDate: '1900-01-01',
             maxDate: new Date().toISOString().substr(0, 10),
+            result: null,
             data: {
                 fechaInicio: null,
                 fechaFin: null,
                 equipo: null,
                 equipo_id: null
-            }
+            },
+            headers: [
+                {
+                    text: 'Tipo',
+                    align: 'left',
+                    sortable: false
+                },
+                {
+                    text: 'Fecha inicio',
+                    align: 'left',
+                    sortable: false
+                },
+                {
+                    text: 'Fecha fin',
+                    align: 'left',
+                    sortable: false
+                },
+                {
+                    text: 'Tiempo falla',
+                    align: 'left',
+                    sortable: false
+                }
+            ]
         }),
         methods: {
 		    open () {
 		        this.dialog = true
             },
             submit () {
-                axios.post(`reportes/tiempomedio`, this.data)
-                    .then(response => {
-                        console.log('el response del reporte', response)
-                    })
-                    .catch(error => {
-                        this.$store.commit('SNACKBAR', {color: 'error', message: `al generar el reporte`, error: error})
-                    })
+                this.result = null
+                this.$validator.validateAll().then(result => {
+                    if (result) {
+                        this.loading = true
+                        axios.post(`reportes/tiempomedio`, this.data)
+                            .then(response => {
+                                console.log('el response del reporte', response.data)
+                                this.result = response.data
+                                this.loading = false
+                            })
+                            .catch(error => {
+                                this.loading = false
+                                this.$store.commit('SNACKBAR', {color: 'error', message: `al generar el reporte`, error: error})
+                            })
+                    }
+                })
             }
         }
 	}

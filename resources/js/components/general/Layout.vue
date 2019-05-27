@@ -37,6 +37,10 @@
 </script>
 
 <style>
+    .content-v-list-tile-p0>.v-list__tile{
+        padding: 0 !important;
+    }
+
     .btn--floating .icon{
         height: auto;
     }
