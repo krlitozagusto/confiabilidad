@@ -26,44 +26,93 @@ class ReportesController extends Controller
         $requestjson->fechaFin = $requestjson->fechaFin->add(1, 'day');
         $minutos_totales = $requestjson->fechaFin->diffInMinutes($requestjson->fechaInicio);
         $eventos = Evento::where('equipo_id', '=', $requestjson->equipo_id)->with('tipo_evento')->get();
-        $registros = [];
-        $total_minutos_falla_equipo = 0;
-        $eventos_calculados = 0;
-        foreach ($eventos as $evento) {
-            if($this->check_date_range($requestjson->fechaInicio, $requestjson->fechaFin, $evento->fecha_inicio, $evento->fecha_fin)) {
-                $eventos_calculados++;
-                $registro =  new stdClass();
-                //fallando
-                $copia_fecha_inicio = $evento->fecha_inicio ? new Carbon($evento->fecha_inicio) : $requestjson->fechaInicio;
-                $copia_fecha_fin = $evento->fecha_fin ? new Carbon($evento->fecha_fin) : new Carbon();
-                $evento->calculo_falla_fecha_inicio = ($requestjson->fechaInicio->diffInMinutes($copia_fecha_inicio, false) >= 0) ? $copia_fecha_inicio : $requestjson->fechaInicio;
-                $evento->calculo_falla_fecha_final = ($requestjson->fechaFin->diffInMinutes($copia_fecha_fin, false) <= 0) ? $copia_fecha_fin : $requestjson->fechaFin;
-                $evento->minutos_total_falla = $evento->calculo_falla_fecha_inicio->diffInMinutes($evento->calculo_falla_fecha_final);
-                $total_minutos_falla_equipo = $total_minutos_falla_equipo + $evento->minutos_total_falla;
-                $evento->horas_falla = intval(($evento->minutos_total_falla / 60));
-                $evento->minutos_falla = ($evento->minutos_total_falla - ($evento->horas_falla * 60));
-                $evento->tiempo_falla = "{$evento->horas_falla}H : {$evento->minutos_falla}M";
-                
-                $registro->evento = $evento;
-                $registro->porcentaje_individual = round((($registro->evento->minutos_total_falla * 100) / $minutos_totales), 2);
-                array_push($registros, $registro);
+        $objeto =  new stdClass();
+        $objeto->disponibilidad = '100%';
+        $objeto->total_tiempo_mtbf = "0H : 0M";
+        $objeto->minutos_mtbf = 0;
+        $objeto->total_tiempo_mttr = "0H : 0M";
+        $objeto->minutos_mttr = 0;
+        $objeto->registros_fallas = [];
+        $objeto->total_tiempo_falla = "0H : 0M";
+        $objeto->minutos_falla = 0;
+        $objeto->total_tiempo_reparacion = "0H : 0M";
+        $objeto->minutos_reparacion = 0;
+        //tiempo total intervalo
+        $objeto->minutos_intervalo = $minutos_totales;
+        $total_horas_intervalo = intval(($objeto->minutos_intervalo / 60));
+        $objeto->total_tiempo_intervalo = "{$total_horas_intervalo}H";
+        if ($eventos->count()) {
+            $registros_fallas = [];
+            $total_minutos_falla_equipo = 0;
+            $eventos_calculados_fallas = 0;
+            $total_minutos_reparacion_equipo = 0;
+            $eventos_calculados_reparaciones = 0;
+            foreach ($eventos as $evento) {
+                if($this->check_date_range($requestjson->fechaInicio, $requestjson->fechaFin, $evento->fecha_inicio, $evento->fecha_fin)) {
+                    $eventos_calculados_fallas++;
+                    //fallando
+                    $copia_fecha_inicio = $evento->fecha_inicio ? new Carbon($evento->fecha_inicio) : $requestjson->fechaInicio;
+                    $copia_fecha_fin = $evento->fecha_fin ? new Carbon($evento->fecha_fin) : new Carbon();
+                    $calculo_fecha_inicio = ($requestjson->fechaInicio->diffInMinutes($copia_fecha_inicio, false) >= 0) ? $copia_fecha_inicio : $requestjson->fechaInicio;
+                    $calculo_fecha_final = ($requestjson->fechaFin->diffInMinutes($copia_fecha_fin, false) <= 0) ? $copia_fecha_fin : $requestjson->fechaFin;
+                    $minutos_total = $calculo_fecha_inicio->diffInMinutes($calculo_fecha_final);
+                    $total_minutos_falla_equipo = $total_minutos_falla_equipo + $minutos_total;
+                    $evento->horas_falla = intval(($minutos_total / 60));
+                    $evento->minutos_falla = ($minutos_total - ($evento->horas_falla * 60));
+                    $evento->tiempo_falla = "{$evento->horas_falla}H : {$evento->minutos_falla}M";
+                    //reparación
+                    $evento->horas_reparacion = 0;
+                    $evento->minutos_reparacion = 0;
+                    $evento->tiempo_reparacion = "0H : 0M";
+                    if($this->check_date_range($requestjson->fechaInicio, $requestjson->fechaFin, $evento->fecha_inicio_reparacion, $evento->fecha_fin_reparacion)) {
+                        $eventos_calculados_reparaciones++;
+                        $copia_fecha_inicio = $evento->fecha_inicio_reparacion ? new Carbon($evento->fecha_inicio_reparacion) : $requestjson->fechaInicio;
+                        $copia_fecha_fin = $evento->fecha_fin_reparacion ? new Carbon($evento->fecha_fin_reparacion) : new Carbon();
+                        $calculo_fecha_inicio = ($requestjson->fechaInicio->diffInMinutes($copia_fecha_inicio, false) >= 0) ? $copia_fecha_inicio : $requestjson->fechaInicio;
+                        $calculo_fecha_final = ($requestjson->fechaFin->diffInMinutes($copia_fecha_fin, false) <= 0) ? $copia_fecha_fin : $requestjson->fechaFin;
+                        $minutos_total = $calculo_fecha_inicio->diffInMinutes($calculo_fecha_final);
+                        $total_minutos_reparacion_equipo = $total_minutos_reparacion_equipo + $minutos_total;
+                        $evento->horas_reparacion = intval(($minutos_total / 60));
+                        $evento->minutos_reparacion = ($minutos_total - ($evento->horas_reparacion * 60));
+                        $evento->tiempo_reparacion = "{$evento->horas_reparacion}H : {$evento->minutos_reparacion}M";
+                    }
+                    array_push($registros_fallas, $evento);
+                }
+            }
+            if ($eventos_calculados_fallas) {
+                //eventos
+                $objeto->registros_fallas = $registros_fallas;
+                //Disponibilidad
+                $objeto->disponibilidad = round(((($objeto->minutos_intervalo - $total_minutos_falla_equipo) / $objeto->minutos_intervalo) * 100), 2).'%';
+                //Tiempo medio entre fallas
+                $minutos_totales_mtbf = round(($total_minutos_falla_equipo / $eventos_calculados_fallas), 2);
+                $horas__mtbf = intval(($minutos_totales_mtbf / 60));
+                $minutos__mtbf = ($minutos_totales_mtbf - ($horas__mtbf * 60));
+                $objeto->total_tiempo_mtbf = "{$horas__mtbf}H : {$minutos__mtbf}M";
+                $objeto->minutos_mtbf = $minutos_totales_mtbf;
+
+                //tiempo total falla
+                $objeto->minutos_falla = $total_minutos_falla_equipo;
+                $total_horas_falla = intval(($objeto->minutos_falla / 60));
+                $total_minutos_falla = ($objeto->minutos_falla - ($total_horas_falla * 60));
+                $objeto->total_tiempo_falla = "{$total_horas_falla}H : {$total_minutos_falla}M";
+
+                if ($eventos_calculados_reparaciones) {
+                    //Tiempo medio entre reparaciones
+                    $minutos_totales_mttr = round(($total_minutos_reparacion_equipo / $eventos_calculados_reparaciones), 2);
+                    $horas_mttr = intval(($minutos_totales_mttr / 60));
+                    $minutos_mttr = ($minutos_totales_mttr - ($horas_mttr * 60));
+                    $objeto->total_tiempo_mttr = "{$horas_mttr}H : {$minutos_mttr}M";
+                    $objeto->minutos_mttr = $minutos_totales_mttr;
+
+                    //tiempo total reparacion
+                    $objeto->minutos_reparacion = $total_minutos_reparacion_equipo;
+                    $total_horas_reparacion = intval(($objeto->minutos_reparacion / 60));
+                    $total_minutos_reparacion = ($objeto->minutos_reparacion - ($total_horas_reparacion * 60));
+                    $objeto->total_tiempo_reparacion = "{$total_horas_reparacion}H : {$total_minutos_reparacion}M";
+                }
             }
         }
-        $objeto =  new stdClass();
-        $objeto->registros = $registros;
-        $objeto->eventos_calculados = $eventos_calculados;
-        $objeto->minutos_intervalo = $minutos_totales;
-        //tiempo total intervalo
-        $total_horas_intervalo = intval(($objeto->minutos_intervalo / 60));
-        $total_minutos_intervalo = ($objeto->minutos_intervalo - ($total_horas_intervalo * 60));
-        $objeto->total_tiempo_intervalo = "{$total_horas_intervalo}H";
-
-        $objeto->minutos_falla = $total_minutos_falla_equipo;
-        //tiempo total falla
-        $total_horas_falla = intval(($objeto->minutos_falla / 60));
-        $total_minutos_falla = ($objeto->minutos_falla - ($total_horas_falla * 60));
-        $objeto->total_tiempo_falla = "{$total_horas_falla}H : {$total_minutos_falla}M";
-        $objeto->porcentaje_minutos_falla = round((($objeto->minutos_falla * 100) / $objeto->minutos_intervalo), 2);
         return response()->json($objeto, 200);
     }
 }

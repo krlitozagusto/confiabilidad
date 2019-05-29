@@ -1,6 +1,6 @@
 <template>
     <v-layout row justify-center>
-        <v-dialog v-model="dialog" scrollable persistent max-width="800px">
+        <v-dialog v-model="dialog" scrollable persistent max-width="900px">
             <v-card>
                 <v-card-title class="title"><strong>Tiempo medio</strong></v-card-title>
                 <v-divider></v-divider>
@@ -120,35 +120,45 @@
                         <v-expansion-panel v-if="result">
                             <v-expansion-panel-content>
                                 <template slot="header">
-                                    <v-list-tile class="content-v-list-tile-p0" style="width: 100% !important">
-                                        <v-list-tile-content>
-                                            <v-list-tile-title>Entre fallas: </v-list-tile-title>
-                                            <v-list-tile-title>Entre reparaciones: </v-list-tile-title>
-                                        </v-list-tile-content>
-                                    </v-list-tile>
+                                    <span class="body-2">Disponibilidad: {{result.disponibilidad}}</span>
+                                    <span class="body-2">MTBF: {{result.total_tiempo_mtbf}}</span>
+                                    <span class="body-2">MTTR: {{result.total_tiempo_mttr}}</span>
                                 </template>
+                                <v-divider></v-divider>
                                 <v-card>
                                     <v-card-title><strong>Tiempo intervalo: {{result.total_tiempo_intervalo}}</strong></v-card-title>
                                     <v-data-table
+                                            v-if="result.registros_fallas"
                                         :headers="headers"
-                                        :items="result.registros"
+                                        :items="result.registros_fallas"
                                         no-data-text="No hay eventos en el rango seleccionado."
                                         hide-actions
                                     >
                                         <template slot="items" slot-scope="props">
-                                            <td>{{props.item.evento.tipo_evento.nombre}}</td>
-                                            <td>{{props.item.evento.fecha_inicio ? moment(props.item.evento.fecha_inicio).format('YYYY-MM-DD HH:mm') : ''}}</td>
-                                            <td>{{props.item.evento.fecha_fin ? moment(props.item.evento.fecha_fin).format('YYYY-MM-DD HH:mm') : ''}}</td>
-                                            <td>{{props.item.evento.tiempo_falla}}</td>
+                                            <td>{{props.item.tipo_evento.nombre}}</td>
+                                            <td>
+                                                <span><strong>Inicio: </strong>{{props.item.fecha_inicio ? moment(props.item.fecha_inicio).format('YYYY-MM-DD HH:mm') : ''}}</span><br/>
+                                                <span><strong>Fin: </strong>{{props.item.fecha_fin ? moment(props.item.fecha_fin).format('YYYY-MM-DD HH:mm') : ''}}</span>
+                                            </td>
+                                            <td>
+                                                <span><strong>Inicio: </strong>{{props.item.fecha_inicio_reparacion ? moment(props.item.fecha_inicio_reparacion).format('YYYY-MM-DD HH:mm') : ''}}</span><br/>
+                                                <span><strong>Fin: </strong>{{props.item.fecha_fin_reparacion ? moment(props.item.fecha_fin_reparacion).format('YYYY-MM-DD HH:mm') : ''}}</span>
+                                            </td>
+                                            <td>{{props.item.tiempo_falla}}</td>
+                                            <td>{{props.item.tiempo_reparacion}}</td>
                                         </template>
                                         <template slot="footer">
                                             <td :colspan="3" class="text-xs-right"><strong>Total</strong></td>
-                                            <td>{{result.total_tiempo_falla}}</td>
+                                            <td :colspan="1">{{result.total_tiempo_falla}}</td>
+                                            <td :colspan="1">{{result.total_tiempo_reparacion}}</td>
                                         </template>
                                     </v-data-table>
                                 </v-card>
                             </v-expansion-panel-content>
                         </v-expansion-panel>
+                        <v-flex xs12 v-else>
+                            <div class="title text-xs-center grey--text" >Click en ejecutar para obtener resultados.</div>
+                        </v-flex>
                     </v-container>
                 </v-card-text>
                 <v-divider></v-divider>
@@ -189,12 +199,12 @@
                     sortable: false
                 },
                 {
-                    text: 'Fecha inicio',
+                    text: 'Fechas evento',
                     align: 'left',
                     sortable: false
                 },
                 {
-                    text: 'Fecha fin',
+                    text: 'Fechas reparación',
                     align: 'left',
                     sortable: false
                 },
@@ -202,9 +212,25 @@
                     text: 'Tiempo falla',
                     align: 'left',
                     sortable: false
+                },
+                {
+                    text: 'Tiempo reparación',
+                    align: 'left',
+                    sortable: false
                 }
             ]
         }),
+        watch: {
+		  'data.equipo_id' (val) {
+              val && (this.result = null)
+          },
+            'data.fechaInicio' (val) {
+              val && (this.result = null)
+          },
+            'data.fechaFin' (val) {
+              val && (this.result = null)
+          }
+        },
         methods: {
 		    open () {
 		        this.dialog = true

@@ -36,7 +36,9 @@ export default {
                 if (data.error.response) {
                     if (data.error.response.status === 419) {
                         message = 'La sesión ha expirado, por favor ingrese sus credenciales nuevamente.'
-                        router.push({name: 'login'})
+                        setTimeout(() => {
+                            window.location.reload()
+                        }, 8000)
                     } else {
                         if (data.error.response && data.error.response.data && data.error.response.data.errors) {
                             let errorList = data.error.response.data.errors
