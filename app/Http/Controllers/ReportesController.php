@@ -9,8 +9,38 @@ use Illuminate\Http\Resources\Json\Resource;
 use stdClass;
 use Carbon\Carbon;
 
+class resultTime {
+    public $total_minutos = 0;
+    public $total_horas = 0;
+    public $horas = 0;
+    public $minutos = 0;
+}
+
+class disponibilidad {
+    public $intervalo;
+    public $disponibilidad = '100%';
+    public $registros_fallas = [];
+    public $fallas;
+    public $reparacion;
+    public $mtbf;
+    public $mttr;
+
+    public $total_tiempo_mtbf = "0H : 0M";
+    public $minutos_mtbf = 0;
+    public $total_tiempo_mttr = "0H : 0M";
+    public $minutos_mttr = 0;
+    public $total_tiempo_falla = "0H : 0M";
+    public $minutos_falla = 0;
+    public $total_tiempo_reparacion = "0H : 0M";
+    public $minutos_reparacion = 0;
+}
+
 class ReportesController extends Controller
 {
+//    $rdi: Rango dado inicial
+//    $rdf: Rango dado final
+//    $rri: Rango registro inicial
+//    $rdf: Rango registro final
     function check_date_range ($rdi, $rdf, $rri, $rrf) {
         $rdi = strtotime($rdi);
         $rdf = strtotime($rdf);
@@ -19,28 +49,26 @@ class ReportesController extends Controller
         return ($rri >= $rdi && $rri <= $rdf) || ($rrf >= $rdi && $rrf <= $rdf) || ($rdi >= $rri && $rdi <= $rrf) || ($rdf >= $rri && $rdf <= $rrf);
     }
 
+    function objectTime ($total_minutos) {
+        $result = new resultTime();
+        if ($total_minutos > 0) {
+            $result->total_minutos = $total_minutos;
+            $result->total_horas = round(($result->total_minutos / 60), 2);
+            $result->horas = intval(($result->total_minutos / 60));
+            $result->minutos = ($result->total_minutos - ($result->horas * 60));
+        }
+        return $result;
+    }
+
     public function tiempoMedio (Request $request) {
         $requestjson = json_decode($request->getContent());
         $requestjson->fechaInicio = new Carbon($requestjson->fechaInicio);
         $requestjson->fechaFin = new Carbon($requestjson->fechaFin);
         $requestjson->fechaFin = $requestjson->fechaFin->add(1, 'day');
-        $minutos_totales = $requestjson->fechaFin->diffInMinutes($requestjson->fechaInicio);
         $eventos = Evento::where('equipo_id', '=', $requestjson->equipo_id)->with('tipo_evento')->get();
-        $objeto =  new stdClass();
-        $objeto->disponibilidad = '100%';
-        $objeto->total_tiempo_mtbf = "0H : 0M";
-        $objeto->minutos_mtbf = 0;
-        $objeto->total_tiempo_mttr = "0H : 0M";
-        $objeto->minutos_mttr = 0;
-        $objeto->registros_fallas = [];
-        $objeto->total_tiempo_falla = "0H : 0M";
-        $objeto->minutos_falla = 0;
-        $objeto->total_tiempo_reparacion = "0H : 0M";
-        $objeto->minutos_reparacion = 0;
+        $objeto =  new disponibilidad();
         //tiempo total intervalo
-        $objeto->minutos_intervalo = $minutos_totales;
-        $total_horas_intervalo = intval(($objeto->minutos_intervalo / 60));
-        $objeto->total_tiempo_intervalo = "{$total_horas_intervalo}H";
+        $objeto->intervalo = $this->objectTime($requestjson->fechaFin->diffInMinutes($requestjson->fechaInicio));
         if ($eventos->count()) {
             $registros_fallas = [];
             $total_minutos_falla_equipo = 0;
@@ -83,7 +111,7 @@ class ReportesController extends Controller
                 //eventos
                 $objeto->registros_fallas = $registros_fallas;
                 //Disponibilidad
-                $objeto->disponibilidad = round(((($objeto->minutos_intervalo - $total_minutos_falla_equipo) / $objeto->minutos_intervalo) * 100), 2).'%';
+                $objeto->disponibilidad = round(((($objeto->intervalo->total_minutos - $total_minutos_falla_equipo) / $objeto->intervalo->total_minutos) * 100), 2).'%';
                 //Tiempo medio entre fallas
                 $minutos_totales_mtbf = round(($total_minutos_falla_equipo / $eventos_calculados_fallas), 2);
                 $horas__mtbf = intval(($minutos_totales_mtbf / 60));

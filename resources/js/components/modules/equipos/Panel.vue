@@ -4,7 +4,7 @@
             <v-card flat height="200px">
                 <v-toolbar dark class="blue darken-1">
                     <v-toolbar-title>
-                        Equipos
+                        Taxonomía
                         <small class="caption">
                             Consulta y detalle
                         </small>

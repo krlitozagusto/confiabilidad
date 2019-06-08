@@ -54,14 +54,14 @@
                     nameRoute: 'EventsBoard'
                 },
                 {
-                    icon: 'today',
-                    text: 'Equipos',
+                    icon: 'developer_board',
+                    text: 'Taxonomía',
                     subheader: false,
                     nameRoute: 'MachinesBoard'
                 },
                 {
                     icon: 'assignment_returned',
-                    text: 'Reportes',
+                    text: 'KPIs',
                     subheader: false,
                     nameRoute: 'ReportsBoard'
                 },

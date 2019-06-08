@@ -2,7 +2,7 @@
     <v-layout row justify-center>
         <v-dialog v-model="dialog" scrollable persistent max-width="900px">
             <v-card>
-                <v-card-title class="title"><strong>Tiempo medio</strong></v-card-title>
+                <v-card-title class="title"><strong>Disponibilidad</strong></v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
                     <v-container class="pa-0" fluid grid-list-md>
@@ -126,7 +126,7 @@
                                 </template>
                                 <v-divider></v-divider>
                                 <v-card>
-                                    <v-card-title><strong>Tiempo intervalo: {{result.total_tiempo_intervalo}}</strong></v-card-title>
+                                    <v-card-title><strong>Tiempo intervalo: {{result.intervalo.total_horas}}Horas</strong></v-card-title>
                                     <v-data-table
                                             v-if="result.registros_fallas"
                                         :headers="headers"

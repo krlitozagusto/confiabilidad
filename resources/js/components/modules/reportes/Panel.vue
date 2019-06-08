@@ -23,7 +23,7 @@
                 </template>
             </v-list>
         </v-flex>
-        <tiempo-medio ref="TiempoMedio"></tiempo-medio>
+        <tiempo-medio ref="Disponibilidad"></tiempo-medio>
     </v-layout>
 </template>
 
@@ -36,7 +36,7 @@
         },
         data: () => ({
             items: [
-                {title: 'Tiempo medio', subtitle: 'Calcular el tiempo medio entre fallas y reparaciones.', ref: 'TiempoMedio' }
+                {title: 'Disponibilidad', subtitle: 'Cálculo de disponibilidad, tiempo medio entre fallas y reparaciones.', ref: 'Disponibilidad' }
             ]
         }),
         methods: {
