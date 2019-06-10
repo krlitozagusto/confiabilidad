@@ -121,16 +121,16 @@
                             <v-expansion-panel-content>
                                 <template slot="header">
                                     <span class="body-2">Disponibilidad: {{result.disponibilidad}}</span>
-                                    <span class="body-2">MTBF: {{result.total_tiempo_mtbf}}</span>
-                                    <span class="body-2">MTTR: {{result.total_tiempo_mttr}}</span>
+                                    <span class="body-2">MTBF: {{result.mtbf.horas}}H:{{result.mtbf.minutos}}M</span>
+                                    <span class="body-2">MTTR: {{result.mttr.horas}}H:{{result.mttr.minutos}}M</span>
                                 </template>
                                 <v-divider></v-divider>
                                 <v-card>
                                     <v-card-title><strong>Tiempo intervalo: {{result.intervalo.total_horas}}Horas</strong></v-card-title>
                                     <v-data-table
-                                            v-if="result.registros_fallas"
+                                        v-if="result.registros_eventos"
                                         :headers="headers"
-                                        :items="result.registros_fallas"
+                                        :items="result.registros_eventos"
                                         no-data-text="No hay eventos en el rango seleccionado."
                                         hide-actions
                                     >
@@ -144,13 +144,13 @@
                                                 <span><strong>Inicio: </strong>{{props.item.fecha_inicio_reparacion ? moment(props.item.fecha_inicio_reparacion).format('YYYY-MM-DD HH:mm') : ''}}</span><br/>
                                                 <span><strong>Fin: </strong>{{props.item.fecha_fin_reparacion ? moment(props.item.fecha_fin_reparacion).format('YYYY-MM-DD HH:mm') : ''}}</span>
                                             </td>
-                                            <td>{{props.item.tiempo_falla}}</td>
-                                            <td>{{props.item.tiempo_reparacion}}</td>
+                                            <td>{{props.item.falla.horas}}H:{{props.item.falla.minutos}}M</td>
+                                            <td>{{props.item.reparacion.horas}}H:{{props.item.reparacion.minutos}}M</td>
                                         </template>
                                         <template slot="footer">
                                             <td :colspan="3" class="text-xs-right"><strong>Total</strong></td>
-                                            <td :colspan="1">{{result.total_tiempo_falla}}</td>
-                                            <td :colspan="1">{{result.total_tiempo_reparacion}}</td>
+                                            <td :colspan="1">{{result.falla.horas}}H:{{result.falla.minutos}}M</td>
+                                            <td :colspan="1">{{result.reparacion.horas}}H:{{result.reparacion.minutos}}M</td>
                                         </template>
                                     </v-data-table>
                                 </v-card>
