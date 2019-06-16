@@ -22,10 +22,10 @@ class CreateEquiposTable extends Migration
             $table->string('numero_equipo')->unique();
             $table->bigInteger('valoracion_ram_id')->unsigned();
             $table->bigInteger('centro_costo_id')->unsigned();
-            $table->bigInteger('ubicacion_tecnica_id')->unsigned();
+            $table->bigInteger('sistema_id')->unsigned();
             $table->foreign('valoracion_ram_id')->references('id')->on('valoracion_rams')->onDelete('restrict');
             $table->foreign('centro_costo_id')->references('id')->on('centro_costos')->onDelete('restrict');
-            $table->foreign('ubicacion_tecnica_id')->references('id')->on('ubicacion_tecnicas')->onDelete('restrict');
+            $table->foreign('sistema_id')->references('id')->on('sistemas')->onDelete('restrict');
             $table->timestamps();
         });
     }

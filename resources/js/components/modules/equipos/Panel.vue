@@ -208,27 +208,16 @@
                                                         name: `Tag: ${sis.tag} - ${sis.nombre}`,
                                                         objeto: sis,
                                                         icon: 'device_hub',
-                                                        children: !sis.ubicacion_tecnicas.length ? [] : sis.ubicacion_tecnicas.map(ut => {
-                                                            let utecnica = {
-                                                                id: `utecnica${ut.id}`,
-                                                                type: `ubicación técnica`,
-                                                                name: `Tag: ${ut.tag} - ${ut.nombre}`,
-                                                                objeto: ut,
-                                                                icon: 'my_location',
-                                                                children: !ut.equipos.length ? [] : ut.equipos.map(eq => {
-                                                                    let equipo = {
-                                                                        id: `equipo${eq.id}`,
-                                                                        type: `equipo`,
-                                                                        name: `Tag: ${eq.tag} - ${eq.nombre}`,
-                                                                        objeto: eq,
-                                                                        icon: 'developer_board'
-                                                                    }
-                                                                    this.nodos.push(equipo)
-                                                                    return equipo
-                                                                })
+                                                        children: !sis.equipos.length ? [] : sis.equipos.map(eq => {
+                                                            let equipo = {
+                                                                id: `equipo${eq.id}`,
+                                                                type: `equipo`,
+                                                                name: `Tag: ${eq.tag} - ${eq.nombre}`,
+                                                                objeto: eq,
+                                                                icon: 'developer_board'
                                                             }
-                                                            this.nodos.push(utecnica)
-                                                            return utecnica
+                                                            this.nodos.push(equipo)
+                                                            return equipo
                                                         })
                                                     }
                                                     this.nodos.push(sistema)

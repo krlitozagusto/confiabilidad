@@ -23,6 +23,7 @@ class CreateEventosTable extends Migration
             $table->integer('downtime');
             $table->enum('estado',['Registrado','Cerrado','Anulado']);
             $table->tinyInteger('contractual')->unsigned();
+            $table->string('archivo_soporte')->nullable();
             $table->bigInteger('tipo_evento_id')->unsigned();
             $table->bigInteger('tipo_mantenimiento_id')->unsigned();
             $table->bigInteger('equipo_id')->unsigned();

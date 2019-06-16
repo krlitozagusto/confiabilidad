@@ -21,7 +21,7 @@ class EquiposSeeder extends Seeder
                 'numero_equipo'=>'10061895-1-1-1-EQ1',
                 'valoracion_ram_id'=>1,
                 'centro_costo_id'=>1,
-                'ubicacion_tecnica_id'=>1
+                'sistema_id'=>1
             ],
             [
                 'id' => 2,
@@ -32,7 +32,7 @@ class EquiposSeeder extends Seeder
                 'numero_equipo'=>'10061895-1-1-1-EQ2',
                 'valoracion_ram_id'=>2,
                 'centro_costo_id'=>1,
-                'ubicacion_tecnica_id'=>1
+                'sistema_id'=>1
             ]
         );
         DB::table('equipos')->insert($rows);

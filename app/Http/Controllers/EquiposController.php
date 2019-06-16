@@ -34,7 +34,7 @@ class EquiposController extends Controller
     public function postulador()
     {
         $query = QueryBuilder::for(Equipo::class)
-            ->with('ubicacion_tecnica')
+            ->with('sistema')
             ->allowedFilters([
                 Filter::scope('search')
             ]);
@@ -45,7 +45,7 @@ class EquiposController extends Controller
     {
         return response()->json([
             'equipo' => Equipo::where('id','=',$request->id)->with([
-                'ubicacion_tecnica',
+                'sistema',
                 'eventos.tipo_evento',
                 'valoracion_ram',
                 'planes_mantenimiento',
@@ -58,7 +58,7 @@ class EquiposController extends Controller
     {
         return response()->json([
             'contratos' => Contrato::with([
-                'campos.plantas.sistemas.ubicacion_tecnicas.equipos'
+                'campos.plantas.sistemas.equipos'
             ])->get()
         ]);
     }

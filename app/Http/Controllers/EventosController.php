@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Resources\Json\Resource;
@@ -255,7 +256,29 @@ class EventosController extends Controller
         }
     }
 
-
+    public function loadFile(Request $request) {
+        DB::beginTransaction();
+        try {
+            $file = $request->file('archivo_soporte');
+            $nombre = $file->getClientOriginalName();
+            $evento = Evento::where('id','=',$request->evento_id)->first();
+            if ($evento->archivo_soporte) {
+                Storage::delete("Eventos/{$evento->id}/Soportes/".$evento->archivo_soporte);
+            }
+            $evento->archivo_soporte = $nombre;
+            \Storage::disk('local')->put("Eventos/{$evento->id}/Soportes/".$nombre, \File::get($file));
+            $evento->save();
+            DB::commit();
+            return response()->json([
+                'archivo' => $nombre
+            ], 200);
+        }catch (\Exception $exception) {
+            DB::rollback();
+            return response()->json([
+                'error' => $exception->getMessage(),
+            ], 500);
+        }
+    }
 
     public function postulador()
     {

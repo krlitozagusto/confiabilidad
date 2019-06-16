@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
         $this->call(EmpleadosSeeder::class);
         $this->call(PlantasSeeder::class);
         $this->call(SistemasSeeder::class);
-        $this->call(UbicacionTecnicasSeeder::class);
         $this->call(ValoracionRamsSeeder::class);
         $this->call(CentroCostosSeeder::class);
         $this->call(EquiposSeeder::class);

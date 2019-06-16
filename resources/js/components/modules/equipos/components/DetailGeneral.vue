@@ -2,9 +2,9 @@
     <v-layout row wrap v-if="value">
         <input-detail-flex
             flex-class="xs12 sm12 md6"
-            label="Ubicación técnica"
-            :text="value.ubicacion_tecnica && value.ubicacion_tecnica.nombre"
-            :hint="`Tag: ${value.ubicacion_tecnica && value.ubicacion_tecnica.tag}`"
+            label="Sistema"
+            :text="value.sistema && value.sistema.nombre"
+            :hint="`Tag: ${value.sistema && value.sistema.tag}`"
         />
         <input-detail-flex
             flex-class="xs12 sm12 md6"

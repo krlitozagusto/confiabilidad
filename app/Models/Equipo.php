@@ -17,9 +17,9 @@ class Equipo extends Model
         return $this->hasMany(Evento::class);
     }
 
-    public function ubicacion_tecnica()
+    public function sistema()
     {
-        return $this->belongsTo(UbicacionTecnica::class);
+        return $this->belongsTo(Sistema::class);
     }
 
     public function valoracion_ram()
@@ -43,7 +43,7 @@ class Equipo extends Model
     {
         return $builder->where(function($query) use($search){
             $query
-                ->orWhereHas('ubicacion_tecnica',function ($query) use ($search) {
+                ->orWhereHas('sistema',function ($query) use ($search) {
                     $query->where('nombre','like','%'.$search.'%')
                         ->orWhere('tag','like','%'.$search.'%')
                         ->orWhere('numero_equipo','like','%'.$search.'%');

@@ -58,13 +58,13 @@ class ReportesController extends Controller
         $requestjson->fechaInicio = new Carbon($requestjson->fechaInicio);
         $requestjson->fechaFin = new Carbon($requestjson->fechaFin);
         $requestjson->fechaFin = $requestjson->fechaFin->add(1, 'day');
-        switch ($requestjson->taxonomia) {
-            case 'equipo': {
-                $response = $this->disponibilidadRangoEquipo.($requestjson);
+        switch ($requestjson->tipoTaxonomia) {
+            case 'Equipo': {
+                $response = $this->disponibilidadRangoEquipo($requestjson);
                 break;
             }
-            case 'sistema': {
-                $response = $this->disponibilidadRangoSistema.($requestjson);
+            case 'Sistema': {
+                $response = $this->disponibilidadRangoSistema($requestjson);
                 break;
             }
         }
@@ -77,7 +77,7 @@ class ReportesController extends Controller
 
     public function disponibilidadRangoEquipo ($requestjson) {
         $objeto =  new disponibilidad();
-        $eventos = Evento::where('equipo_id', '=', $requestjson->equipo_id)->with('tipo_evento')->get();
+        $eventos = Evento::where('equipo_id', '=', $requestjson->taxonomia_id)->with('tipo_evento')->get();
         //tiempo total intervalo
         $objeto->intervalo = $this->objectTime($requestjson->fechaFin->diffInMinutes($requestjson->fechaInicio));
         if ($eventos->count()) {

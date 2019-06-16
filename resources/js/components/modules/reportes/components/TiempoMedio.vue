@@ -7,21 +7,69 @@
                 <v-card-text>
                     <v-container class="pa-0" fluid grid-list-md>
                         <v-layout row wrap>
-                            <v-flex xs12>
+                            <v-flex xs12 sm4 md3>
+                                <v-select
+                                    :items="['Equipo','Sistema']"
+                                    label="Taxonomía"
+                                    v-model="data.tipoTaxonomia"
+                                ></v-select>
+                            </v-flex>
+                            <v-flex xs12 sm8 md9>
                                 <postulador-v2
+                                    v-if="data.tipoTaxonomia === 'Equipo'"
+                                    key="postulaEquipo"
                                     ref="postuladorEquipos"
                                     no-data="Busqueda por nombre, tag, ubucación técnica o número de equipo."
                                     item-text="nombre"
                                     label="Equipo"
                                     entidad="equipos/postulador"
-                                    v-model="data.equipo"
-                                    @changeid="val => data.equipo_id = val"
+                                    v-model="data.taxonomia"
+                                    @changeid="val => data.taxonomia_id = val"
                                     no-btn-create
                                     no-btn-edit
                                     name="Equipo"
                                     rules="required"
                                     v-validate="'required'"
                                     :error-messages="errors.collect('Equipo')"
+                                    :slot-data='{
+                                      template:`
+                                      <v-list-tile class="content-v-list-tile-p0" style="width: 100% !important">
+                                        <v-list-tile-content>
+                                          <v-list-tile-title>{{value.nombre}}</v-list-tile-title>
+                                          <v-list-tile-sub-title class=caption>Tag: {{ value.tag }}</v-list-tile-sub-title>
+                                        </v-list-tile-content>
+                                      </v-list-tile>
+                                      `,
+                                      props: [`value`]
+                                     }'
+                                    :slot-selection='{
+                                      template:`
+                                      <v-list-tile class="content-v-list-tile-p0" style="width: 100% !important">
+                                        <v-list-tile-content>
+                                          <v-list-tile-title>{{value.nombre}}</v-list-tile-title>
+                                          <v-list-tile-sub-title class=caption>Tag: {{ value.tag }}</v-list-tile-sub-title>
+                                        </v-list-tile-content>
+                                      </v-list-tile>
+                                      `,
+                                      props: [`value`]
+                                     }'
+                                ></postulador-v2>
+                                <postulador-v2
+                                    v-if="data.tipoTaxonomia === 'Sistema'"
+                                    key="postulaSistema"
+                                    ref="postuladorSistemas"
+                                    no-data="Busqueda por nombre, tag o nombre de planta."
+                                    item-text="nombre"
+                                    label="Sistema"
+                                    entidad="sistemas/postulador"
+                                    v-model="data.taxonomia"
+                                    @changeid="val => data.taxonomia_id = val"
+                                    no-btn-create
+                                    no-btn-edit
+                                    name="Sistema"
+                                    rules="required"
+                                    v-validate="'required'"
+                                    :error-messages="errors.collect('Sistema')"
                                     :slot-data='{
                                       template:`
                                       <v-list-tile class="content-v-list-tile-p0" style="width: 100% !important">
@@ -189,8 +237,9 @@
             data: {
                 fechaInicio: null,
                 fechaFin: null,
-                equipo: null,
-                equipo_id: null
+                taxonomia: null,
+                taxonomia_id: null,
+                tipoTaxonomia: 'Equipo'
             },
             headers: [
                 {
@@ -221,7 +270,12 @@
             ]
         }),
         watch: {
-		  'data.equipo_id' (val) {
+		    'data.tipoTaxonomia' (val) {
+                this.data.taxonomia = null
+                this.data.taxonomia_id = null
+                val && (this.result = null)
+            },
+		  'data.taxonomia_id' (val) {
               val && (this.result = null)
           },
             'data.fechaInicio' (val) {

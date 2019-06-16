@@ -103,6 +103,7 @@
                 equipo_id: null,
                 evento_padre_id: null,
                 user_id: null,
+                archivo_soporte: null,
                 // Auxiliares
                 eventos_hijos: [],
                 orden_trabajos: [],

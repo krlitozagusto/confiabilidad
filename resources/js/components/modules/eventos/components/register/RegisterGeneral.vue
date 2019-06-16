@@ -456,6 +456,18 @@
                 ></v-time-picker>
             </v-menu>
         </v-flex>
+        <v-flex xs12 v-if="value.id">
+            <input-file
+                class="mb-2"
+                label="Soporte"
+                v-model="value.archivo_soporte"
+                accept="application/pdf"
+                hint="Extenciones aceptadas: pdf"
+                prepend-icon="description"
+                :loading="loadingFile"
+                @input="cargaSoporte(value.archivo_soporte)"
+            ></input-file>
+        </v-flex>
     </v-layout>
 </template>
 <script>
@@ -463,9 +475,11 @@
         props: ['value', 'esPrincipal', 'soloGuardar', 'complementos'],
 		name: "RegisterGeneral",
         components: {
-            PostuladorV2: resolve => {require(['../../../../general/PostuladorV2'], resolve)}
+            PostuladorV2: resolve => {require(['../../../../general/PostuladorV2'], resolve)},
+            InputFile: resolve => {require(['../../../../general/InputFile'], resolve)}
         },
 		data: () => ({
+            loadingFile: false,
             fechaRegistro: {
                 menu: false,
                 minDate: '1900-01-01',
@@ -514,6 +528,24 @@
 		created () {
 		},
         methods: {
+            cargaSoporte (file) {
+                this.loadingFile = true
+                let data = new FormData()
+                data.append('evento_id', this.value.id)
+                data.append('archivo_soporte', file)
+                this.axios.post(`eventos/loadfile`, data)
+                    .then(response => {
+                        this.value.archivo_soporte = response.data.archivo
+                        this.loadingFile = false
+                    })
+                    .catch(e => {
+                        this.loadingFile = false
+                        this.$nextTick(() => {
+                            this.value.archivo_soporte = null
+                        })
+                        this.$store.commit('SNACKBAR', {color: 'error', message: `al cargar el archivo`, error: e})
+                    })
+            },
             async reset () {
                 await this.$validator.reset()
             }
