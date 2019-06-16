@@ -23,7 +23,7 @@ Route::group(['middleware' => 'auth'], function (){
     Route::post('/eventos/cancelevent', 'EventosController@cancelEvent');
 
     Route::post('/eventos/registercomment', 'EventosController@registerComment');
-
+    Route::post('/eventos/loadfile', 'EventosController@loadFile');
 
 //Equipos
     Route::post('/equipos/panel', 'EquiposController@panel');
@@ -33,6 +33,8 @@ Route::group(['middleware' => 'auth'], function (){
 
     Route::post('/equipos/getcontratos', 'EquiposController@getContratos');
 
+//Sistemas
+    Route::post('/sistemas/postulador', 'SistemasController@postulador');
 //Reportes
     Route::post('/reportes/tiempomedio', 'ReportesController@tiempoMedio');
 });
