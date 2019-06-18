@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Equipo;
 use App\Models\Evento;
+use App\Models\Sistema;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\Resource;
 use stdClass;
@@ -58,13 +59,18 @@ class ReportesController extends Controller
         $requestjson->fechaInicio = new Carbon($requestjson->fechaInicio);
         $requestjson->fechaFin = new Carbon($requestjson->fechaFin);
         $requestjson->fechaFin = $requestjson->fechaFin->add(1, 'day');
+        $response = new stdClass();
+        $response->data = [];
         switch ($requestjson->tipoTaxonomia) {
             case 'Equipo': {
-                $response = $this->disponibilidadRangoEquipo($requestjson);
+                $response->equipo = Equipo::where('id', '=', $requestjson->taxonomia_id)->first();
+                $response->data = $this->disponibilidadRangoEquipo($requestjson);
                 break;
             }
             case 'Sistema': {
-                $response = $this->disponibilidadRangoSistema($requestjson);
+                $sistema = Sistema::where('id', '=', $requestjson->taxonomia_id)->first();
+                $response->sistema = $sistema;
+                $response->data = $this->disponibilidadRangoSistema($requestjson);
                 break;
             }
         }
@@ -72,7 +78,16 @@ class ReportesController extends Controller
     }
 
     public function disponibilidadRangoSistema ($requestjson) {
-
+        $equipos = Equipo::where('sistema_id', '=', $requestjson->taxonomia_id)->get();
+        $response = [];
+        foreach ($equipos as $equipo) {
+            $response_equipo = new stdClass();
+            $response_equipo->equipo = Equipo::where('id', '=', $equipo->id)->first();
+            $requestjson->taxonomia_id = $equipo->id;
+            $response_equipo->data = $this->disponibilidadRangoEquipo($requestjson);
+            array_push($response, $response_equipo);
+        }
+        return $response;
     }
 
     public function disponibilidadRangoEquipo ($requestjson) {

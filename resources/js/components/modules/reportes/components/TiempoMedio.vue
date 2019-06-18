@@ -1,26 +1,33 @@
 <template>
     <v-layout row justify-center>
-        <v-dialog v-model="dialog" scrollable persistent max-width="900px">
+        <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition" persistent>
             <v-card>
-                <v-card-title class="title"><strong>Disponibilidad</strong></v-card-title>
+                <v-card-title class="py-0">
+                    <span class="headline">Disponibilidad</span>
+                    <v-spacer></v-spacer>
+                    <v-btn flat icon @click="dialog = false">
+                        <v-icon>close</v-icon>
+                    </v-btn>
+                </v-card-title>
                 <v-divider></v-divider>
                 <v-card-text>
                     <v-container class="pa-0" fluid grid-list-md>
                         <v-layout row wrap>
-                            <v-flex xs12 sm4 md3>
+                            <v-flex xs12 sm4 md2>
                                 <v-select
                                     :items="['Equipo','Sistema']"
                                     label="Taxonomía"
                                     v-model="data.tipoTaxonomia"
                                 ></v-select>
                             </v-flex>
-                            <v-flex xs12 sm8 md9>
+                            <v-flex xs12 sm8 md6>
                                 <postulador-v2
                                     v-if="data.tipoTaxonomia === 'Equipo'"
                                     key="postulaEquipo"
                                     ref="postuladorEquipos"
                                     no-data="Busqueda por nombre, tag, ubucación técnica o número de equipo."
                                     item-text="nombre"
+                                    hint="tag"
                                     label="Equipo"
                                     entidad="equipos/postulador"
                                     v-model="data.taxonomia"
@@ -42,17 +49,6 @@
                                       `,
                                       props: [`value`]
                                      }'
-                                    :slot-selection='{
-                                      template:`
-                                      <v-list-tile class="content-v-list-tile-p0" style="width: 100% !important">
-                                        <v-list-tile-content>
-                                          <v-list-tile-title>{{value.nombre}}</v-list-tile-title>
-                                          <v-list-tile-sub-title class=caption>Tag: {{ value.tag }}</v-list-tile-sub-title>
-                                        </v-list-tile-content>
-                                      </v-list-tile>
-                                      `,
-                                      props: [`value`]
-                                     }'
                                 ></postulador-v2>
                                 <postulador-v2
                                     v-if="data.tipoTaxonomia === 'Sistema'"
@@ -60,6 +56,7 @@
                                     ref="postuladorSistemas"
                                     no-data="Busqueda por nombre, tag o nombre de planta."
                                     item-text="nombre"
+                                    hint="tag"
                                     label="Sistema"
                                     entidad="sistemas/postulador"
                                     v-model="data.taxonomia"
@@ -81,20 +78,9 @@
                                       `,
                                       props: [`value`]
                                      }'
-                                    :slot-selection='{
-                                      template:`
-                                      <v-list-tile class="content-v-list-tile-p0" style="width: 100% !important">
-                                        <v-list-tile-content>
-                                          <v-list-tile-title>{{value.nombre}}</v-list-tile-title>
-                                          <v-list-tile-sub-title class=caption>Tag: {{ value.tag }}</v-list-tile-sub-title>
-                                        </v-list-tile-content>
-                                      </v-list-tile>
-                                      `,
-                                      props: [`value`]
-                                     }'
                                 ></postulador-v2>
                             </v-flex>
-                            <v-flex xs12 sm12 md6>
+                            <v-flex xs12 sm12 md2>
                                 <v-menu
                                     ref="fechaInicio"
                                     v-model="menuInicio"
@@ -129,7 +115,7 @@
                                     ></v-date-picker>
                                 </v-menu>
                             </v-flex>
-                            <v-flex xs12 sm12 md6>
+                            <v-flex xs12 sm12 md2>
                                 <v-menu
                                     ref="fechaFin"
                                     v-model="menuFin"
@@ -168,17 +154,24 @@
                         <v-expansion-panel v-if="result">
                             <v-expansion-panel-content>
                                 <template slot="header">
-                                    <span class="body-2">Disponibilidad: {{result.disponibilidad}}</span>
-                                    <span class="body-2">MTBF: {{result.mtbf.horas}}H:{{result.mtbf.minutos}}M</span>
-                                    <span class="body-2">MTTR: {{result.mttr.horas}}H:{{result.mttr.minutos}}M</span>
+                                    <v-layout row wrap>
+                                        <v-flex xs12>
+                                            <span class="subheading">{{result.equipo.nombre}} - Tag:{{result.equipo.tag}}</span>
+                                        </v-flex>
+                                        <v-layout row justify-space-between class="px-2">
+                                            <span class="body-2">Disponibilidad: {{result.data.disponibilidad}}</span>
+                                            <span class="body-2">MTBF: {{result.data.mtbf.horas}}H:{{result.data.mtbf.minutos}}M</span>
+                                            <span class="body-2">MTTR: {{result.data.mttr.horas}}H:{{result.data.mttr.minutos}}M</span>
+                                        </v-layout>
+                                    </v-layout>
                                 </template>
                                 <v-divider></v-divider>
                                 <v-card>
-                                    <v-card-title><strong>Tiempo intervalo: {{result.intervalo.total_horas}}Horas</strong></v-card-title>
+                                    <v-card-title><strong>Tiempo intervalo: {{result.data.intervalo.total_horas}}Horas</strong></v-card-title>
                                     <v-data-table
-                                        v-if="result.registros_eventos"
+                                        v-if="result.data.registros_eventos"
                                         :headers="headers"
-                                        :items="result.registros_eventos"
+                                        :items="result.data.registros_eventos"
                                         no-data-text="No hay eventos en el rango seleccionado."
                                         hide-actions
                                     >
@@ -197,8 +190,8 @@
                                         </template>
                                         <template slot="footer">
                                             <td :colspan="3" class="text-xs-right"><strong>Total</strong></td>
-                                            <td :colspan="1">{{result.falla.horas}}H:{{result.falla.minutos}}M</td>
-                                            <td :colspan="1">{{result.reparacion.horas}}H:{{result.reparacion.minutos}}M</td>
+                                            <td :colspan="1">{{result.data.falla.horas}}H:{{result.data.falla.minutos}}M</td>
+                                            <td :colspan="1">{{result.data.reparacion.horas}}H:{{result.data.reparacion.minutos}}M</td>
                                         </template>
                                     </v-data-table>
                                 </v-card>
