@@ -290,7 +290,6 @@ class EventosController extends Controller
             );
             return response()->download($url, $evento->archivo_soporte, $headers);
         }catch (\Exception $exception) {
-            DB::rollback();
             return response()->json([
                 'error' => $exception->getMessage(),
             ], 500);
