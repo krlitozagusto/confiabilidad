@@ -280,6 +280,23 @@ class EventosController extends Controller
         }
     }
 
+    public function downloadSoporte($id) {
+        try {
+            $evento = Evento::where('id','=',$id)->first();
+            $public_path = public_path();
+            $url = "C:\laragon\www\confiabilidad\storage\app/Eventos/{$evento->id}/Soportes/{$evento->archivo_soporte}";
+            $headers = array(
+                'Content-Type: application/pdf',
+            );
+            return response()->download($url, $evento->archivo_soporte, $headers);
+        }catch (\Exception $exception) {
+            DB::rollback();
+            return response()->json([
+                'error' => $exception->getMessage(),
+            ], 500);
+        }
+    }
+
     public function postulador()
     {
         $query = QueryBuilder::for(Evento::class)

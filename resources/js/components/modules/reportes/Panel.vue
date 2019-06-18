@@ -23,16 +23,16 @@
                 </template>
             </v-list>
         </v-flex>
-        <tiempo-medio ref="Disponibilidad"></tiempo-medio>
+        <disponibilidad ref="Disponibilidad"></disponibilidad>
     </v-layout>
 </template>
 
 <script>
-    import TiempoMedio from './components/TiempoMedio'
+    import Disponibilidad from './components/Disponibilidad'
 	export default {
 		name: 'PanelReportes',
         components: {
-            TiempoMedio
+            Disponibilidad
         },
         data: () => ({
             items: [
