@@ -79,13 +79,21 @@ class ReportesController extends Controller
 
     public function disponibilidadRangoSistema ($requestjson) {
         $equipos = Equipo::where('sistema_id', '=', $requestjson->taxonomia_id)->get();
-        $response = [];
+        $response = new stdClass();
+        $response->time = new stdClass();
+        $response->data = [];
+        $response->time->minutos_falla = 0;
+        $response->time->minutos_reparacion = 0;
+        $response->time->minutos_intervalo = 0;
         foreach ($equipos as $equipo) {
             $response_equipo = new stdClass();
             $response_equipo->equipo = Equipo::where('id', '=', $equipo->id)->first();
             $requestjson->taxonomia_id = $equipo->id;
             $response_equipo->data = $this->disponibilidadRangoEquipo($requestjson);
-            array_push($response, $response_equipo);
+            $response->time->minutos_falla = $response->time->minutos_falla + ($response_equipo->data->falla ? $response_equipo->data->falla->total_minutos : 0);
+            $response->time->minutos_reparacion = $response->time->minutos_reparacion + ($response_equipo->data->reparacion ? $response_equipo->data->reparacion->total_minutos : 0);
+            $response->time->minutos_intervalo = $response_equipo->data->intervalo->total_minutos;
+            array_push($response->data, $response_equipo);
         }
         return $response;
     }

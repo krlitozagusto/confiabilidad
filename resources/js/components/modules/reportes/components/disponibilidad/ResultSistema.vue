@@ -17,12 +17,12 @@
                 </v-layout>
             </template>
             <v-divider></v-divider>
-            <template v-for="(resultEquipo, index) in result.data">
+            <template v-for="(resultEquipo, index) in result.data.data">
                 <result-equipo
                         :result="resultEquipo"
                         :key="'resultEquipo' + index"
                 ></result-equipo>
-                <v-divider v-if="index < (result.data.length - 1)"></v-divider>
+                <v-divider v-if="index < (result.data.data.length - 1)"></v-divider>
             </template>
         </v-expansion-panel-content>
     </v-expansion-panel>

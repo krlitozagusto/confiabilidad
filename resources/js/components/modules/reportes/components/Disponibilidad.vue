@@ -172,12 +172,14 @@
 </template>
 
 <script>
+    import ResultEquipo from './disponibilidad/ResultEquipo'
+    import ResultSistema from './disponibilidad/ResultSistema'
 	export default {
 		name: 'Disponibilidad',
         components: {
             PostuladorV2: resolve => {require(['../../../general/PostuladorV2'], resolve)},
-            ResultEquipo: resolve => {require(['./disponibilidad/ResultEquipo'], resolve)},
-            ResultSistema: resolve => {require(['./disponibilidad/ResultSistema'], resolve)}
+            ResultEquipo,
+            ResultSistema
         },
         data: () => ({
             loading: false,

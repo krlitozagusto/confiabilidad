@@ -1,5 +1,5 @@
 <template>
-    <v-expansion-panel v-if="result">
+    <v-expansion-panel>
         <v-expansion-panel-content>
             <template slot="header">
                 <v-layout row wrap>
