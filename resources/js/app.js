@@ -64,6 +64,9 @@ Vue.prototype.moment = moment
 
 Vue.mixin({
     methods: {
+        downloadFile (url) {
+            window.location.href = url
+        },
         currency: (valor) => {
             return new Intl.NumberFormat('es-CO', {style: 'currency', currency: 'COP'}).format(valor)
         }

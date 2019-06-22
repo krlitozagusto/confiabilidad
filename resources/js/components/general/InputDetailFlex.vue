@@ -54,7 +54,7 @@
                 flat
                 icon
                 :color="appendButton.color"
-                @click.native="$emit('clickAppend')"
+                @click.native="$emit('appendButtonClick')"
               >
                 <v-icon v-text="appendButton.icon"/>
               </v-btn>

@@ -15,11 +15,11 @@
             </template>
             <v-divider></v-divider>
             <v-card>
-                <v-card-title><strong>Tiempo intervalo: {{result.data.intervalo.total_horas}}Horas</strong></v-card-title>
+                <v-card-title v-if="!delegado"><strong>Tiempo intervalo: {{result.data.intervalo.total_horas}}Horas</strong></v-card-title>
                 <v-data-table
-                        v-if="result.data.registros_eventos.length"
+                        v-if="result.data.registros.length"
                         :headers="headers"
-                        :items="result.data.registros_eventos"
+                        :items="result.data.registros"
                         no-data-text="No hay eventos en el rango seleccionado."
                         hide-actions
                 >
@@ -50,7 +50,16 @@
 <script>
     export default {
         name: 'ResultEquipo',
-        props: ['result'],
+        props: {
+            result: {
+                type: Object,
+                default: null
+            },
+            delegado: {
+                type: Boolean,
+                default: false
+            }
+        },
         data: () => ({
             headers: [
                 {

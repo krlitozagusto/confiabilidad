@@ -466,21 +466,20 @@
                 prepend-icon="description"
                 :loading="loadingFile"
                 @input="cargaSoporte(value.archivo_soporte)"
+                :append-button="value.archivo_soporte ? {tooltip: 'descargar archivo', icon: 'arrow_downward', color: 'primary'} : null"
+                @appendButtonClick="downloadFile('/eventos/downloadsoporte/' + value.id)"
             ></input-file>
-            <v-btn flat icon color="pink" @click="downloadSoporte">
-                <v-icon>favorite</v-icon>
-            </v-btn>
-            <a :href="'/eventos/downloadsoporte/' + value.id" class="btn btn-large pull-right"><i class="icon-download-alt"> </i> Download Brochure </a>
         </v-flex>
     </v-layout>
 </template>
 <script>
+    import InputFile from '../../../../general/InputFile'
     export default {
         props: ['value', 'esPrincipal', 'soloGuardar', 'complementos'],
 		name: "RegisterGeneral",
         components: {
             PostuladorV2: resolve => {require(['../../../../general/PostuladorV2'], resolve)},
-            InputFile: resolve => {require(['../../../../general/InputFile'], resolve)}
+            InputFile
         },
 		data: () => ({
             loadingFile: false,
@@ -548,31 +547,6 @@
                             this.value.archivo_soporte = null
                         })
                         this.$store.commit('SNACKBAR', {color: 'error', message: `al cargar el archivo`, error: e})
-                    })
-            },
-            downloadSoporte (file) {
-                this.loadingFile = true
-                let data = new FormData()
-                this.axios.post(`eventos/downloadsoporte`, {id: this.value.id})
-                    .then(response => {
-                        let reader = new FileReader()
-                        reader.onload = function (event) {
-                            let save = document.createElement('a')
-                            save.href = event.target.result
-                            save.target = '_blank'
-                            save.download = 'ss'
-                            save.dispatchEvent(new MouseEvent('click', {
-                                'view': window,
-                                'bubbles': true,
-                                'cancelable': true
-                            }))
-                        }
-                        reader.readAsDataURL(response)
-                        this.loadingFile = false
-                    })
-                    .catch(e => {
-                        this.loadingFile = false
-                        this.$store.commit('SNACKBAR', {color: 'error', message: `al descargar el archivo`, error: e})
                     })
             },
             async reset () {

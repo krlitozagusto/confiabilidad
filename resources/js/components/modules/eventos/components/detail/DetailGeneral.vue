@@ -78,6 +78,13 @@
             label="Fecha fin reparación"
             :text="value.fecha_fin_reparacion"
         />
+        <input-detail-flex
+            flex-class="xs12"
+            label="Soporte"
+            :text="value.archivo_soporte"
+            :append-button="value.archivo_soporte ? {tooltip: 'descargar archivo', icon: 'arrow_downward', color: 'primary'} : null"
+            @appendButtonClick="downloadFile('/eventos/downloadsoporte/' + value.id)"
+        />
     </v-layout>
 </template>
 <script>

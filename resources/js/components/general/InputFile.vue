@@ -23,13 +23,28 @@
       :clearable="clearable"
       :disabled="disabled"
       :loading="loading"
-    ></v-textarea>
+    >
+        <template slot="append-outer" v-if="appendButton">
+            <v-tooltip top :disabled="!appendButton.tooltip">
+                <v-btn
+                    @click.stop="$emit('appendButtonClick')"
+                    slot="activator"
+                    flat
+                    icon
+                    :color="appendButton.color"
+                >
+                    <v-icon>{{appendButton.icon}}</v-icon>
+                </v-btn>
+                <span>{{appendButton.tooltip}}</span>
+            </v-tooltip>
+        </template>
+    </v-textarea>
   </div>
 </template>
 
 <script>
   export default {
-    name: 'InputFileV2',
+    name: 'InputFile',
     inject: ['$validator'],
     $_veeValidate: {
       name () {
@@ -40,6 +55,10 @@
       }
     },
     props: {
+      appendButton: {
+        type: Object,
+        default: null
+      },
       name: {
         type: String,
         default: null

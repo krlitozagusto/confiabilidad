@@ -150,6 +150,31 @@
                                     ></v-date-picker>
                                 </v-menu>
                             </v-flex>
+                            <v-flex xs12 sm4 md2>
+                                <v-switch
+                                    label="Multiples rangos"
+                                    v-model="data.rangos"
+                                ></v-switch>
+                            </v-flex>
+                            <template v-if="data.rangos">
+                                <v-flex xs12 sm4 md2>
+                                    <v-select
+                                        :items="['Acumulado','Periódico']"
+                                        label="Tipo resultado"
+                                        v-model="data.tipoResultado"
+                                    ></v-select>
+                                </v-flex>
+                                <v-flex xs12 sm4 md2>
+                                    <v-select
+                                        :items="[{id: 1, value: 15, tipo: 'Día', text: '15 días'}, {id: 2, value: 1, tipo: 'Mes', text: '1 mes'}, {id: 3, value: 2, tipo: 'Mes', text: '2 meses'}, {id: 4, value: 3, tipo: 'Mes', text: '3 meses'}, {id: 5, value: 6, tipo: 'Mes', text: '6 meses'}, {id: 6, value: 12, tipo: 'Mes', text: '12 meses'}]"
+                                        label="Frecuencia"
+                                        v-model="data.frecuencia"
+                                        item-value="id"
+                                        item-text="text"
+                                        return-object
+                                    ></v-select>
+                                </v-flex>
+                            </template>
                         </v-layout>
                         <template v-if="result">
                             <result-equipo v-if="result.equipo" :result="result"></result-equipo>
@@ -194,7 +219,10 @@
                 fechaFin: null,
                 taxonomia: null,
                 taxonomia_id: null,
-                tipoTaxonomia: 'Equipo'
+                tipoTaxonomia: 'Equipo',
+                rangos: false,
+                tipoResultado: 'Acumulado',
+                frecuencia: {id: 2, value: 1, tipo: 'Mes', text: '1 mes'}
             }
         }),
         watch: {
