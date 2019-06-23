@@ -1,7 +1,7 @@
 <template>
     <v-layout row wrap>
         <v-flex xs12>
-            <v-card flat height="200px">
+            <v-card flat>
                 <v-toolbar dark class="blue darken-1">
                     <v-toolbar-title>
                         Taxonomía

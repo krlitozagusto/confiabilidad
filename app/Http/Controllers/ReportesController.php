@@ -98,11 +98,11 @@ class ReportesController extends Controller
         $objeto->falla = $this->objectTime($minutos_falla);
         $objeto->reparacion = $this->objectTime($minutos_reparacion);
         //Disponibilidad
-        $objeto->disponibilidad = $this->calculaDisponibilidad($objeto->intervalo->total_minutos, $objeto->falla->total_minutos);
+        $objeto->disponibilidad = $this->calculaDisponibilidad(($objeto->intervalo->total_minutos * $equipos->count()), $objeto->falla->total_minutos);
         //Tiempo medio entre fallas
-        $objeto->mtbf = $this->calculaMtbf($objeto->falla->total_minutos, $objeto->fallas);
+        $objeto->mtbf = $this->calculaMtbf((($objeto->intervalo->total_minutos * $equipos->count()) - $objeto->falla->total_minutos), $objeto->fallas);
         //Tiempo medio entre reparaciones
-        $objeto->mttr = $this->calculaMttr($objeto->reparacion->total_minutos, $objeto->reparaciones);
+        $objeto->mttr = $this->calculaMttr($objeto->falla->total_minutos, $objeto->fallas);
         return $objeto;
     }
 
@@ -144,29 +144,27 @@ class ReportesController extends Controller
                 //Disponibilidad
                 $objeto->disponibilidad = $this->calculaDisponibilidad($objeto->intervalo->total_minutos, $total_minutos_falla_equipo);
                 //Tiempo medio entre fallas
-                $objeto->mtbf = $this->calculaMtbf($total_minutos_falla_equipo, $objeto->fallas);
+                $objeto->mtbf = $this->calculaMtbf(($objeto->intervalo->total_minutos - $total_minutos_falla_equipo), $objeto->fallas);
 
                 //tiempo total fallas
                 $objeto->falla = $this->objectTime($total_minutos_falla_equipo);
 
-                if ($objeto->reparaciones) {
-                    //Tiempo medio entre reparaciones
-                    $objeto->mttr = $this->calculaMttr($total_minutos_reparacion_equipo, $objeto->reparaciones);
+                //Tiempo medio entre reparaciones
+                $objeto->mttr = $this->calculaMttr($total_minutos_falla_equipo, $objeto->fallas);
 
-                    //tiempo total reparaciones
-                    $objeto->reparacion = $this->objectTime($total_minutos_reparacion_equipo);
-                }
+                //tiempo total reparaciones
+                $objeto->reparacion = $this->objectTime($total_minutos_reparacion_equipo);
             }
         }
         return $objeto;
     }
 
-    public function calculaMttr ($minutos_reparacion, $cantidad_reparaciones) {
-        return $this->objectTime(round(($minutos_reparacion / $cantidad_reparaciones), 2));
+    public function calculaMttr ($minutos_falla, $cantidad_fallas = 1) {
+        return $this->objectTime(round(($minutos_falla / $cantidad_fallas), 2));
     }
 
-    public function calculaMtbf ($minutos_falla, $cantidad_fallas) {
-        return $this->objectTime(round(($minutos_falla / $cantidad_fallas), 2));
+    public function calculaMtbf ($minutos_operacion, $cantidad_fallas = 1) {
+        return $this->objectTime(round(($minutos_operacion / $cantidad_fallas), 2));
     }
 
     public function calculaDisponibilidad ($minutos_intervalo, $minutos_falla) {
