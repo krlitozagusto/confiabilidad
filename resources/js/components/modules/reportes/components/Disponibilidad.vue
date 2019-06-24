@@ -15,7 +15,7 @@
                         <v-layout row wrap>
                             <v-flex xs12 sm4 md2>
                                 <v-select
-                                    :items="['Equipo','Sistema']"
+                                    :items="['Equipo','Sistema', 'Planta']"
                                     label="Taxonomía"
                                     v-model="data.tipoTaxonomia"
                                 ></v-select>
@@ -73,6 +73,35 @@
                                         <v-list-tile-content>
                                           <v-list-tile-title>{{value.nombre}}</v-list-tile-title>
                                           <v-list-tile-sub-title class=caption>Tag: {{ value.tag }}</v-list-tile-sub-title>
+                                        </v-list-tile-content>
+                                      </v-list-tile>
+                                      `,
+                                      props: [`value`]
+                                     }'
+                                ></postulador-v2>
+                                <postulador-v2
+                                    v-if="data.tipoTaxonomia === 'Planta'"
+                                    key="postulaPlanta"
+                                    ref="postuladorPlantas"
+                                    no-data="Busqueda por nombre, emplazamiento o nombre de campo."
+                                    item-text="nombre"
+                                    hint="emplazamiento"
+                                    label="Planta"
+                                    entidad="plantas/postulador"
+                                    v-model="data.taxonomia"
+                                    @changeid="val => data.taxonomia_id = val"
+                                    no-btn-create
+                                    no-btn-edit
+                                    name="Planta"
+                                    rules="required"
+                                    v-validate="'required'"
+                                    :error-messages="errors.collect('Planta')"
+                                    :slot-data='{
+                                      template:`
+                                      <v-list-tile class="content-v-list-tile-p0" style="width: 100% !important">
+                                        <v-list-tile-content>
+                                          <v-list-tile-title>{{value.nombre}}</v-list-tile-title>
+                                          <v-list-tile-sub-title class=caption>Emplazamiento: {{ value.emplazamiento }}</v-list-tile-sub-title>
                                         </v-list-tile-content>
                                       </v-list-tile>
                                       `,
@@ -179,6 +208,7 @@
                         <template v-if="result">
                             <result-equipo v-if="result.equipo" :result="result"></result-equipo>
                             <result-sistema v-if="result.sistema" :result="result"></result-sistema>
+                            <result-planta v-if="result.planta" :result="result"></result-planta>
                         </template>
                         <v-flex xs12 v-else>
                             <div class="title text-xs-center grey--text" >Click en ejecutar para obtener resultados.</div>
@@ -199,12 +229,14 @@
 <script>
     import ResultEquipo from './disponibilidad/ResultEquipo'
     import ResultSistema from './disponibilidad/ResultSistema'
+    import ResultPlanta from './disponibilidad/ResultPlanta'
 	export default {
 		name: 'Disponibilidad',
         components: {
             PostuladorV2: resolve => {require(['../../../general/PostuladorV2'], resolve)},
             ResultEquipo,
-            ResultSistema
+            ResultSistema,
+            ResultPlanta
         },
         data: () => ({
             loading: false,

@@ -4,7 +4,7 @@
             <template slot="header">
                 <v-layout row wrap>
                     <v-flex xs12>
-                        <span class="subheading">{{result.sistema.nombre}} - Tag:{{result.sistema.tag}}</span>
+                        <span class="subheading">{{result.planta.nombre}}</span>
                     </v-flex>
                     <v-layout row justify-space-between class="px-2">
                         <span class="body-2">Disponibilidad: {{result.data.disponibilidad}}</span>
@@ -15,14 +15,14 @@
             </template>
             <v-divider></v-divider>
             <v-card>
-                <v-card-title v-if="!delegado"><strong>Tiempo intervalo: {{result.data.intervalo.total_horas}}Horas</strong></v-card-title>
-                <v-card-text :class="delegado ? '' : 'pt-0'">
-                    <template v-for="(resultEquipo, index) in result.data.registros">
-                        <result-equipo
+                <v-card-title><strong>Tiempo intervalo: {{result.data.intervalo.total_horas}}Horas</strong></v-card-title>
+                <v-card-text class="pt-0">
+                    <template v-for="(resultSistema, index) in result.data.registros">
+                        <result-sistema
                             delegado
-                            :result="resultEquipo"
-                            :key="'resultEquipo' + index"
-                        ></result-equipo>
+                            :result="resultSistema"
+                            :key="'resultSistema' + index"
+                        ></result-sistema>
                         <v-divider v-if="index < (result.data.registros.length - 1)"></v-divider>
                     </template>
                 </v-card-text>
@@ -33,19 +33,10 @@
 
 <script>
     export default {
-        name: 'ResultSistema',
-        props: {
-            result: {
-                type: Object,
-                default: null
-            },
-            delegado: {
-                type: Boolean,
-                default: false
-            }
-        },
+        name: 'ResultPlanta',
+        props: ['result'],
         components: {
-            ResultEquipo: resolve => {require(['./ResultEquipo'], resolve)}
+            ResultSistema: resolve => {require(['./ResultSistema'], resolve)}
         },
         data: () => ({
         })

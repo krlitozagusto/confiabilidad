@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Equipo;
 use App\Models\Evento;
+use App\Models\Planta;
 use App\Models\Sistema;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\Resource;
@@ -72,8 +73,43 @@ class ReportesController extends Controller
                 $response->data = $this->disponibilidadRangoSistema($requestjson);
                 break;
             }
+            case 'Planta': {
+                $response->planta = Planta::where('id', '=', $requestjson->taxonomia_id)->first();
+                $response->data = $this->disponibilidadRangoPlanta($requestjson);
+                break;
+            }
         }
         return response()->json($response, 200);
+    }
+
+    public function disponibilidadRangoPlanta ($requestjson) {
+        $sistemas = Sistema::where('planta_id', '=', $requestjson->taxonomia_id)->get();
+        $objeto =  new disponibilidad();
+        $minutos_falla = 0;
+        $minutos_reparacion = 0;
+        $minutos_intervalo = 0;
+        foreach ($sistemas as $sistema) {
+            $response_sistema = new stdClass();
+            $response_sistema->sistema = Sistema::where('id', '=', $sistema->id)->first();
+            $requestjson->taxonomia_id = $sistema->id;
+            $response_sistema->data = $this->disponibilidadRangoSistema($requestjson);
+            $minutos_falla = $minutos_falla + ($response_sistema->data->falla ? $response_sistema->data->falla->total_minutos : 0);
+            $minutos_reparacion = $minutos_reparacion + ($response_sistema->data->reparacion ? $response_sistema->data->reparacion->total_minutos : 0);
+            $objeto->fallas = $objeto->fallas + $response_sistema->data->fallas;
+            $objeto->reparaciones = $objeto->reparaciones + $response_sistema->data->reparaciones;
+            $minutos_intervalo = $response_sistema->data->intervalo->total_minutos;
+            array_push($objeto->registros, $response_sistema);
+        }
+        $objeto->intervalo = $this->objectTime($minutos_intervalo * $sistemas->count());
+        $objeto->falla = $this->objectTime($minutos_falla);
+        $objeto->reparacion = $this->objectTime($minutos_reparacion);
+        //Disponibilidad
+        $objeto->disponibilidad = $this->calculaDisponibilidad($objeto->intervalo->total_minutos, $objeto->falla->total_minutos);
+        //Tiempo medio entre fallas
+        $objeto->mtbf = $this->calculaMtbf(($objeto->intervalo->total_minutos - $objeto->falla->total_minutos), $objeto->fallas);
+        //Tiempo medio entre reparaciones
+        $objeto->mttr = $this->calculaMttr($objeto->falla->total_minutos, $objeto->fallas);
+        return $objeto;
     }
 
     public function disponibilidadRangoSistema ($requestjson) {
@@ -94,13 +130,13 @@ class ReportesController extends Controller
             $minutos_intervalo = $response_equipo->data->intervalo->total_minutos;
             array_push($objeto->registros, $response_equipo);
         }
-        $objeto->intervalo = $this->objectTime($minutos_intervalo);
+        $objeto->intervalo = $this->objectTime($minutos_intervalo * $equipos->count());
         $objeto->falla = $this->objectTime($minutos_falla);
         $objeto->reparacion = $this->objectTime($minutos_reparacion);
         //Disponibilidad
-        $objeto->disponibilidad = $this->calculaDisponibilidad(($objeto->intervalo->total_minutos * $equipos->count()), $objeto->falla->total_minutos);
+        $objeto->disponibilidad = $this->calculaDisponibilidad($objeto->intervalo->total_minutos, $objeto->falla->total_minutos);
         //Tiempo medio entre fallas
-        $objeto->mtbf = $this->calculaMtbf((($objeto->intervalo->total_minutos * $equipos->count()) - $objeto->falla->total_minutos), $objeto->fallas);
+        $objeto->mtbf = $this->calculaMtbf(($objeto->intervalo->total_minutos - $objeto->falla->total_minutos), $objeto->fallas);
         //Tiempo medio entre reparaciones
         $objeto->mttr = $this->calculaMttr($objeto->falla->total_minutos, $objeto->fallas);
         return $objeto;

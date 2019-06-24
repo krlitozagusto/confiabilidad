@@ -37,6 +37,10 @@ Route::group(['middleware' => 'auth'], function (){
 
 //Sistemas
     Route::post('/sistemas/postulador', 'SistemasController@postulador');
+
+//Plantas
+    Route::post('/plantas/postulador', 'PlantasController@postulador');
+
 //Reportes
     Route::post('/reportes/tiempomedio', 'ReportesController@tiempoMedio');
 });
