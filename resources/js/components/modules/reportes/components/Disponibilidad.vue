@@ -195,7 +195,7 @@
                                 </v-flex>
                                 <v-flex xs12 sm4 md2>
                                     <v-select
-                                        :items="[{id: 1, value: 15, tipo: 'Día', text: '15 días'}, {id: 2, value: 1, tipo: 'Mes', text: '1 mes'}, {id: 3, value: 2, tipo: 'Mes', text: '2 meses'}, {id: 4, value: 3, tipo: 'Mes', text: '3 meses'}, {id: 5, value: 6, tipo: 'Mes', text: '6 meses'}, {id: 6, value: 12, tipo: 'Mes', text: '12 meses'}]"
+                                        :items="[{id: 1, value: '15 days', tipo: 'Día', text: '15 días'}, {id: 2, value: '1 months', tipo: 'Mes', text: '1 mes'}, {id: 3, value: '2 months', tipo: 'Mes', text: '2 meses'}, {id: 4, value: '3 months', tipo: 'Mes', text: '3 meses'}, {id: 5, value: '6 months', tipo: 'Mes', text: '6 meses'}, {id: 6, value: '12 months', tipo: 'Mes', text: '12 meses'}]"
                                         label="Frecuencia"
                                         v-model="data.frecuencia"
                                         item-value="id"
@@ -254,7 +254,7 @@
                 tipoTaxonomia: 'Equipo',
                 rangos: false,
                 tipoResultado: 'Acumulado',
-                frecuencia: {id: 2, value: 1, tipo: 'Mes', text: '1 mes'}
+                frecuencia: {id: 2, value: '1 months', tipo: 'Mes', text: '1 mes'}
             }
         }),
         watch: {

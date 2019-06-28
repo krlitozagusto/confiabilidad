@@ -6,6 +6,8 @@ use App\Models\Equipo;
 use App\Models\Evento;
 use App\Models\Planta;
 use App\Models\Sistema;
+use Carbon\CarbonInterval;
+use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\Resource;
 use stdClass;
@@ -55,11 +57,7 @@ class ReportesController extends Controller
         return $result;
     }
 
-    public function tiempoMedio (Request $request) {
-        $requestjson = json_decode($request->getContent());
-        $requestjson->fechaInicio = new Carbon($requestjson->fechaInicio);
-        $requestjson->fechaFin = new Carbon($requestjson->fechaFin);
-        $requestjson->fechaFin = $requestjson->fechaFin->add(1, 'day');
+    public function singleData ($requestjson) {
         $response = new stdClass();
         $response->data = [];
         switch ($requestjson->tipoTaxonomia) {
@@ -79,7 +77,35 @@ class ReportesController extends Controller
                 break;
             }
         }
-        return response()->json($response, 200);
+        return $response;
+    }
+
+    public function tiempoMedio (Request $request) {
+        $requestjson = json_decode($request->getContent());
+        $requestjson->fechaInicio = new Carbon($requestjson->fechaInicio);
+        $requestjson->fechaFin = new Carbon($requestjson->fechaFin);
+        $requestjson->fechaFin = $requestjson->fechaFin->add(1, 'day');
+        $response = new stdClass();
+        $period = CarbonPeriod::create($requestjson->fechaInicio, $requestjson->frecuencia->value, $requestjson->fechaFin);
+        if (!$requestjson->rangos || ($requestjson->rangos && $period->count() < 2)) {
+            $response = $this->singleData($requestjson);
+            return response()->json($response, 200);
+        } else {
+            $period = $period->toArray();
+//        echo 'lenght'.$period->count().'... ';
+
+            for($i = 2; $i <= $period->lenght(); $i++){
+//            echo "del ".($i-1)." al ".($i).", ";
+            }
+            foreach ($period as $key => $date) {
+                if ($key) {
+//                echo ', ';
+                }
+//            echo $date->format('m-d');
+            }
+// 04-21, 04-24, 04-27
+//        echo "\n";
+        }
     }
 
     public function disponibilidadRangoPlanta ($requestjson) {
