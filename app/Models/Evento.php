@@ -79,6 +79,36 @@ class Evento extends Model
         'evento_padre_id'
     ];
 
+    public function getEquipoIdAttribute($value)
+    {
+        return (int)$value;
+
+    }
+
+    public function getContractualAttribute($value)
+    {
+        return (int)$value;
+
+    }
+
+    public function getTipoEventoIdAttribute($value)
+    {
+        return (int)$value;
+
+    }
+
+    public function getTipoMantenimientoIdAttribute($value)
+    {
+        return (int)$value;
+
+    }
+
+    public function getUserIdAttribute($value)
+    {
+        return (int)$value;
+
+    }
+
     public function scopeSearch(Builder $builder,$search) : Builder
     {
         return $builder->where(function($query) use($search){

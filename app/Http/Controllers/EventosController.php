@@ -283,8 +283,9 @@ class EventosController extends Controller
     public function downloadSoporte($id) {
         try {
             $evento = Evento::where('id','=',$id)->first();
-            $public_path = public_path();
-            $url = "C:\laragon\www\confiabilidad\storage\app/Eventos/{$evento->id}/Soportes/{$evento->archivo_soporte}";
+//            $public_path = "/home/bdsystem/public_html/storage";
+            $public_path = "C:\laragon\www\confiabilidad\storage";
+            $url = $public_path."/app/Eventos/{$evento->id}/Soportes/{$evento->archivo_soporte}";
             $headers = array(
                 'Content-Type: application/pdf',
             );

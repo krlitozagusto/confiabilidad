@@ -44,10 +44,10 @@ return [
     'disks' => [
 
         'local' => [
-//            'driver' => 'local',
-//            'root' => storage_path('app'),
             'driver' => 'local',
-            'root' => public_path().'/storage',
+            'root' => storage_path('app'),
+//            'driver' => 'local',
+//            'root' => public_path().'/storage',
         ],
 
         'public' => [
