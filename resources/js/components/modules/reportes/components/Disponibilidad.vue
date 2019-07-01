@@ -206,9 +206,14 @@
                             </template>
                         </v-layout>
                         <template v-if="result">
-                            <result-equipo v-if="result.equipo" :result="result"></result-equipo>
-                            <result-sistema v-if="result.sistema" :result="result"></result-sistema>
-                            <result-planta v-if="result.planta" :result="result"></result-planta>
+                            <template v-if="result.request">
+                                <result-rangos-multiples v-model="result"></result-rangos-multiples>
+                            </template>
+                            <template v-else>
+                                <result-equipo v-if="result.equipo" :result="result"></result-equipo>
+                                <result-sistema v-if="result.sistema" :result="result"></result-sistema>
+                                <result-planta v-if="result.planta" :result="result"></result-planta>
+                            </template>
                         </template>
                         <v-flex xs12 v-else>
                             <div class="title text-xs-center grey--text" >Click en ejecutar para obtener resultados.</div>
@@ -230,13 +235,15 @@
     import ResultEquipo from './disponibilidad/ResultEquipo'
     import ResultSistema from './disponibilidad/ResultSistema'
     import ResultPlanta from './disponibilidad/ResultPlanta'
+    import ResultRangosMultiples from './disponibilidad/ResultRangosMultiples'
 	export default {
 		name: 'Disponibilidad',
         components: {
             PostuladorV2: resolve => {require(['../../../general/PostuladorV2'], resolve)},
             ResultEquipo,
             ResultSistema,
-            ResultPlanta
+            ResultPlanta,
+            ResultRangosMultiples
         },
         data: () => ({
             loading: false,
@@ -253,7 +260,7 @@
                 taxonomia_id: null,
                 tipoTaxonomia: 'Equipo',
                 rangos: false,
-                tipoResultado: 'Acumulado',
+                tipoResultado: 'Periódico',
                 frecuencia: {id: 2, value: '1 months', tipo: 'Mes', text: '1 mes'}
             }
         }),

@@ -30,6 +30,8 @@ class disponibilidad {
     public $reparaciones = 0;
     public $mtbf;
     public $mttr;
+    public $fecha_inicial;
+    public $fecha_final;
 }
 
 class ReportesController extends Controller
@@ -52,7 +54,7 @@ class ReportesController extends Controller
             $result->total_minutos = $total_minutos;
             $result->total_horas = round(($result->total_minutos / 60), 2);
             $result->horas = intval(($result->total_minutos / 60));
-            $result->minutos = ($result->total_minutos - ($result->horas * 60));
+            $result->minutos = round(($result->total_minutos - ($result->horas * 60)),2);
         }
         return $result;
     }
@@ -84,31 +86,30 @@ class ReportesController extends Controller
         $requestjson = json_decode($request->getContent());
         $requestjson->fechaInicio = new Carbon($requestjson->fechaInicio);
         $requestjson->fechaFin = new Carbon($requestjson->fechaFin);
-        $requestjson->fechaFin = $requestjson->fechaFin->add(1, 'day');
         $response = new stdClass();
         $period = CarbonPeriod::create($requestjson->fechaInicio, $requestjson->frecuencia->value, $requestjson->fechaFin);
         if (!$requestjson->rangos || ($requestjson->rangos && $period->count() < 2)) {
+            $requestjson->fechaFin = $requestjson->fechaFin->add(1, 'day');
             $response = $this->singleData($requestjson);
             return response()->json($response, 200);
         } else {
+            $response->data = [];
             $period = $period->toArray();
-//        echo 'lenght'.$period->count().'... ';
-
-            for($i = 2; $i <= $period->lenght(); $i++){
-//            echo "del ".($i-1)." al ".($i).", ";
+            for($i = 1; $i < count($period); $i++){
+                $requestjson->fechaInicio = new Carbon($period[$i - 1]);
+                $requestjson->fechaFin = new Carbon($period[$i]);
+                $rango = $this->singleData($requestjson);
+                $rango->fecha_inicial = $requestjson->fechaInicio->format('Y-m-d');
+                $rango->fecha_final = $requestjson->fechaFin->add(-1, 'day')->format('Y-m-d');
+                array_push($response->data, $rango);
             }
-            foreach ($period as $key => $date) {
-                if ($key) {
-//                echo ', ';
-                }
-//            echo $date->format('m-d');
-            }
-// 04-21, 04-24, 04-27
-//        echo "\n";
+            $response->request = $requestjson;
+            return response()->json($response, 200);
         }
     }
 
-    public function disponibilidadRangoPlanta ($requestjson) {
+    public function disponibilidadRangoPlanta ($request) {
+        $requestjson = clone $request;
         $sistemas = Sistema::where('planta_id', '=', $requestjson->taxonomia_id)->get();
         $objeto =  new disponibilidad();
         $minutos_falla = 0;
@@ -138,7 +139,8 @@ class ReportesController extends Controller
         return $objeto;
     }
 
-    public function disponibilidadRangoSistema ($requestjson) {
+    public function disponibilidadRangoSistema ($request) {
+        $requestjson = clone $request;
         $equipos = Equipo::where('sistema_id', '=', $requestjson->taxonomia_id)->get();
         $objeto =  new disponibilidad();
         $minutos_falla = 0;
@@ -158,6 +160,7 @@ class ReportesController extends Controller
         }
         $objeto->intervalo = $this->objectTime($minutos_intervalo * $equipos->count());
         $objeto->falla = $this->objectTime($minutos_falla);
+//        dd($objeto->falla);
         $objeto->reparacion = $this->objectTime($minutos_reparacion);
         //Disponibilidad
         $objeto->disponibilidad = $this->calculaDisponibilidad($objeto->intervalo->total_minutos, $objeto->falla->total_minutos);
@@ -222,14 +225,17 @@ class ReportesController extends Controller
     }
 
     public function calculaMttr ($minutos_falla, $cantidad_fallas = 1) {
+        if ($cantidad_fallas === 0) $cantidad_fallas = 1;
         return $this->objectTime(round(($minutos_falla / $cantidad_fallas), 2));
     }
 
     public function calculaMtbf ($minutos_operacion, $cantidad_fallas = 1) {
+        if ($cantidad_fallas === 0) $cantidad_fallas = 1;
         return $this->objectTime(round(($minutos_operacion / $cantidad_fallas), 2));
     }
 
     public function calculaDisponibilidad ($minutos_intervalo, $minutos_falla) {
+        if (($minutos_intervalo - $minutos_falla) === 0) return '0%';
         return round(((($minutos_intervalo - $minutos_falla) / $minutos_intervalo) * 100), 2).'%';
     }
 }
