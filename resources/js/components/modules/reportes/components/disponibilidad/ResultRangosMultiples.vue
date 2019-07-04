@@ -77,16 +77,10 @@
             exportar () {
                 let elt = document.getElementById('tabla')
                 let wb = XLSX.utils.table_to_book(elt, {sheet: 'Disponibilidad'})
-                wb.Sheets[wb.SheetNames[0]]['B3'].s = {fill:{
-                        type: 'pattern',
-                        pattern: 'solid',
-                        auto: 1,
-                        fgColor: {HEX: 'FF5733'},
-                        bgColor: {HEX: 'FF5733'}
-                    }}
-
-                console.log('la data', wb)
-                return XLSX.writeFile(wb, 'disponibilidad.xlsx')
+                for (const cell in wb.Sheets.Disponibilidad) {
+                    if (wb.Sheets.Disponibilidad[cell].v && !isNaN(wb.Sheets.Disponibilidad[cell].v)) wb.Sheets.Disponibilidad[cell].z = '0.00%'
+                }
+                return XLSX.writeFile(wb, 'disponibilidad.xls')
             },
             resolveData () {
                 if (this.value) {
