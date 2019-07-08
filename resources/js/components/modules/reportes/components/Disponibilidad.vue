@@ -265,6 +265,15 @@
             }
         }),
         watch: {
+            'data.frecuencia' (val) {
+                val && (this.result = null)
+            },
+            'data.tipoResultado' (val) {
+                val && (this.result = null)
+            },
+            'data.rangos' (val) {
+                this.result = null
+            },
 		    'data.tipoTaxonomia' (val) {
                 this.data.taxonomia = null
                 this.data.taxonomia_id = null

@@ -1,6 +1,6 @@
 <template>
     <v-card v-if="result" style="overflow-x: scroll !important;">
-        <v-btn @click="exportar">exportar</v-btn>
+        <v-btn color="green" class="white--text" @click="exportar"><v-icon left>fas fa-file-excel</v-icon> Exportar</v-btn>
         <table border="1" style="min-width: 100% !important;" name="tabla" id="tabla">
             <thead>
             <tr>
