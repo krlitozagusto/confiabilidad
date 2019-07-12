@@ -96,7 +96,7 @@ class ReportesController extends Controller
             $response->data = [];
             $period = $period->toArray();
             for($i = 1; $i < count($period); $i++){
-                $requestjson->fechaInicio = new Carbon($period[$i - 1]);
+                if ($requestjson->tipoResultado === "Periódico") $requestjson->fechaInicio = new Carbon($period[$i - 1]);
                 $requestjson->fechaFin = new Carbon($period[$i]);
                 $rango = $this->singleData($requestjson);
                 $rango->fecha_inicial = $requestjson->fechaInicio->format('Y-m-d');

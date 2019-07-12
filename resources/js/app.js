@@ -48,8 +48,11 @@ window.toProperty = (obj, array) => {
  */
 import 'vuetify/dist/vuetify.min.css'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
+import '@fortawesome/fontawesome-free/css/all.css'
 
-Vue.use(Vuetify)
+Vue.use(Vuetify, {
+    iconfont: 'fa'
+})
 Vue.use(VueAxios, axios)
 Validator.localize('es', es)
 Vue.use(VeeValidate, {locale: 'es'})
