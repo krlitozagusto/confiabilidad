@@ -1,6 +1,9 @@
 <template>
     <v-card v-if="result" style="overflow-x: scroll !important;">
-<!--        <v-btn @click="exportar">exportar</v-btn>-->
+        <v-btn @click="exportar" color="green" class="white--text">
+            <v-icon left>fas fa-file-excel</v-icon>
+            exportar
+        </v-btn>
         <table border="1" style="min-width: 100% !important;" name="tabla" id="tabla">
             <thead>
             <tr>
@@ -74,14 +77,14 @@
             this.resolveData()
         },
         methods: {
-            // exportar () {
-            //     let elt = document.getElementById('tabla')
-            //     let wb = XLSX.utils.table_to_book(elt, {sheet: 'Disponibilidad'})
-            //     for (const cell in wb.Sheets.Disponibilidad) {
-            //         if (wb.Sheets.Disponibilidad[cell].v && !isNaN(wb.Sheets.Disponibilidad[cell].v)) wb.Sheets.Disponibilidad[cell].z = '0.00%'
-            //     }
-            //     return XLSX.writeFile(wb, 'disponibilidad.xls')
-            // },
+            exportar () {
+                let elt = document.getElementById('tabla')
+                let wb = XLSX.utils.table_to_book(elt, {sheet: 'Disponibilidad'})
+                for (const cell in wb.Sheets.Disponibilidad) {
+                    if (wb.Sheets.Disponibilidad[cell].v && !isNaN(wb.Sheets.Disponibilidad[cell].v)) wb.Sheets.Disponibilidad[cell].z = '0.00%'
+                }
+                return XLSX.writeFile(wb, 'disponibilidad.xls')
+            },
             resolveData () {
                 if (this.value) {
                     let headers = []
