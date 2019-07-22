@@ -45,12 +45,10 @@ class Equipo extends Model
             $query
                 ->orWhereHas('sistema',function ($query) use ($search) {
                     $query->where('nombre','like','%'.$search.'%')
-                        ->orWhere('tag','like','%'.$search.'%')
-                        ->orWhere('numero_equipo','like','%'.$search.'%');
+                        ->orWhere('tag','like','%'.$search.'%');
                 });
         })->orWhere(function($query) use ($search){
-            $query->where('descripcion','like','%'.$search.'%')
-                ->orWhere('nombre','like','%'.$search.'%')
+            $query->orWhere('nombre','like','%'.$search.'%')
                 ->orWhere('tag','like','%'.$search.'%')
                 ->orWhere('numero_equipo','like','%'.$search.'%');
         });
