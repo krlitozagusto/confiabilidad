@@ -114,7 +114,6 @@
 		},
         methods: {
             register (id, type = 'Detalle') {
-                this.open = true
                 this.$store.commit('LOADING', true)
                 this.axios.post(`eventos/get`, {id: id})
                     .then(response => {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Campo;
 use App\Models\Comentario;
 use App\Models\Evento;
 use App\Models\Falla;
@@ -34,7 +35,7 @@ class EventosController extends Controller
         $perPage = Input::get('per_page');
 
         $query = QueryBuilder::for(Evento::class)
-            ->with('tipo_evento', 'equipo')
+            ->with('tipo_evento', 'equipo.sistema.planta.campo')
             ->allowedFilters([
                 Filter::scope('search')
             ])
@@ -55,7 +56,8 @@ class EventosController extends Controller
             'puestosTrabajo'=> PuestoTrabajo::all(),
             'modosFalla'=> ModoFalla::all(),
             'tiposImpacto'=> TipoImpacto::all(),
-            'tiposGasto'=> TipoGasto::all()
+            'tiposGasto'=> TipoGasto::all(),
+            'campos'=> Campo::all()
         ]);
     }
 
@@ -69,7 +71,7 @@ class EventosController extends Controller
                 'tipo_mantenimiento',
                 'eventos_hijos.equipo',
                 'eventos_hijos.tipo_evento',
-                'equipo',
+                'equipo.sistema.planta.campo',
                 'comentarios.usuario',
                 'orden_trabajos.puesto_trabajo',
                 'fallas.modo_falla',
@@ -83,9 +85,10 @@ class EventosController extends Controller
     {
         return response()->json([
             'evento' => Evento::where('id','=',$request->id)->with([
-                'evento_padre',
+                'evento_padre.equipo',
+                'evento_padre.tipo_evento',
                 'eventos_hijos',
-                'equipo',
+                'equipo.sistema.planta.campo',
                 'orden_trabajos',
                 'fallas.modo_falla',
                 'impactos.tipo_impacto',
@@ -97,7 +100,8 @@ class EventosController extends Controller
             'puestosTrabajo'=> PuestoTrabajo::all(),
             'modosFalla'=> ModoFalla::all(),
             'tiposImpacto'=> TipoImpacto::all(),
-            'tiposGasto'=> TipoGasto::all()
+            'tiposGasto'=> TipoGasto::all(),
+            'campos'=> Campo::all()
         ]);
     }
 

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 class Equipo extends Model
 {
+
     public function imagen_equipos()
     {
         return $this->hasMany(ImagenEquipo::class);
@@ -35,6 +36,12 @@ class Equipo extends Model
     public function centro_costo()
     {
         return $this->belongsTo(CentroCosto::class);
+    }
+
+    public function getUserIdAttribute($value)
+    {
+        return (int)$value;
+
     }
 
     protected $hidden = ['created_at','updated_at'];

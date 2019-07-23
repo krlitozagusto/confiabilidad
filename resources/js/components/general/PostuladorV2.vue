@@ -43,9 +43,9 @@
                   <component :is="slotSelection" v-model="data.item"/>
               </template>
           </template>
-          <template :slot="((dataTitle !== '' || dataSubtitle !== '') || slotData) && entity.items ? 'item' : ''" slot-scope="data">
+          <template :slot="((dataTitle !== '' || dataSubtitle !== '') || slotItem) && entity.items ? 'item' : ''" slot-scope="data">
               <template v-if="entity.items">
-                  <component v-if="slotData" :is="slotData" v-model="data.item"></component>
+                  <component v-if="slotItem" :is="slotItem" v-model="data.item"></component>
                   <template v-else>
                       <v-list-tile-content>
                           <v-list-tile-title v-if="dataTitle !== ''" v-html="convertidor(data.item, dataTitle)"></v-list-tile-title>
@@ -171,7 +171,7 @@
       slotAppend: {
         default: null
       },
-        slotData: {
+        slotItem: {
             default: null
         },
         slotSelection: {

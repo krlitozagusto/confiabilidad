@@ -36,8 +36,8 @@
         <input-detail-flex
             flex-class="xs12 sm12 md6"
             label="Equipo"
-            :text="value.equipo && value.equipo.nombre"
-            :hint="value.equipo && value.equipo.tag"
+            :text="value.equipo && (value.equipo.nombre + ' - Tag: ' + value.equipo.tag)"
+            :hint="value.equipo && ('Número: ' + value.equipo.numero_equipo + ' - Campo: ' + value.equipo.sistema.planta.campo.nombre)"
         />
         <input-detail-flex
             flex-class="xs12 sm6 md3"

@@ -4,7 +4,7 @@
         <navigation></navigation>
         <toolbar></toolbar>
         <v-content>
-            <v-container fluid fill-height>
+            <v-container fluid fill-height class="px-2">
                 <router-view></router-view>
             </v-container>
         </v-content>

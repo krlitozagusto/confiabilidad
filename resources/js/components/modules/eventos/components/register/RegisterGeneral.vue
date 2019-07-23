@@ -4,10 +4,10 @@
             <v-switch
                 :readonly="!!value.eventos_hijos.length"
                 ripple
-                label="value principal"
+                label="Evento principal"
                 :false-value="0"
                 :true-value="1"
-                v-model="esPrincipal"
+                v-model="value.esPrincipal"
             ></v-switch>
         </v-flex>
         <v-flex xs12 sm6 md3>
@@ -91,8 +91,9 @@
                 ></v-time-picker>
             </v-menu>
         </v-flex>
-        <v-flex xs12 v-if="!esPrincipal">
+        <v-flex xs12 v-show="!value.esPrincipal">
             <postulador-v2
+                    v-if="!value.esPrincipal"
                 ref="postuladorEventos"
                 key="eventoP"
                 no-data="Busqueda por número o nombre de equipo."
@@ -109,9 +110,9 @@
                 rules="required"
                 v-validate="'required'"
                 :error-messages="errors.collect('evento principal')"
-                :slot-data='{
+                :slot-item='{
                                       template:`
-                                      <v-list-tile v-if="value.equipo">
+                                      <v-list-tile v-if="value.equipo" style="width: 100% !important;">
                                       <v-list-tile-action>
                                         <v-chip
                                         color="indigo lighten-2"
@@ -122,8 +123,28 @@
                                         </v-chip>
                                         </v-list-tile-action>
                                         <v-list-tile-content>
-                                          <v-list-tile-title>{{value.equipo.nombre}}</v-list-tile-title>
-                                          <v-list-tile-sub-title class=caption>{{ value.equipo.descripcion }}</v-list-tile-sub-title>
+                                          <v-list-tile-title>{{value.equipo.nombre}} - Tag: {{ value.equipo.tag }}</v-list-tile-title>
+                                          <v-list-tile-sub-title class=caption>Número: {{ value.equipo.numero_equipo }}</v-list-tile-sub-title>
+                                        </v-list-tile-content>
+                                      </v-list-tile>
+                                      `,
+                                      props: [`value`]
+                                     }'
+                :slot-selection='{
+                                      template:`
+                                      <v-list-tile v-if="value.equipo" style="width: 100% !important;">
+                                      <v-list-tile-action>
+                                        <v-chip
+                                        color="indigo lighten-2"
+                                        label
+                                        small
+                                        >
+                                        {{ value.id }}
+                                        </v-chip>
+                                        </v-list-tile-action>
+                                        <v-list-tile-content>
+                                          <v-list-tile-title>{{value.equipo.nombre}} - Tag: {{ value.equipo.tag }}</v-list-tile-title>
+                                          <v-list-tile-sub-title class=caption>Número: {{ value.equipo.numero_equipo }}</v-list-tile-sub-title>
                                         </v-list-tile-content>
                                       </v-list-tile>
                                       `,
@@ -146,12 +167,23 @@
                 rules="required"
                 v-validate="'required'"
                 :error-messages="errors.collect('Equipo')"
-                :slot-data='{
+                :slot-item='{
                                       template:`
-                                      <v-list-tile>
+                                      <v-list-tile style="width: 100% !important;">
                                         <v-list-tile-content>
-                                          <v-list-tile-title>{{value.nombre}}</v-list-tile-title>
-                                          <v-list-tile-sub-title class=caption>Tag: {{ value.tag }}</v-list-tile-sub-title>
+                                          <v-list-tile-title>{{value.nombre}} - Tag: {{ value.tag }}</v-list-tile-title>
+                                          <v-list-tile-sub-title class=caption>Número: {{ value.numero_equipo }} - Campo: {{ value.sistema.planta.campo.nombre }}</v-list-tile-sub-title>
+                                        </v-list-tile-content>
+                                      </v-list-tile>
+                                      `,
+                                      props: [`value`]
+                                     }'
+                :slot-selection='{
+                                      template:`
+                                      <v-list-tile style="width: 100% !important;">
+                                        <v-list-tile-content>
+                                          <v-list-tile-title>{{value.nombre}} - Tag: {{ value.tag }}</v-list-tile-title>
+                                          <v-list-tile-sub-title class=caption>Número: {{ value.numero_equipo }} - Campo: {{ value.sistema.planta.campo.nombre }}</v-list-tile-sub-title>
                                         </v-list-tile-content>
                                       </v-list-tile>
                                       `,
@@ -475,7 +507,7 @@
 <script>
     import InputFile from '../../../../general/InputFile'
     export default {
-        props: ['value', 'esPrincipal', 'soloGuardar', 'complementos'],
+        props: ['value', 'soloGuardar', 'complementos'],
 		name: "RegisterGeneral",
         components: {
             PostuladorV2: resolve => {require(['../../../../general/PostuladorV2'], resolve)},

@@ -64,7 +64,7 @@
                     {
                         text: 'EP',
                         align: 'center',
-                        sortable: true,
+                        sortable: false,
                         value: 'evento_padre_id',
                         classData: 'text-xs-center',
                         tooltip: 'Evento principal'
@@ -76,22 +76,56 @@
                         value: 'tipo_evento.nombre'
                     },
                     {
-                        text: 'Fecha inicio',
+                        text: 'Fecha registro',
                         align: 'left',
                         sortable: false,
-                        value: 'fecha_inicio'
+                        value: 'fecha_registro'
                     },
                     {
-                        text: 'Fecha fin',
+                        text: 'Ubicación',
                         align: 'left',
                         sortable: false,
-                        value: 'fecha_fin'
+                        value: 'equipo',
+                        component: {
+                            template:
+                                `
+                        <div>
+                            <v-chip small color="green" text-color="white">
+                                <v-avatar class="green darken-4">C</v-avatar>
+                                {{value.equipo.sistema.planta.campo.nombre}}
+                            </v-chip>
+                            <v-chip small color="orange" text-color="white">
+                                <v-avatar class="orange darken-4">P</v-avatar>
+                                {{value.equipo.sistema.planta.nombre}}
+                            </v-chip>
+                            <v-chip small color="teal" text-color="white">
+                                <v-avatar class="teal darken-4">S</v-avatar>
+                                {{value.equipo.sistema.nombre}}
+                            </v-chip>
+                        </div>
+                      `,
+                            props: ['value']
+                        }
                     },
                     {
                         text: 'Equipo',
                         align: 'left',
                         sortable: false,
-                        value: 'equipo.nombre'
+                        value: 'equipo',
+                        component: {
+                            template:
+                                `
+                        <div>
+                          <v-list-tile class="content-v-list-tile-p0">
+                            <v-list-tile-content>
+                              <v-list-tile-title class="body-1"> {{value.equipo.nombre}} - Tag:{{value.equipo.tag}}</v-list-tile-title>
+                              <v-list-tile-sub-title class="caption">Número: {{value.equipo.numero_equipo}}</v-list-tile-sub-title>
+                            </v-list-tile-content>
+                          </v-list-tile>
+                        </div>
+                      `,
+                            props: ['value']
+                        }
                     },
                     {
                         text: 'Estado',
@@ -104,7 +138,6 @@
                         align: 'center',
                         sortable: false,
                         actions: true,
-                        singlesActions: true,
                         classData: 'text-xs-center'
                     }
                 ]

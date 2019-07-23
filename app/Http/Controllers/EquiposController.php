@@ -34,7 +34,7 @@ class EquiposController extends Controller
     public function postulador()
     {
         $query = QueryBuilder::for(Equipo::class)
-            ->with('sistema')
+            ->with('sistema.planta.campo')
             ->allowedFilters([
                 Filter::scope('search')
             ]);

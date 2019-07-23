@@ -1,5 +1,6 @@
 <template>
     <v-navigation-drawer
+            width="180px"
         ref="navigationDrawer"
             fixed
             :clipped="true"

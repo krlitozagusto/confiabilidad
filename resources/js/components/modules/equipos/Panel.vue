@@ -157,10 +157,10 @@
                       case 'equipo': {
                           this.details.registros = [
                               {label: 'Nombre', text: registro.objeto.nombre, hint: null, icon: null, flexClass: null},
+                              {label: 'Criticidad', text: registro.objeto.criticidad, hint: null, icon: null, flexClass: null},
                               {label: 'Tag', text: registro.objeto.tag, hint: null, icon: null, flexClass: null},
                               {label: 'Número', text: registro.objeto.numero_equipo, hint: null, icon: null, flexClass: null},
-                              {label: 'Denominación', text: registro.objeto.denominacion, hint: null, icon: null, flexClass: null},
-                              {label: 'Descripción', text: registro.objeto.descripcion, hint: null, icon: null, flexClass: null}
+                              {label: 'Denominación', text: registro.objeto.denominacion, hint: null, icon: null, flexClass: null}
                           ]
                           break
                       }
@@ -178,6 +178,7 @@
                 this.$refs.detailDialog.register(id)
             },
             getContratos () {
+                this.$store.commit('LOADING', true)
                 axios.post(`equipos/getcontratos`,)
                     .then(response => {
                         this.items = response.data.contratos.map(co => {
@@ -235,8 +236,10 @@
                             this.nodos.push(contrato)
                             return contrato
                         })
+                        this.$store.commit('LOADING', false)
                     })
                     .catch(error => {
+                        this.$store.commit('LOADING', false)
                         this.$store.commit('SNACKBAR', {color: 'error', message: `al traer los contratos para el arbol`, error: error})
                     })
             }

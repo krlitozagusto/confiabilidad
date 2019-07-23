@@ -37,7 +37,7 @@
                                     >
                                         <v-card flat>
                                             <v-card-text>
-                                                <component ref="componentsRegister" :is="tab.component" :es-principal="esPrincipal" :solo-guardar="soloGuardar" v-model="evento" :complementos="complementos"></component>
+                                                <component ref="componentsRegister" :is="tab.component" :solo-guardar="soloGuardar" v-model="evento" :complementos="complementos"></component>
                                             </v-card-text>
                                         </v-card>
                                     </v-tab-item>
@@ -80,7 +80,6 @@
             open: false,
             tabActiva: 'tab-0',
             tabs: [],
-            esPrincipal: 1,
             soloGuardar: 1,
             evento: null,
             makeEvento: {
@@ -113,7 +112,9 @@
                 evento_padre: null,
                 equipo: null,
                 tipo_evento: null,
-                tipo_mantenimiento: null
+                tipo_mantenimiento: null,
+                // ayudas
+                esPrincipal: 1
             },
             complementos:{
                 tiposEvento: [],
@@ -165,7 +166,7 @@
                                 response.data.evento.hora_fin_reparacion = this.moment(response.data.evento.fecha_fin_reparacion).format('HH:mm')
                                 response.data.evento.fecha_fin_reparacion = this.moment(response.data.evento.fecha_fin_reparacion).format('YYYY-MM-DD')
                             }
-                            this.esPrincipal = response.data.evento.evento_padre_id ? 0 : 1
+                            response.data.evento.esPrincipal = response.data.evento.evento_padre_id ? 0 : 1
                             this.evento = response.data.evento
                         }
                         this.complementos.tiposEvento = response.data.tiposEvento
@@ -219,7 +220,7 @@
                         tipo_evento_id: this.evento.tipo_evento_id,
                         tipo_mantenimiento_id: this.evento.tipo_mantenimiento_id,
                         equipo_id: this.evento.equipo_id,
-                        evento_padre_id: !this.esPrincipal ? this.evento.evento_padre_id : null,
+                        evento_padre_id: !this.evento.esPrincipal ? this.evento.evento_padre_id : null,
                         user_id: this.evento.user_id,
                         orden_trabajos: this.evento.orden_trabajos,
                         fallas: this.evento.fallas,
@@ -247,7 +248,6 @@
                 this.complementos.modosFalla = []
                 this.complementos.tiposImpacto = []
                 this.complementos.tiposGasto = []
-                this.esPrincipal = 1
                 this.soloGuardar = 1
                 this.resetForms()
             },
