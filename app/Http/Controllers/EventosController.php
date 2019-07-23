@@ -56,8 +56,7 @@ class EventosController extends Controller
             'puestosTrabajo'=> PuestoTrabajo::all(),
             'modosFalla'=> ModoFalla::all(),
             'tiposImpacto'=> TipoImpacto::all(),
-            'tiposGasto'=> TipoGasto::all(),
-            'campos'=> Campo::all()
+            'tiposGasto'=> TipoGasto::all()
         ]);
     }
 
@@ -100,8 +99,7 @@ class EventosController extends Controller
             'puestosTrabajo'=> PuestoTrabajo::all(),
             'modosFalla'=> ModoFalla::all(),
             'tiposImpacto'=> TipoImpacto::all(),
-            'tiposGasto'=> TipoGasto::all(),
-            'campos'=> Campo::all()
+            'tiposGasto'=> TipoGasto::all()
         ]);
     }
 
