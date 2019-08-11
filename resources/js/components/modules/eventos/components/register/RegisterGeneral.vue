@@ -93,7 +93,7 @@
         </v-flex>
         <v-flex xs12 v-show="!value.esPrincipal">
             <postulador-v2
-                    v-if="!value.esPrincipal"
+                v-if="!value.esPrincipal"
                 ref="postuladorEventos"
                 key="eventoP"
                 no-data="Busqueda por número o nombre de equipo."

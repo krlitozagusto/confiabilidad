@@ -38,7 +38,7 @@
                                     rules="required"
                                     v-validate="'required'"
                                     :error-messages="errors.collect('Equipo')"
-                                    :slot-data='{
+                                    :slot-item='{
                                       template:`
                                       <v-list-tile class="content-v-list-tile-p0" style="width: 100% !important">
                                         <v-list-tile-content>
@@ -67,7 +67,7 @@
                                     rules="required"
                                     v-validate="'required'"
                                     :error-messages="errors.collect('Sistema')"
-                                    :slot-data='{
+                                    :slot-item='{
                                       template:`
                                       <v-list-tile class="content-v-list-tile-p0" style="width: 100% !important">
                                         <v-list-tile-content>
@@ -96,7 +96,7 @@
                                     rules="required"
                                     v-validate="'required'"
                                     :error-messages="errors.collect('Planta')"
-                                    :slot-data='{
+                                    :slot-item='{
                                       template:`
                                       <v-list-tile class="content-v-list-tile-p0" style="width: 100% !important">
                                         <v-list-tile-content>
