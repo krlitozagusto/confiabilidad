@@ -79,7 +79,12 @@
             :text="value.fecha_fin_reparacion"
         />
         <input-detail-flex
-            flex-class="xs12"
+                flex-class="xs12 sm3 md2"
+                label="DownTime"
+                :text="downTime"
+        />
+        <input-detail-flex
+            flex-class="xs12 sm9 md10"
             label="Soporte"
             :text="value.archivo_soporte"
             :append-button="value.archivo_soporte ? {tooltip: 'descargar archivo', icon: 'arrow_downward', color: 'primary'} : null"
@@ -97,6 +102,19 @@
 		data: () => ({
 		}),
 		computed: {
+            downTime () {
+                if (this.value.fecha_inicio) {
+                    let fechaInicio = this.value.fecha_inicio.split(' ')[0]
+                    let horaInicio = this.value.fecha_inicio.split(' ')[1] || '00:00'
+                    let fechaFin = this.value.fecha_fin.split(' ')[0] || this.moment().format('YYYY-MM-DD')
+                    let horaFin = this.value.fecha_fin.split(' ')[1] || (this.value.fecha_fin.split(' ')[0] ? '00:00' : this.moment().format('HH:mm'))
+
+                    let hi = this.moment(`${fechaInicio} ${horaInicio}`)
+                    let hf = this.moment(`${fechaFin} ${horaFin}`)
+                    return String(Math.round((parseFloat(hf.diff(hi, 'hours', true)))*100)/100)
+                }
+                return '0'
+            }
 		},
         whatch: {
         },
