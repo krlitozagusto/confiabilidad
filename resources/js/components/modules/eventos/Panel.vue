@@ -10,12 +10,11 @@
                         </small>
                     </v-toolbar-title>
                     <v-spacer/>
-                    <v-tooltip top>
-                        <v-btn icon slot="activator" @click.stop="newEvent">
-                            <v-icon>add</v-icon>
-                        </v-btn>
-                        <span>Crear evento</span>
-                    </v-tooltip>
+                    <v-btn color="blue-grey" @click.stop="newEvent">
+                        <v-icon left>fas fa-calendar-plus</v-icon>
+                        Crear evento
+                    </v-btn>
+                    <dinamic-list></dinamic-list>
                 </v-toolbar>
                 <data-table
                     ref="tablaEventos"
@@ -40,9 +39,11 @@
     </v-layout>
 </template>
 <script>
+    import DinamicList from './DinamicList'
     export default {
 		name: "Panel",
         components: {
+            DinamicList,
             DataTable: resolve => {require(['../../general/DataTable'], resolve)},
             RegisterDialog: resolve => {require(['./RegisterDialog'], resolve)},
             ConfirmationDialog: resolve => {require(['../../general/ConfirmationDialog'], resolve)},

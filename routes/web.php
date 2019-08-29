@@ -26,6 +26,8 @@ Route::group(['middleware' => 'auth'], function (){
     Route::post('/eventos/registercomment', 'EventosController@registerComment');
     Route::post('/eventos/loadfile', 'EventosController@loadFile');
 
+    Route::post('/eventos/dinamiclist', 'EventosController@dianmicList');
+
 
 //Equipos
     Route::post('/equipos/panel', 'EquiposController@panel');

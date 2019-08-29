@@ -348,4 +348,25 @@ class EventosController extends Controller
             ], 500);
         }
     }
+
+    public function dianmicList(Request $request)
+    {
+        $requestjson = json_decode($request->getContent());
+//        dd($requestjson);
+        switch ($requestjson->tipoTaxonomia) {
+            case 'Equipo': {
+                $query = QueryBuilder::for(Evento::class)
+                    ->with('tipo_evento', 'equipo.sistema.planta.campo.contrato')
+                    ->where('equipo_id', '=', $requestjson->taxonomia_id);
+                break;
+            }
+            case 'Sistema': {
+                break;
+            }
+            case 'Planta': {
+                break;
+            }
+        }
+        return new Resource($query->get());
+    }
 }
