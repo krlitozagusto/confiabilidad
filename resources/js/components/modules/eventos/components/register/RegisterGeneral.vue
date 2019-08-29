@@ -488,7 +488,12 @@
                 ></v-time-picker>
             </v-menu>
         </v-flex>
-        <v-flex xs12 v-if="value.id">
+        <input-detail-flex
+                flex-class="xs12 sm3 md2"
+                label="DownTime"
+                :text="downTime"
+        />
+        <v-flex xs12 sm9 md10 v-if="value.id">
             <input-file
                 class="mb-2"
                 label="Soporte"
@@ -506,10 +511,12 @@
 </template>
 <script>
     import InputFile from '../../../../general/InputFile'
+    import InputDetailFlex from '../../../../general/InputDetailFlex'
     export default {
         props: ['value', 'soloGuardar', 'complementos'],
 		name: "RegisterGeneral",
         components: {
+            InputDetailFlex,
             PostuladorV2: resolve => {require(['../../../../general/PostuladorV2'], resolve)},
             InputFile
         },
@@ -557,6 +564,18 @@
             }
 		}),
 		computed: {
+            downTime () {
+                if (this.value.fecha_inicio) {
+                    let horaInicio = this.value.hora_inicio || '00:00'
+                    let fechaFin = this.value.fecha_fin || this.moment().format('YYYY-MM-DD')
+                    let horaFin = this.value.hora_fin || (this.value.fecha_fin ? '00:00' : this.moment().format('HH:mm'))
+
+                    let hi = this.moment(`${this.value.fecha_inicio} ${horaInicio}`)
+                    let hf = this.moment(`${fechaFin} ${horaFin}`)
+                    return String(Math.round((parseFloat(hf.diff(hi, 'hours', true)))*100)/100)
+                }
+                return '0'
+            }
 		},
         whatch: {
         },
