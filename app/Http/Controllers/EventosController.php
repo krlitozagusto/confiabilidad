@@ -21,12 +21,14 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use function Sodium\add;
 use Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Http\Resources\Json\Resource;
 use Illuminate\Support\Facades\Input;
 use Spatie\QueryBuilder\Filter;
 use Spatie\QueryBuilder\QueryBuilder;
+use Carbon\Carbon;
 
 class EventosController extends Controller
 {
@@ -352,18 +354,32 @@ class EventosController extends Controller
     public function dianmicList(Request $request)
     {
         $requestjson = json_decode($request->getContent());
-//        dd($requestjson);
+        $requestjson->rangoFinal = new Carbon($requestjson->rangoFinal);
+        $requestjson->rangoFinal = $requestjson->rangoFinal->add(1, 'day')->format('Y-m-d');
+        $query = QueryBuilder::for(Evento::class)
+            ->with('tipo_evento', 'tipo_mantenimiento', 'user', 'equipo.valoracion_ram', 'equipo.sistema.planta.campo.contrato')
+            ->whereBetween('fecha_inicio', array($requestjson->rangoInicial, $requestjson->rangoFinal));
         switch ($requestjson->tipoTaxonomia) {
             case 'Equipo': {
-                $query = QueryBuilder::for(Evento::class)
-                    ->with('tipo_evento', 'equipo.sistema.planta.campo.contrato')
+                $query = $query
                     ->where('equipo_id', '=', $requestjson->taxonomia_id);
                 break;
             }
             case 'Sistema': {
+                $query = $query
+                ->join('equipos', 'equipos.id', '=', 'eventos.equipo_id')
+                ->join('sistemas', 'sistemas.id', '=', 'equipos.sistema_id')
+                ->where('sistemas.id', '=', $requestjson->taxonomia_id)
+                ->select('eventos.*');
                 break;
             }
             case 'Planta': {
+                $query = $query
+                    ->join('equipos', 'equipos.id', '=', 'eventos.equipo_id')
+                    ->join('sistemas', 'sistemas.id', '=', 'equipos.sistema_id')
+                    ->join('plantas', 'plantas.id', '=', 'sistemas.planta_id')
+                    ->where('plantas.id', '=', $requestjson->taxonomia_id)
+                    ->select('eventos.*');
                 break;
             }
         }

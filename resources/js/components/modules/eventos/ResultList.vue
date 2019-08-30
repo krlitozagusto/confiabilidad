@@ -18,62 +18,30 @@
                 <table border="1" style="min-width: 100% !important;" name="tablaitems" id="tablaitems">
                     <thead>
                     <tr>
-                        <template v-for="(header, hindex) in headers">
-                            <th>
-                                {{ header.title }}
-                            </th>
-                        </template>
+                        <th v-for="(header, hindex) in headers.map(x => x.title)">
+                            {{ header }}
+                        </th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-for="(row, rindex) in items">
-                        <td>
-                            {{row.id}}
-                        </td>
-                        <td>
-                            {{row.equipo.tag}}
-                        </td>
-                        <td>
-                            {{moment(row.fecha_inicio).format('YYYY-MM-DD HH:mm')}}
-                        </td>
-                        <td>
-                            {{row.fecha_fin}}
-                        </td>
-                        <td>
-                            {{row.downtime}}
+                    <tr v-for="row in items">
+                        <td v-for="propiedad in headers.map(x => x.propiedad)">
+                            {{row[propiedad]}}
                         </td>
                     </tr>
                     </tbody>
                 </table>
-                <table border="1" style="min-width: 100% !important; visibility: collapse !important;" name="tablaitemsexcel" id="tablaitemsexcel">
-                    <thead>
+                <table style="visibility: collapse !important;" name="tablaitemsexcel" id="tablaitemsexcel">
                     <tr>
-                        <template v-for="(header, hindex) in headers">
-                            <th>
-                                {{ header.title }}
-                            </th>
-                        </template>
+                        <th v-for="(header, hindex) in headers.map(x => x.title)">
+                            {{ header }}
+                        </th>
                     </tr>
-                    </thead>
-                    <tbody>
-                    <tr v-for="(row, rindex) in items">
-                        <td>
-                            '{{row.id}}'
-                        </td>
-                        <td>
-                            '{{row.equipo.tag}}'
-                        </td>
-                        <td>
-                            '{{moment(row.fecha_inicio).format('YYYY-MM-DD HH:mm')}}'
-                        </td>
-                        <td>
-                            '{{row.fecha_fin}}'
-                        </td>
-                        <td>
-                            '{{row.downtime}}'
+                    <tr v-for="row in items">
+                        <td v-for="propiedad in headers.map(x => x.propiedad)">
+                            '{{row[propiedad]}}'
                         </td>
                     </tr>
-                    </tbody>
                 </table>
             </v-card>
         </v-flex>
@@ -92,11 +60,23 @@
         },
         data: () => ({
             headers: [
-                {letra: 'A', title: 'Evento'},
-                {letra: 'B', title: 'Equipo'},
-                {letra: 'C', title: 'Fecha inicial'},
-                {letra: 'D', title: 'Fecha final'},
-                {letra: 'E', title: 'Downtime'}
+                {propiedad: 'id', title: 'Evento'},
+                {propiedad: 'contrato', title: 'Contrato'},
+                {propiedad: 'campo', title: 'Campo'},
+                {propiedad: 'planta', title: 'Planta'},
+                {propiedad: 'sistema', title: 'Sistema'},
+                {propiedad: 'equipo', title: 'Equipo'},
+                {propiedad: 'tipoEvento', title: 'Tipo evento'},
+                {propiedad: 'tipoMantenimiento', title: 'Tipo mantenimiento'},
+                {propiedad: 'fechaInicio', title: 'Fecha inicio'},
+                {propiedad: 'fechaFin', title: 'Fecha fin'},
+                {propiedad: 'downtime', title: 'Downtime'},
+                {propiedad: 'fechaInicioReparacion', title: 'Fecha inicio reparación'},
+                {propiedad: 'fechaFinReparacion', title: 'Fecha fin reparación'},
+                {propiedad: 'contractual', title: 'Es contractual'},
+                {propiedad: 'estado', title: 'Estado'},
+                {propiedad: 'usuario', title: 'Usuario registra'},
+                {propiedad: 'fechaRegistro', title: 'Fecha registra'}
             ],
             items: []
         }),
@@ -122,12 +102,51 @@
                 let elt = document.getElementById('tablaitemsexcel')
                 let wb = XLSX.utils.table_to_book(elt, {sheet: 'tablaitemsexcel'})
                 for (const cell in wb.Sheets['tablaitemsexcel']) {
-                    if (wb.Sheets['tablaitemsexcel'][cell].v) wb.Sheets['tablaitemsexcel'][cell].v = wb.Sheets['tablaitemsexcel'][cell].v.replace(new RegExp(/(')/i, 'g'), '')
+                    if (wb.Sheets['tablaitemsexcel'][cell].v && wb.Sheets['tablaitemsexcel'][cell].v.indexOf(`'`) > -1) wb.Sheets['tablaitemsexcel'][cell].v = wb.Sheets['tablaitemsexcel'][cell].v.replace(new RegExp(/(')/i, 'g'), '')
+                    if (wb.Sheets['tablaitemsexcel'][cell].v && wb.Sheets['tablaitemsexcel'][cell].v.indexOf('=') > -1) {
+                        wb.Sheets['tablaitemsexcel'][cell] = { f: wb.Sheets['tablaitemsexcel'][cell].v.split('=')[1] }
+                    }
+
                 }
-                return XLSX.writeFile(wb, 'Eventos.xls')
+                console.log('el book', wb.Sheets['tablaitemsexcel'])
+                return XLSX.writeFile(wb, 'Eventos.xlsx', {cellFormula: true})
             },
             resolveData () {
-                this.items = this.result
+
+                this.items = this.result.map(x => {
+                    return {
+                        id: x.id,
+                        contrato: `${x.equipo.sistema.planta.campo.contrato.numero} - ${x.equipo.sistema.planta.campo.contrato.descripcion}`,
+                        campo: `${x.equipo.sistema.planta.campo.codigo} - ${x.equipo.sistema.planta.campo.nombre}`,
+                        planta: `${x.equipo.sistema.planta.descripcion} - ${x.equipo.sistema.planta.nombre}`,
+                        sistema: `${x.equipo.sistema.tag} - ${x.equipo.sistema.nombre}`,
+                        equipo: `${x.equipo.tag} - ${x.equipo.nombre}`,
+                        tipoEvento: `${x.tipo_evento.abreviado} - ${x.tipo_evento.nombre}`,
+                        tipoMantenimiento: x.tipo_mantenimiento.nombre,
+                        fechaInicio: x.fecha_inicio,
+                        fechaFin: x.fecha_fin,
+                        downtime: this.downTime(x.fecha_inicio, x.fecha_fin),
+                        fechaInicioReparacion: x.fecha_inicio_reparacion,
+                        fechaFinReparacion: x.fecha_fin_reparacion,
+                        contractual: x.contractual ? 'SI' : 'NO',
+                        estado: x.estado,
+                        usuario: x.user.name,
+                        fechaRegistro: x.fecha_registro
+                    }
+                })
+            },
+            downTime (fi, ff) {
+                if (fi) {
+                    let fechaInicio = fi.split(' ')[0]
+                    let horaInicio = fi.split(' ')[1] || '00:00'
+                    let fechaFin = ff.split(' ')[0] || this.moment().format('YYYY-MM-DD')
+                    let horaFin = ff.split(' ')[1] || (ff.split(' ')[0] ? '00:00' : this.moment().format('HH:mm'))
+
+                    let hi = this.moment(`${fechaInicio} ${horaInicio}`)
+                    let hf = this.moment(`${fechaFin} ${horaFin}`)
+                    return String(Math.round((parseFloat(hf.diff(hi, 'hours', true)))*100)/100)
+                }
+                return '0'
             }
         }
     }
