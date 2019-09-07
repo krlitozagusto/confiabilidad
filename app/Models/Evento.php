@@ -114,6 +114,19 @@ class Evento extends Model
         return $builder->where(function($query) use($search){
             $query->orWhereHas('tipo_evento',function ($query) use ($search) {
                 $query->where('nombre','like','%'.$search.'%');
+            })->orWhereHas('equipo',function ($query) use ($search) {
+                $query->where('nombre','like','%'.$search.'%')
+                    ->orWhere('tag','like','%'.$search.'%')
+                    ->orWhere('numero_equipo','like','%'.$search.'%')
+                    ->orWhereHas('sistema',function ($query) use ($search) {
+                        $query->where('nombre','like','%'.$search.'%')
+                            ->orWhere('tag','like','%'.$search.'%')
+                            ->orWhere('descripcion','like','%'.$search.'%')
+                            ->orWhereHas('planta',function ($query) use ($search) {
+                                $query->where('nombre','like','%'.$search.'%')
+                                    ->orWhere('descripcion','like','%'.$search.'%');
+                            });
+                    });
             });
         })->orWhere(function($query) use ($search){
             $query->where('id','like','%'.$search.'%')

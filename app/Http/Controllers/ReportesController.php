@@ -8,6 +8,7 @@ use App\Models\Planta;
 use App\Models\Sistema;
 use Carbon\CarbonInterval;
 use Carbon\CarbonPeriod;
+use function foo\func;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\Resource;
 use stdClass;
@@ -59,6 +60,134 @@ class ReportesController extends Controller
         return $result;
     }
 
+    public function listaEventos (Request $request) {
+        $requestjson = json_decode($request->getContent());
+        $requestjson->fechaInicio = new Carbon($requestjson->fechaInicio);
+        $requestjson->fechaFin = new Carbon($requestjson->fechaFin);
+//        if (!$requestjson->rangos) {
+//            $requestjson->fechaFin = $requestjson->fechaFin->add(1, 'day');
+//            $eventosfiltrados = $this->filtraEventos($requestjson);
+//        } else {
+//
+//        }
+        $eventosfiltrados = $this->filtraEventos($requestjson);
+        return response()->json([
+            'eventos' => $eventosfiltrados
+        ], 200);
+    }
+
+    public function filtraEventos ($requestjson) {
+        $idsEquipos = [];
+//        $requestjson->fechaFin = $requestjson->fechaFin->add(1, 'day');
+        switch ($requestjson->tipoTaxonomia) {
+            case 'Equipo': {
+                array_push($idsEquipos, $requestjson->taxonomia_id);
+                break;
+            }
+            case 'Sistema': {
+                $equipos = Equipo::where('sistema_id', '=', $requestjson->taxonomia_id)->select('id')->get();
+                foreach ($equipos as $equipo) {
+                    array_push($idsEquipos, $equipo->id);
+                }
+                break;
+            }
+            case 'Planta': {
+                $equipos = Equipo::where(function($query) use ($requestjson) {
+                    $query->whereHas('sistema',function ($query) use ($requestjson) {
+                        $query->whereHas('planta',function ($query) use ($requestjson) {
+                            $query->where('id', '=' , $requestjson->taxonomia_id);
+                        });
+                    });
+                })->select('id')->get();
+                foreach ($equipos as $equipo) {
+                    array_push($idsEquipos, $equipo->id);
+                }
+                break;
+            }
+        }
+        $eventos = Evento::whereIn('equipo_id',$idsEquipos)
+            ->whereIn('tipo_evento_id', $requestjson->tipoEvento)
+            ->with('tipo_evento', 'tipo_mantenimiento', 'user', 'equipo.valoracion_ram', 'equipo.sistema.planta.campo.contrato')->get();
+
+        $eventosRango = [];
+        if ($eventos->count()) {
+            foreach ($eventos as $evento) {
+                if($this->check_date_range($requestjson->fechaInicio, $requestjson->fechaFin, $evento->fecha_inicio, $evento->fecha_fin)) {
+                    //fechas
+                    $copia_fecha_inicio = $evento->fecha_inicio ? new Carbon($evento->fecha_inicio) : $requestjson->fechaInicio;
+                    $copia_fecha_fin = $evento->fecha_fin ? new Carbon($evento->fecha_fin) : new Carbon();
+                    $diferencia_fecha_inicio = $requestjson->fechaInicio->diffInMinutes($copia_fecha_inicio, false);
+//                    dd($requestjson->fechaInicio.' -- '.$copia_fecha_inicio.' xx '.$diferencia_fecha_inicio);
+//                    if (($diferencia_fecha_inicio === 0)) $calculo_fecha_inicio = $requestjson->fechaInicio;
+                    $calculo_fecha_inicio = (($diferencia_fecha_inicio === 0) ? $requestjson->fechaInicio : ($diferencia_fecha_inicio < 0) && ($requestjson->fechaInicio->diffInMinutes($copia_fecha_fin, false))) ? $requestjson->fechaInicio : $copia_fecha_inicio;
+//                    dd($requestjson->fechaFin.' -- '.$copia_fecha_fin);
+//                    dd($requestjson->fechaFin->diffInMinutes($copia_fecha_fin, false));
+                    $calculo_fecha_final = ($requestjson->fechaFin->diffInMinutes($copia_fecha_fin, false) <= 0) ? $copia_fecha_fin : $requestjson->fechaFin;
+
+                    $evento->fecha_inicio = $calculo_fecha_inicio->toDateTimeString();
+                    $evento->fecha_fin = $calculo_fecha_final->toDateTimeString();
+                    if (($calculo_fecha_inicio->diffInMinutes($calculo_fecha_final, false) !== 0) && ($calculo_fecha_inicio->diffInMinutes($requestjson->fechaInicio, false) <= 0)) array_push($eventosRango, $evento);
+                }
+            }
+        }
+        return $eventosRango;
+    }
+
+    public function tiempoMedio (Request $request) {
+        $requestjson = json_decode($request->getContent());
+        $requestjson->fechaInicio = new Carbon(($requestjson->fechaInicio.' '.$requestjson->horaInicio));
+        $requestjson->fechaFin = new Carbon(($requestjson->fechaFin.' '.$requestjson->horaFin));
+        $response = new stdClass();
+        $response -> eventos = $this->filtraEventos($requestjson);
+        $response->data = [];
+        if (!$requestjson->rangos) {
+//            $requestjson->fechaFin = $requestjson->fechaFin->add(1, 'day');
+//            $requestjson->frecuencia = $requestjson->fechaInicio->diffInDays($requestjson->fechaFin, false).' days';
+            $rango = $this->singleData($requestjson);
+            if ($rango->data) {
+                $rango->fecha_inicial = $requestjson->fechaInicio->format('Y-m-d H:i');
+                $rango->fecha_final = $requestjson->fechaFin->add(-1, 'day')->format('Y-m-d H:i');
+                array_push($response->data, $rango);
+            }
+//            dd($requestjson->frecuencia);
+//            $requestjson->fechaFin = $requestjson->fechaFin->add(1, 'day');
+//            $response = $this->singleData($requestjson);
+//            return response()->json($response, 200);
+        } else {
+            $period = CarbonPeriod::create($requestjson->fechaInicio, $requestjson->frecuencia, $requestjson->fechaFin);
+            $period = $period->toArray();
+            for($i = 1; $i < count($period); $i++){
+                if ($requestjson->tipoResultado === "Periódico") $requestjson->fechaInicio = new Carbon($period[$i - 1]);
+                $requestjson->fechaFin = new Carbon($period[$i]);
+                $rango = $this->singleData($requestjson);
+                if ($rango->data) {
+                    $rango->fecha_inicial = $requestjson->fechaInicio->format('Y-m-d H:i');
+                    $rango->fecha_final = $requestjson->fechaFin->add(-1, 'day')->format('Y-m-d H:i');
+                    array_push($response->data, $rango);
+                }
+            }
+//            $response->data = [];
+//            $period = CarbonPeriod::create($requestjson->fechaInicio, $requestjson->frecuencia, $requestjson->fechaFin);
+//            $period = $period->toArray();
+//            for($i = 1; $i < count($period); $i++){
+//                if ($requestjson->tipoResultado === "Periódico") $requestjson->fechaInicio = new Carbon($period[$i - 1]);
+//                $requestjson->fechaFin = new Carbon($period[$i]);
+//                $rango = $this->singleData($requestjson);
+//                if ($rango->data) {
+//                    $rango->fecha_inicial = $requestjson->fechaInicio->format('Y-m-d');
+//                    $rango->fecha_final = $requestjson->fechaFin->add(-1, 'day')->format('Y-m-d');
+//                    array_push($response->data, $rango);
+//                }
+//            }
+//            $response->request = $requestjson;
+//            return response()->json($response, 200);
+        }
+
+
+        $response->request = $requestjson;
+        return response()->json($response, 200);
+    }
+
     public function singleData ($requestjson) {
         $response = new stdClass();
         $response->data = [];
@@ -80,34 +209,6 @@ class ReportesController extends Controller
             }
         }
         return $response;
-    }
-
-    public function tiempoMedio (Request $request) {
-        $requestjson = json_decode($request->getContent());
-        $requestjson->fechaInicio = new Carbon($requestjson->fechaInicio);
-        $requestjson->fechaFin = new Carbon($requestjson->fechaFin);
-        $response = new stdClass();
-        $period = CarbonPeriod::create($requestjson->fechaInicio, $requestjson->frecuencia->value, $requestjson->fechaFin);
-        if (!$requestjson->rangos || ($requestjson->rangos && $period->count() < 2)) {
-            $requestjson->fechaFin = $requestjson->fechaFin->add(1, 'day');
-            $response = $this->singleData($requestjson);
-            return response()->json($response, 200);
-        } else {
-            $response->data = [];
-            $period = $period->toArray();
-            for($i = 1; $i < count($period); $i++){
-                if ($requestjson->tipoResultado === "Periódico") $requestjson->fechaInicio = new Carbon($period[$i - 1]);
-                $requestjson->fechaFin = new Carbon($period[$i]);
-                $rango = $this->singleData($requestjson);
-                if ($rango->data) {
-                    $rango->fecha_inicial = $requestjson->fechaInicio->format('Y-m-d');
-                    $rango->fecha_final = $requestjson->fechaFin->add(-1, 'day')->format('Y-m-d');
-                    array_push($response->data, $rango);
-                }
-            }
-            $response->request = $requestjson;
-            return response()->json($response, 200);
-        }
     }
 
     public function disponibilidadRangoPlanta ($request) {
@@ -185,12 +286,13 @@ class ReportesController extends Controller
 
     public function disponibilidadRangoEquipo ($requestjson) {
         $objeto =  new disponibilidad();
-        $eventos = Evento::where('equipo_id', '=', $requestjson->taxonomia_id)->with('tipo_evento')->get();
+        $eventos = Evento::where('equipo_id', '=', $requestjson->taxonomia_id)
+            ->whereIn('tipo_evento_id', $requestjson->tipoEvento)->get();
         //tiempo total intervalo
         $objeto->intervalo = $this->objectTime($requestjson->fechaFin->diffInMinutes($requestjson->fechaInicio));
         if ($eventos->count()) {
             $total_minutos_falla_equipo = 0;
-            $total_minutos_reparacion_equipo = 0;
+//            $total_minutos_reparacion_equipo = 0;
             foreach ($eventos as $evento) {
                 if($this->check_date_range($requestjson->fechaInicio, $requestjson->fechaFin, $evento->fecha_inicio, $evento->fecha_fin)) {
                     $objeto->fallas++;
@@ -200,21 +302,25 @@ class ReportesController extends Controller
                     $calculo_fecha_inicio = ($requestjson->fechaInicio->diffInMinutes($copia_fecha_inicio, false) >= 0) ? $copia_fecha_inicio : $requestjson->fechaInicio;
                     $calculo_fecha_final = ($requestjson->fechaFin->diffInMinutes($copia_fecha_fin, false) <= 0) ? $copia_fecha_fin : $requestjson->fechaFin;
 
-                    $evento->falla = $this->objectTime($calculo_fecha_inicio->diffInMinutes($calculo_fecha_final));
-                    $total_minutos_falla_equipo = $total_minutos_falla_equipo + $evento->falla->total_minutos;
-                    //reparación
-                    $evento->reparacion = $this->objectTime(0);
-                    if($this->check_date_range($requestjson->fechaInicio, $requestjson->fechaFin, $evento->fecha_inicio_reparacion, $evento->fecha_fin_reparacion)) {
-                        $objeto->reparaciones++;
-                        $copia_fecha_inicio = $evento->fecha_inicio_reparacion ? new Carbon($evento->fecha_inicio_reparacion) : $requestjson->fechaInicio;
-                        $copia_fecha_fin = $evento->fecha_fin_reparacion ? new Carbon($evento->fecha_fin_reparacion) : new Carbon();
-                        $calculo_fecha_inicio = ($requestjson->fechaInicio->diffInMinutes($copia_fecha_inicio, false) >= 0) ? $copia_fecha_inicio : $requestjson->fechaInicio;
-                        $calculo_fecha_final = ($requestjson->fechaFin->diffInMinutes($copia_fecha_fin, false) <= 0) ? $copia_fecha_fin : $requestjson->fechaFin;
-
-                        $evento->reparacion = $this->objectTime($calculo_fecha_inicio->diffInMinutes($calculo_fecha_final));
-                        $total_minutos_reparacion_equipo = $total_minutos_reparacion_equipo + $evento->reparacion->total_minutos;
-                    }
-                    array_push($objeto->registros, $evento);
+                    $thefalla = $this->objectTime($calculo_fecha_inicio->diffInMinutes($calculo_fecha_final));
+//                    $evento->falla = $this->objectTime($calculo_fecha_inicio->diffInMinutes($calculo_fecha_final));
+//                    $evento->fecha_inicio = $calculo_fecha_inicio;
+//                    $evento->fecha_fin = $calculo_fecha_final;
+//                    $evento->downtime = $evento->falla->total_horas;
+                    $total_minutos_falla_equipo = $total_minutos_falla_equipo + $thefalla->total_minutos;
+//                    //reparación
+//                    $evento->reparacion = $this->objectTime(0);
+//                    if($this->check_date_range($requestjson->fechaInicio, $requestjson->fechaFin, $evento->fecha_inicio_reparacion, $evento->fecha_fin_reparacion)) {
+//                        $objeto->reparaciones++;
+//                        $copia_fecha_inicio = $evento->fecha_inicio_reparacion ? new Carbon($evento->fecha_inicio_reparacion) : $requestjson->fechaInicio;
+//                        $copia_fecha_fin = $evento->fecha_fin_reparacion ? new Carbon($evento->fecha_fin_reparacion) : new Carbon();
+//                        $calculo_fecha_inicio = ($requestjson->fechaInicio->diffInMinutes($copia_fecha_inicio, false) >= 0) ? $copia_fecha_inicio : $requestjson->fechaInicio;
+//                        $calculo_fecha_final = ($requestjson->fechaFin->diffInMinutes($copia_fecha_fin, false) <= 0) ? $copia_fecha_fin : $requestjson->fechaFin;
+//
+//                        $evento->reparacion = $this->objectTime($calculo_fecha_inicio->diffInMinutes($calculo_fecha_final));
+//                        $total_minutos_reparacion_equipo = $total_minutos_reparacion_equipo + $evento->reparacion->total_minutos;
+//                    }
+//                    array_push($objeto->registros, $evento);
                 }
             }
             if ($objeto->fallas) {
@@ -229,8 +335,8 @@ class ReportesController extends Controller
                 //Tiempo medio entre reparaciones
                 $objeto->mttr = $this->calculaMttr($total_minutos_falla_equipo, $objeto->fallas);
 
-                //tiempo total reparaciones
-                $objeto->reparacion = $this->objectTime($total_minutos_reparacion_equipo);
+//                //tiempo total reparaciones
+//                $objeto->reparacion = $this->objectTime($total_minutos_reparacion_equipo);
             }
         }
         return $objeto;

@@ -351,6 +351,12 @@ class EventosController extends Controller
         }
     }
 
+    public function getTiposEvento() {
+        return response()->json([
+            'tiposEvento' => TipoEvento::all()
+        ], 200);
+    }
+
     public function dianmicList(Request $request)
     {
         $requestjson = json_decode($request->getContent());

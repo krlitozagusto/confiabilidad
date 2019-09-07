@@ -26,6 +26,8 @@ Route::group(['middleware' => 'auth'], function (){
     Route::post('/eventos/registercomment', 'EventosController@registerComment');
     Route::post('/eventos/loadfile', 'EventosController@loadFile');
 
+    Route::post('/eventos/tipos', 'EventosController@getTiposEvento');
+
     Route::post('/eventos/dinamiclist', 'EventosController@dianmicList');
 
 
@@ -45,6 +47,7 @@ Route::group(['middleware' => 'auth'], function (){
 
 //Reportes
     Route::post('/reportes/tiempomedio', 'ReportesController@tiempoMedio');
+    Route::post('/reportes/listaeventos', 'ReportesController@listaEventos');
 });
 
 

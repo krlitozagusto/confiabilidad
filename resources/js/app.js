@@ -51,7 +51,7 @@ import 'material-design-icons-iconfont/dist/material-design-icons.css'
 import '@fortawesome/fontawesome-free/css/all.css'
 
 Vue.use(Vuetify, {
-    iconfont: 'fa'
+    iconfont: ['fa', 'mdi']
 })
 Vue.use(VueAxios, axios)
 Validator.localize('es', es)

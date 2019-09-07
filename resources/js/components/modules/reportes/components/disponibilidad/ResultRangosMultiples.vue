@@ -3,56 +3,114 @@
         <v-flex xs12 v-if="value && value.data && (!value.data.length || (value.data[0].planta && !value.data[0].data.registros.length))">
             <div class="title text-xs-center grey--text" >No hay registros para mostrar.</div>
         </v-flex>
-        <v-card v-else style="overflow-x: scroll !important;">
-            <v-btn @click="exportar" color="green" class="white--text">
-                <v-icon left>fas fa-file-excel</v-icon>
-                exportar
-            </v-btn>
-            <table border="1" style="min-width: 100% !important;" name="tabla" id="tabla">
-                <thead>
-                <tr>
-                    <template v-for="(header, hindex) in result.headers">
-                        <th
-                            :width="hindex === 0 ? '300' : ''"
-                            :colspan="hindex === 0 ? '' : '3'"
-                            :rowspan="hindex === 0 ? '2' : ''"
-                        >
-                            {{ header.title }}
-                        </th>
-                    </template>
-                </tr>
-                <tr>
-                    <template v-for="(header, hindex) in result.headers" v-if="hindex > 0">
-                        <th>MTBF</th>
-                        <th>MTTR</th>
-                        <th>Disp.</th>
-                    </template>
-                </tr>
-                </thead>
-                <tbody>
-                <template>
-                    <tr v-for="(row, rindex) in result.items">
-                        <template v-for="(col, cindex) in row">
-                            <td width="300" v-if="cindex === 0" :style="'background:' + col.background">
-                                {{col.title}}
-                            </td>
-                            <template v-else>
-                                <td :style="'background:' + col.background">
-                                    {{col.mtbf && col.disp !== '100%' ? `${col.mtbf.horas}H:${col.mtbf.minutos}M` : ''}}
-                                </td>
-                                <td :style="'background:' + col.background">
-                                    {{col.mttr && col.disp !== '100%' ? `${col.mttr.horas}H:${col.mttr.minutos}M` : ''}}
-                                </td>
-                                <td :style="'background:' + col.background">
-                                    {{col.disp}}
-                                </td>
-                            </template>
-                        </template>
-                    </tr>
-                </template>
-                </tbody>
-            </table>
-        </v-card>
+        <v-flex xs12 v-else>
+            <v-card>
+                <v-card-title class="py-0">
+                    <span class="headline">Resultados de la ejecución</span>
+                    <v-spacer></v-spacer>
+                    <v-btn @click="exportar" color="green" class="white--text">
+                        <v-icon left>fas fa-file-excel</v-icon>
+                        exportar
+                    </v-btn>
+                </v-card-title>
+                <v-divider></v-divider>
+                <v-tabs
+                    v-model="active"
+                    color="cyan"
+                    dark
+                    slider-color="yellow"
+                >
+                    <v-tab ripple>
+                        Disponibilidad
+
+                    </v-tab>
+                    <v-tab-item>
+                        <v-card flat style="overflow-x: scroll !important; overflow-y: hidden !important;">
+                            <table border="1" style="min-width: 100% !important;" name="tabla" id="tabla">
+                                <thead>
+                                <tr>
+                                    <template v-for="(header, hindex) in result.headers">
+                                        <th
+                                            :width="hindex === 0 ? '300' : ''"
+                                            :colspan="hindex === 0 ? '' : '3'"
+                                            :rowspan="hindex === 0 ? '2' : ''"
+                                        >
+                                            {{ header.title }}
+                                        </th>
+                                    </template>
+                                </tr>
+                                <tr>
+                                    <template v-for="(header, hindex) in result.headers" v-if="hindex > 0">
+                                        <th>MTBF</th>
+                                        <th>MTTR</th>
+                                        <th>Disp.</th>
+                                    </template>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <template>
+                                    <tr v-for="(row, rindex) in result.items">
+                                        <template v-for="(col, cindex) in row">
+                                            <td width="300" v-if="cindex === 0" :style="'background:' + col.background">
+                                                {{col.title}}
+                                            </td>
+                                            <template v-else>
+                                                <td :style="'background:' + col.background">
+                                                    {{col.mtbf && col.disp !== '100%' ? `${col.mtbf.horas}H:${col.mtbf.minutos}M` : ''}}
+                                                </td>
+                                                <td :style="'background:' + col.background">
+                                                    {{col.mttr && col.disp !== '100%' ? `${col.mttr.horas}H:${col.mttr.minutos}M` : ''}}
+                                                </td>
+                                                <td :style="'background:' + col.background">
+                                                    {{col.disp}}
+                                                </td>
+                                            </template>
+                                        </template>
+                                    </tr>
+                                </template>
+                                </tbody>
+                            </table>
+                        </v-card>
+                    </v-tab-item>
+                    <v-tab ripple>
+                        Eventos
+
+                    </v-tab>
+                    <v-tab-item>
+                        <v-card flat style="overflow-x: scroll !important; overflow-y: hidden !important;">
+                            <table border="1" style="min-width: 100% !important;" name="tablaitems" id="tablaitems">
+                                <thead>
+                                <tr>
+                                    <th v-for="header in headers.map(x => x.title)">
+                                        {{ header }}
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="row in itemsEventos">
+                                    <td v-for="propiedad in headers.map(x => x.propiedad)">
+                                        {{row[propiedad]}}
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <table style="visibility: collapse !important;" name="tablaitemsexcel" id="tablaitemsexcel">
+                                <tr>
+                                    <th v-for="header in headers.map(x => x.title)">
+                                        {{ header }}
+                                    </th>
+                                </tr>
+                                <tr v-for="row in itemsEventos">
+                                    <td v-for="propiedad in headers.map(x => x.propiedad)">
+                                        '{{row[propiedad]}}'
+                                    </td>
+                                </tr>
+                            </table>
+                        </v-card>
+                    </v-tab-item>
+                </v-tabs>
+            </v-card>
+        </v-flex>
     </v-layout>
 </template>
 
@@ -71,22 +129,68 @@
             }
         },
         data: () => ({
-            result: null
+            active: null,
+            result: null,
+            eventos: [],
+            headers: [
+                {propiedad: 'id', title: 'Evento'},
+                {propiedad: 'contrato', title: 'Contrato'},
+                {propiedad: 'campo', title: 'Campo'},
+                {propiedad: 'planta', title: 'Planta'},
+                {propiedad: 'sistema', title: 'Sistema'},
+                {propiedad: 'equipo', title: 'Equipo'},
+                {propiedad: 'tipoEvento', title: 'Tipo evento'},
+                {propiedad: 'tipoMantenimiento', title: 'Tipo mantenimiento'},
+                {propiedad: 'fechaInicio', title: 'Fecha inicio'},
+                {propiedad: 'fechaFin', title: 'Fecha fin'},
+                {propiedad: 'downtime', title: 'Downtime'},
+                {propiedad: 'fechaInicioReparacion', title: 'Fecha inicio reparación'},
+                {propiedad: 'fechaFinReparacion', title: 'Fecha fin reparación'},
+                {propiedad: 'contractual', title: 'Es contractual'},
+                {propiedad: 'estado', title: 'Estado'},
+                {propiedad: 'usuario', title: 'Usuario registra'},
+                {propiedad: 'fechaRegistro', title: 'Fecha registra'}
+            ],
+            itemsEventos: []
         }),
         watch: {
           'value' (val) {
               val && this.resolveData()
-          }
+          },
+            'eventos' (val) {
+                val && this.resolveDataEventos()
+            }
         },
         created () {
             this.resolveData()
         },
         methods: {
             exportar () {
-                let elt = document.getElementById('tabla')
-                let wb = XLSX.utils.table_to_book(elt, {sheet: 'Disponibilidad'})
-                for (const cell in wb.Sheets.Disponibilidad) {
-                    if (wb.Sheets.Disponibilidad[cell].v && !isNaN(wb.Sheets.Disponibilidad[cell].v)) wb.Sheets.Disponibilidad[cell].z = '0.00%'
+                // let elt = document.getElementById('tablaitems')
+                // let sh = XLSX.utils.json_to_sheet(this.items)
+                // let wb = XLSX.utils.book_new()
+                // XLSX.utils.book_append_sheet(wb, sh, 'listadoEventos')
+                // this.headers.forEach(x => {
+                //     // wb.Sheets['listadoEventos'][`${x.letra}1`].v = x.title
+                // })
+                // return XLSX.writeFile(wb, 'Eventos.xlsx', { bookType: 'xlsx', bookSST: true})
+
+                let disponibilidad = document.getElementById('tabla')
+                let eventos = document.getElementById('tablaitemsexcel')
+                let wb = XLSX.utils.book_new()
+                let sh1 = XLSX.utils.table_to_sheet(disponibilidad)
+                let sh2 = XLSX.utils.table_to_sheet(eventos)
+                XLSX.utils.book_append_sheet(wb, sh1, 'disponibilidad')
+                for (const cell in wb.Sheets['disponibilidad']) {
+                    if (wb.Sheets['disponibilidad'][cell].v && !isNaN(wb.Sheets['disponibilidad'][cell].v)) wb.Sheets['disponibilidad'][cell].z = '0.00%'
+                }
+                XLSX.utils.book_append_sheet(wb, sh2, 'eventos')
+                for (const cell in wb.Sheets['eventos']) {
+                    if (wb.Sheets['eventos'][cell].v && wb.Sheets['eventos'][cell].v.indexOf(`'`) > -1) wb.Sheets['eventos'][cell].v = wb.Sheets['eventos'][cell].v.replace(new RegExp(/(')/i, 'g'), '')
+                    if (wb.Sheets['eventos'][cell].v && wb.Sheets['eventos'][cell].v.indexOf('=') > -1) {
+                        wb.Sheets['eventos'][cell] = { f: wb.Sheets['eventos'][cell].v.split('=')[1] }
+                    }
+
                 }
                 return XLSX.writeFile(wb, 'disponibilidad.xls')
             },
@@ -95,6 +199,7 @@
                     let headers = []
                     let items = []
                     let cols = []
+                    this.eventos = this.value.eventos
                     headers.push({title: 'Taxonomía', subtitle: ''})
                     cols.push({
                         background:  this.value.request.tipoTaxonomia === 'Planta' ? 'aquamarine' : this.value.request.tipoTaxonomia === 'Sistema' ? 'antiquewhite' : '',
@@ -187,6 +292,42 @@
                     }
                     this.result = {headers: headers, items: items, request: this.value.request}
                 }
+            },
+            resolveDataEventos () {
+                this.itemsEventos = this.eventos.map(x => {
+                    return {
+                        id: x.id,
+                        contrato: `${x.equipo.sistema.planta.campo.contrato.numero} - ${x.equipo.sistema.planta.campo.contrato.descripcion}`,
+                        campo: `${x.equipo.sistema.planta.campo.codigo} - ${x.equipo.sistema.planta.campo.nombre}`,
+                        planta: `${x.equipo.sistema.planta.descripcion} - ${x.equipo.sistema.planta.nombre}`,
+                        sistema: `${x.equipo.sistema.tag} - ${x.equipo.sistema.nombre}`,
+                        equipo: `${x.equipo.tag} - ${x.equipo.nombre}`,
+                        tipoEvento: `${x.tipo_evento.abreviado} - ${x.tipo_evento.nombre}`,
+                        tipoMantenimiento: x.tipo_mantenimiento.nombre,
+                        fechaInicio: x.fecha_inicio,
+                        fechaFin: x.fecha_fin,
+                        downtime: this.downTime(x.fecha_inicio, x.fecha_fin),
+                        fechaInicioReparacion: x.fecha_inicio_reparacion,
+                        fechaFinReparacion: x.fecha_fin_reparacion,
+                        contractual: x.contractual ? 'SI' : 'NO',
+                        estado: x.estado,
+                        usuario: x.user.name,
+                        fechaRegistro: x.fecha_registro
+                    }
+                })
+            },
+            downTime (fi, ff) {
+                if (fi) {
+                    let fechaInicio = fi.split(' ')[0]
+                    let horaInicio = fi.split(' ')[1] || '00:00'
+                    let fechaFin = ff.split(' ')[0] || this.moment().format('YYYY-MM-DD')
+                    let horaFin = ff.split(' ')[1] || (ff.split(' ')[0] ? '00:00' : this.moment().format('HH:mm'))
+
+                    let hi = this.moment(`${fechaInicio} ${horaInicio}`)
+                    let hf = this.moment(`${fechaFin} ${horaFin}`)
+                    return String(Math.round((parseFloat(hf.diff(hi, 'hours', true)))*100)/100)
+                }
+                return '0'
             }
         }
     }

@@ -33,7 +33,7 @@
                 </table>
                 <table style="visibility: collapse !important;" name="tablaitemsexcel" id="tablaitemsexcel">
                     <tr>
-                        <th v-for="(header, hindex) in headers.map(x => x.title)">
+                        <th v-for="header in headers.map(x => x.title)">
                             {{ header }}
                         </th>
                     </tr>
