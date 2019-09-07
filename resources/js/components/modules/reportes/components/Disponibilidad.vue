@@ -329,8 +329,7 @@
                 <v-card-actions>
                     <v-btn flat :loading="loading" @click="dialog = false">Cerrar</v-btn>
                     <v-spacer></v-spacer>
-                    <v-btn color="error darken-1" :loading="loading" class="white--text" @click="listaEventos">Listar eventos</v-btn>
-                    <v-btn color="blue darken-1" :loading="loading" class="white--text" :disabled="!! result" @click="submit">Ejecutar</v-btn>
+                    <v-btn color="blue darken-1" :loading="loading" class="white--text" :disabled="!!result" @click="submit">Ejecutar</v-btn>
                 </v-card-actions>
 
                 <v-card-text>
@@ -379,7 +378,6 @@
             minDate: '1900-01-01',
             maxDate: new Date().toISOString().substr(0, 10),
             result: null,
-            eventos: [],
             data: {
                 fechaInicio: null,
                 fechaFin: null,
@@ -434,24 +432,6 @@
         methods: {
 		    open () {
 		        this.dialog = true
-            },
-            listaEventos () {
-                this.$validator.validateAll().then(result => {
-                    if (result) {
-                        this.loading = true
-                        this.data.frecuencia = `${this.data.frecuenciaCantidad} ${this.data.frecuenciaTipo}`
-                        axios.post(`reportes/listaeventos`, this.data)
-                            .then(response => {
-                                console.log('el response de los eventos', response.data)
-                                this.eventos = response.data.eventos
-                                this.loading = false
-                            })
-                            .catch(error => {
-                                this.loading = false
-                                this.$store.commit('SNACKBAR', {color: 'error', message: `al listar los eventos`, error: error})
-                            })
-                    }
-                })
             },
             submit () {
                 this.result = null

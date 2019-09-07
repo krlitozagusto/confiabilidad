@@ -114,15 +114,15 @@
                                      }'
                             ></postulador-v2>
                         </v-flex>
-                        <v-flex xs12 sm12 md4>
+                        <v-flex xs12 sm12 md2>
                             <v-layout row wrap style="position: absolute !important;">
-                                <label>Fecha inicio de evento</label>
+                                <label>Fecha inicio</label>
                             </v-layout>
                             <v-layout row wrap style="margin-top: -4px !important;">
                                 <v-flex xs12 sm6 md6>
                                     <v-menu
-                                        ref="fechaRangoInicial"
-                                        v-model="menuRangoInicial"
+                                        ref="fechaInicio"
+                                        v-model="menuInicio"
                                         :close-on-content-click="false"
                                         :nudge-right="40"
                                         lazy
@@ -133,23 +133,22 @@
                                     >
                                         <v-text-field
                                             slot="activator"
-                                            single-line
-                                            label="Rango inicial"
-                                            v-model="data.rangoInicial"
-                                            name="rango inicial"
+                                            placeholder="Fecha"
+                                            v-model="data.fechaInicio"
+                                            name="fecha inicio"
                                             v-validate="'required|date_format:yyyy-MM-dd|date_between:' + minDate + ',' + maxDate + ',true'"
-                                            :error-messages="errors.collect('rango inicial')"
+                                            :error-messages="errors.collect('fecha inicio')"
                                             readonly
                                         ></v-text-field>
                                         <v-date-picker
                                             ref="picker"
-                                            v-model="data.rangoInicial"
+                                            v-model="data.fechaInicio"
                                             locale="es-co"
                                             :min="minDate"
                                             :max="maxDate"
-                                            @input="$refs.fechaRangoInicial.save(data.rangoInicial)"
+                                            @input="$refs.fechaInicio.save(data.fechaInicio)"
                                             @change="() => {
-                                          let index = $validator.errors.items.findIndex(x => x.field === 'rango inicial')
+                                          let index = $validator.errors.items.findIndex(x => x.field === 'fecha inicio')
                                           $validator.errors.items.splice((index !== -1) ? index : 0, (index !== -1) ? 1 : 0)
                                         }"
                                         ></v-date-picker>
@@ -157,8 +156,49 @@
                                 </v-flex>
                                 <v-flex xs12 sm6 md6>
                                     <v-menu
-                                        ref="fechaRangoFinal"
-                                        v-model="menuRangoFinal"
+                                        ref="menuHoraInicio"
+                                        v-model="menuHoraInicio"
+                                        :close-on-content-click="false"
+                                        :nudge-right="40"
+                                        :return-value.sync="data.horaInicio"
+                                        lazy
+                                        transition="scale-transition"
+                                        offset-y
+                                        full-width
+                                        max-width="290px"
+                                        min-width="290px"
+                                    >
+                                        <template v-slot:activator="{ on }">
+                                            <v-text-field
+                                                v-model="data.horaInicio"
+                                                placeholder="Hora"
+                                                readonly
+                                                v-on="on"
+                                                name="hora inicio"
+                                                v-validate="'required'"
+                                                :error-messages="errors.collect('hora inicio')"
+                                            ></v-text-field>
+                                        </template>
+                                        <v-time-picker
+                                            v-if="menuHoraInicio"
+                                            v-model="data.horaInicio"
+                                            format="24hr"
+                                            full-width
+                                            @click:minute="$refs.menuHoraInicio.save(data.horaInicio)"
+                                        ></v-time-picker>
+                                    </v-menu>
+                                </v-flex>
+                            </v-layout>
+                        </v-flex>
+                        <v-flex xs12 sm12 md2>
+                            <v-layout row wrap style="position: absolute !important;">
+                                <label>Fecha fin</label>
+                            </v-layout>
+                            <v-layout row wrap style="margin-top: -4px !important;">
+                                <v-flex xs12 sm6 md6>
+                                    <v-menu
+                                        ref="fechaFin"
+                                        v-model="menuFin"
                                         :close-on-content-click="false"
                                         :nudge-right="40"
                                         lazy
@@ -169,33 +209,83 @@
                                     >
                                         <v-text-field
                                             slot="activator"
-                                            single-line
-                                            label="Rango final"
-                                            v-model="data.rangoFinal"
-                                            name="rango final"
+                                            placeholder="Fecha"
+                                            v-model="data.fechaFin"
+                                            name="fecha fin"
                                             v-validate="'required|date_format:yyyy-MM-dd|date_between:' + minDate + ',' + maxDate + ',true'"
-                                            :error-messages="errors.collect('rango final')"
+                                            :error-messages="errors.collect('fecha fin')"
                                             readonly
                                         ></v-text-field>
                                         <v-date-picker
                                             ref="picker"
-                                            v-model="data.rangoFinal"
+                                            v-model="data.fechaFin"
                                             locale="es-co"
                                             :min="minDate"
                                             :max="maxDate"
-                                            @input="$refs.fechaRangoFinal.save(data.rangoFinal)"
+                                            @input="$refs.fechaFin.save(data.fechaFin)"
                                             @change="() => {
-                                          let index = $validator.errors.items.findIndex(x => x.field === 'rango final')
+                                          let index = $validator.errors.items.findIndex(x => x.field === 'fecha fin')
                                           $validator.errors.items.splice((index !== -1) ? index : 0, (index !== -1) ? 1 : 0)
                                         }"
                                         ></v-date-picker>
                                     </v-menu>
                                 </v-flex>
+                                <v-flex xs12 sm6 md6>
+                                    <v-menu
+                                        ref="menuHoraFin"
+                                        v-model="menuHoraFin"
+                                        :close-on-content-click="false"
+                                        :nudge-right="40"
+                                        :return-value.sync="data.horaFin"
+                                        lazy
+                                        transition="scale-transition"
+                                        offset-y
+                                        full-width
+                                        max-width="290px"
+                                        min-width="290px"
+                                    >
+                                        <template v-slot:activator="{ on }">
+                                            <v-text-field
+                                                v-model="data.horaFin"
+                                                placeholder="Hora"
+                                                readonly
+                                                v-on="on"
+                                                name="hora fin"
+                                                v-validate="'required'"
+                                                :error-messages="errors.collect('hora fin')"
+                                            ></v-text-field>
+                                        </template>
+                                        <v-time-picker
+                                            v-if="menuHoraFin"
+                                            v-model="data.horaFin"
+                                            format="24hr"
+                                            full-width
+                                            @click:minute="$refs.menuHoraFin.save(data.horaFin)"
+                                        ></v-time-picker>
+                                    </v-menu>
+                                </v-flex>
                             </v-layout>
                         </v-flex>
+                        <v-flex xs12 sm12 md6>
+                            <v-select
+                                label="Tipo de evento"
+                                :items="tiposEvento"
+                                item-value="id"
+                                item-text="nombre"
+                                v-model="data.tipoEvento"
+                                name="tipo de evento"
+                                v-validate="'required'"
+                                :error-messages="errors.collect('tipo de evento')"
+                                multiple
+                                chips
+                                deletable-chips
+                                small-chips
+                                hide-selected
+                                no-data-text="No hay tipos de evento para seleccionar"
+                            ></v-select>
+                        </v-flex>
                     </v-layout>
-                    <result-list v-if="result" :result="result"></result-list>
-                    <v-flex xs12 v-else>
+                    <v-flex xs12 v-if="!eventos">
                         <div v-if="loading" class="title text-xs-center grey--text" >Procesando...</div>
                         <div v-else class="title text-xs-center grey--text" >Click en ejecutar para obtener resultados.</div>
                     </v-flex>
@@ -205,8 +295,11 @@
             <v-card-actions>
                 <v-btn flat :loading="loading" @click="dialog = false">Cerrar</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" :loading="loading" class="white--text" @click="submit">Ejecutar</v-btn>
+                <v-btn color="blue darken-1" :loading="loading" :disabled="!!eventos" class="white--text" @click="submit">Ejecutar</v-btn>
             </v-card-actions>
+            <v-card-text>
+                <result-list v-if="eventos" :result="eventos"></result-list>
+            </v-card-text>
         </v-card>
     </v-dialog>
 </template>
@@ -222,53 +315,77 @@
         data: () => ({
             loading: false,
             dialog: false,
-            menuRangoInicial: false,
-            menuRangoFinal: false,
+            menuInicio: false,
+            menuFin: false,
+            menuHoraInicio: false,
+            menuHoraFin: false,
             minDate: '1900-01-01',
             maxDate: new Date().toISOString().substr(0, 10),
-            result: null,
+            eventos: null,
             data: {
-                rangoInicial: null,
-                rangoFinal: null,
+                fechaInicio: null,
+                fechaFin: null,
+                horaInicio: null,
+                horaFin: null,
                 taxonomia: null,
                 taxonomia_id: null,
+                tipoEvento: [],
                 tipoTaxonomia: 'Equipo'
-            }
+            },
+            tiposEvento: []
         }),
         watch: {
-		    'data.tipoTaxonomia' (val) {
+            'data.tipoTaxonomia' (val) {
                 this.data.taxonomia = null
                 this.data.taxonomia_id = null
-                val && (this.result = null)
+                val && (this.eventos = null)
             },
-		  'data.taxonomia_id' (val) {
-              val && (this.result = null)
-          },
-            'data.rangoInicial' (val) {
-              val && (this.result = null)
-          },
-            'data.rangoFinal' (val) {
-              val && (this.result = null)
-          }
+            'data.taxonomia_id' (val) {
+                val && (this.eventos = null)
+            },
+            'data.fechaInicio' (val) {
+                val && (this.eventos = null)
+            },
+            'data.fechaFin' (val) {
+                val && (this.eventos = null)
+            },
+            'data.horaInicio' (val) {
+                val && (this.eventos = null)
+            },
+            'data.horaFin' (val) {
+                val && (this.eventos = null)
+            }
+        },
+        created () {
+            this.getTiposEvento()
         },
         methods: {
             submit () {
-                this.result = null
+                this.eventos = null
                 this.$validator.validateAll().then(result => {
                     if (result) {
                         this.loading = true
-                        axios.post(`eventos/dinamiclist`, this.data)
+                        axios.post(`reportes/listaeventos`, this.data)
                             .then(response => {
                                 console.log('el response del reporte', response.data)
-                                this.result = response.data.data
+                                this.eventos = response.data.eventos
                                 this.loading = false
                             })
                             .catch(error => {
                                 this.loading = false
-                                this.$store.commit('SNACKBAR', {color: 'error', message: `al generar el reporte`, error: error})
+                                this.$store.commit('SNACKBAR', {color: 'error', message: `al generar el reporte de eventos`, error: error})
                             })
                     }
                 })
+            },
+            getTiposEvento () {
+                axios.post(`eventos/tipos`)
+                    .then(response => {
+                        this.tiposEvento = response.data.tiposEvento
+                    })
+                    .catch(error => {
+                        this.$store.commit('SNACKBAR', {color: 'error', message: `al traer los tipos de evento`, error: error})
+                    })
             }
         }
 	}

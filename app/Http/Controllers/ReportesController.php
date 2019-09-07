@@ -62,14 +62,8 @@ class ReportesController extends Controller
 
     public function listaEventos (Request $request) {
         $requestjson = json_decode($request->getContent());
-        $requestjson->fechaInicio = new Carbon($requestjson->fechaInicio);
-        $requestjson->fechaFin = new Carbon($requestjson->fechaFin);
-//        if (!$requestjson->rangos) {
-//            $requestjson->fechaFin = $requestjson->fechaFin->add(1, 'day');
-//            $eventosfiltrados = $this->filtraEventos($requestjson);
-//        } else {
-//
-//        }
+        $requestjson->fechaInicio = new Carbon(($requestjson->fechaInicio.' '.$requestjson->horaInicio));
+        $requestjson->fechaFin = new Carbon(($requestjson->fechaFin.' '.$requestjson->horaFin));
         $eventosfiltrados = $this->filtraEventos($requestjson);
         return response()->json([
             'eventos' => $eventosfiltrados
@@ -78,7 +72,6 @@ class ReportesController extends Controller
 
     public function filtraEventos ($requestjson) {
         $idsEquipos = [];
-//        $requestjson->fechaFin = $requestjson->fechaFin->add(1, 'day');
         switch ($requestjson->tipoTaxonomia) {
             case 'Equipo': {
                 array_push($idsEquipos, $requestjson->taxonomia_id);
@@ -117,16 +110,14 @@ class ReportesController extends Controller
                     $copia_fecha_inicio = $evento->fecha_inicio ? new Carbon($evento->fecha_inicio) : $requestjson->fechaInicio;
                     $copia_fecha_fin = $evento->fecha_fin ? new Carbon($evento->fecha_fin) : new Carbon();
                     $diferencia_fecha_inicio = $requestjson->fechaInicio->diffInMinutes($copia_fecha_inicio, false);
-//                    dd($requestjson->fechaInicio.' -- '.$copia_fecha_inicio.' xx '.$diferencia_fecha_inicio);
-//                    if (($diferencia_fecha_inicio === 0)) $calculo_fecha_inicio = $requestjson->fechaInicio;
+                    $diferencia_fecha_fin = $requestjson->fechaFin->diffInMinutes($copia_fecha_fin, false);
+
                     $calculo_fecha_inicio = (($diferencia_fecha_inicio === 0) ? $requestjson->fechaInicio : ($diferencia_fecha_inicio < 0) && ($requestjson->fechaInicio->diffInMinutes($copia_fecha_fin, false))) ? $requestjson->fechaInicio : $copia_fecha_inicio;
-//                    dd($requestjson->fechaFin.' -- '.$copia_fecha_fin);
-//                    dd($requestjson->fechaFin->diffInMinutes($copia_fecha_fin, false));
-                    $calculo_fecha_final = ($requestjson->fechaFin->diffInMinutes($copia_fecha_fin, false) <= 0) ? $copia_fecha_fin : $requestjson->fechaFin;
+                    $calculo_fecha_fin = ($diferencia_fecha_fin === 0) ? $requestjson->fechaFin : ($diferencia_fecha_fin < 0) ? $copia_fecha_fin : $requestjson->fechaFin;
 
                     $evento->fecha_inicio = $calculo_fecha_inicio->toDateTimeString();
-                    $evento->fecha_fin = $calculo_fecha_final->toDateTimeString();
-                    if (($calculo_fecha_inicio->diffInMinutes($calculo_fecha_final, false) !== 0) && ($calculo_fecha_inicio->diffInMinutes($requestjson->fechaInicio, false) <= 0)) array_push($eventosRango, $evento);
+                    $evento->fecha_fin = $calculo_fecha_fin->toDateTimeString();
+                    if (($calculo_fecha_inicio->diffInMinutes($calculo_fecha_fin, false) !== 0) && ($calculo_fecha_inicio->diffInMinutes($requestjson->fechaInicio, false) <= 0)) array_push($eventosRango, $evento);
                 }
             }
         }
@@ -295,19 +286,35 @@ class ReportesController extends Controller
 //            $total_minutos_reparacion_equipo = 0;
             foreach ($eventos as $evento) {
                 if($this->check_date_range($requestjson->fechaInicio, $requestjson->fechaFin, $evento->fecha_inicio, $evento->fecha_fin)) {
-                    $objeto->fallas++;
-                    //fallando
+                    //fechas
                     $copia_fecha_inicio = $evento->fecha_inicio ? new Carbon($evento->fecha_inicio) : $requestjson->fechaInicio;
                     $copia_fecha_fin = $evento->fecha_fin ? new Carbon($evento->fecha_fin) : new Carbon();
-                    $calculo_fecha_inicio = ($requestjson->fechaInicio->diffInMinutes($copia_fecha_inicio, false) >= 0) ? $copia_fecha_inicio : $requestjson->fechaInicio;
-                    $calculo_fecha_final = ($requestjson->fechaFin->diffInMinutes($copia_fecha_fin, false) <= 0) ? $copia_fecha_fin : $requestjson->fechaFin;
+                    $diferencia_fecha_inicio = $requestjson->fechaInicio->diffInMinutes($copia_fecha_inicio, false);
+                    $diferencia_fecha_fin = $requestjson->fechaFin->diffInMinutes($copia_fecha_fin, false);
 
-                    $thefalla = $this->objectTime($calculo_fecha_inicio->diffInMinutes($calculo_fecha_final));
+                    $calculo_fecha_inicio = (($diferencia_fecha_inicio === 0) ? $requestjson->fechaInicio : ($diferencia_fecha_inicio < 0) && ($requestjson->fechaInicio->diffInMinutes($copia_fecha_fin, false))) ? $requestjson->fechaInicio : $copia_fecha_inicio;
+                    $calculo_fecha_fin = ($diferencia_fecha_fin === 0) ? $requestjson->fechaFin : ($diferencia_fecha_fin < 0) ? $copia_fecha_fin : $requestjson->fechaFin;
+
+                    if (($calculo_fecha_inicio->diffInMinutes($calculo_fecha_fin, false) !== 0) && ($calculo_fecha_inicio->diffInMinutes($requestjson->fechaInicio, false) <= 0)) {
+                        $objeto->fallas++;
+                        $thefalla = $this->objectTime($calculo_fecha_inicio->diffInMinutes($calculo_fecha_fin));
+                        $total_minutos_falla_equipo = $total_minutos_falla_equipo + $thefalla->total_minutos;
+                    }
+
+                    // lo viejo
+//                    $objeto->fallas++;
+                    //fallando
+//                    $copia_fecha_inicio = $evento->fecha_inicio ? new Carbon($evento->fecha_inicio) : $requestjson->fechaInicio;
+//                    $copia_fecha_fin = $evento->fecha_fin ? new Carbon($evento->fecha_fin) : new Carbon();
+//                    $calculo_fecha_inicio = ($requestjson->fechaInicio->diffInMinutes($copia_fecha_inicio, false) >= 0) ? $copia_fecha_inicio : $requestjson->fechaInicio;
+//                    $calculo_fecha_final = ($requestjson->fechaFin->diffInMinutes($copia_fecha_fin, false) <= 0) ? $copia_fecha_fin : $requestjson->fechaFin;
+
+//                    $thefalla = $this->objectTime($calculo_fecha_inicio->diffInMinutes($calculo_fecha_fin));
 //                    $evento->falla = $this->objectTime($calculo_fecha_inicio->diffInMinutes($calculo_fecha_final));
 //                    $evento->fecha_inicio = $calculo_fecha_inicio;
 //                    $evento->fecha_fin = $calculo_fecha_final;
 //                    $evento->downtime = $evento->falla->total_horas;
-                    $total_minutos_falla_equipo = $total_minutos_falla_equipo + $thefalla->total_minutos;
+//                    $total_minutos_falla_equipo = $total_minutos_falla_equipo + $thefalla->total_minutos;
 //                    //reparación
 //                    $evento->reparacion = $this->objectTime(0);
 //                    if($this->check_date_range($requestjson->fechaInicio, $requestjson->fechaFin, $evento->fecha_inicio_reparacion, $evento->fecha_fin_reparacion)) {

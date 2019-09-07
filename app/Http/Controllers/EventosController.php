@@ -356,39 +356,5 @@ class EventosController extends Controller
             'tiposEvento' => TipoEvento::all()
         ], 200);
     }
-
-    public function dianmicList(Request $request)
-    {
-        $requestjson = json_decode($request->getContent());
-        $requestjson->rangoFinal = new Carbon($requestjson->rangoFinal);
-        $requestjson->rangoFinal = $requestjson->rangoFinal->add(1, 'day')->format('Y-m-d');
-        $query = QueryBuilder::for(Evento::class)
-            ->with('tipo_evento', 'tipo_mantenimiento', 'user', 'equipo.valoracion_ram', 'equipo.sistema.planta.campo.contrato')
-            ->whereBetween('fecha_inicio', array($requestjson->rangoInicial, $requestjson->rangoFinal));
-        switch ($requestjson->tipoTaxonomia) {
-            case 'Equipo': {
-                $query = $query
-                    ->where('equipo_id', '=', $requestjson->taxonomia_id);
-                break;
-            }
-            case 'Sistema': {
-                $query = $query
-                ->join('equipos', 'equipos.id', '=', 'eventos.equipo_id')
-                ->join('sistemas', 'sistemas.id', '=', 'equipos.sistema_id')
-                ->where('sistemas.id', '=', $requestjson->taxonomia_id)
-                ->select('eventos.*');
-                break;
-            }
-            case 'Planta': {
-                $query = $query
-                    ->join('equipos', 'equipos.id', '=', 'eventos.equipo_id')
-                    ->join('sistemas', 'sistemas.id', '=', 'equipos.sistema_id')
-                    ->join('plantas', 'plantas.id', '=', 'sistemas.planta_id')
-                    ->where('plantas.id', '=', $requestjson->taxonomia_id)
-                    ->select('eventos.*');
-                break;
-            }
-        }
-        return new Resource($query->get());
-    }
+    
 }

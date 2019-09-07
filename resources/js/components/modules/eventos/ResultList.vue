@@ -90,15 +90,6 @@
         },
         methods: {
             exportar () {
-                // let elt = document.getElementById('tablaitems')
-                // let sh = XLSX.utils.json_to_sheet(this.items)
-                // let wb = XLSX.utils.book_new()
-                // XLSX.utils.book_append_sheet(wb, sh, 'listadoEventos')
-                // this.headers.forEach(x => {
-                //     // wb.Sheets['listadoEventos'][`${x.letra}1`].v = x.title
-                // })
-                // return XLSX.writeFile(wb, 'Eventos.xlsx', { bookType: 'xlsx', bookSST: true})
-
                 let elt = document.getElementById('tablaitemsexcel')
                 let wb = XLSX.utils.table_to_book(elt, {sheet: 'tablaitemsexcel'})
                 for (const cell in wb.Sheets['tablaitemsexcel']) {

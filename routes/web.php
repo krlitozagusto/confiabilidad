@@ -28,8 +28,6 @@ Route::group(['middleware' => 'auth'], function (){
 
     Route::post('/eventos/tipos', 'EventosController@getTiposEvento');
 
-    Route::post('/eventos/dinamiclist', 'EventosController@dianmicList');
-
 
 //Equipos
     Route::post('/equipos/panel', 'EquiposController@panel');
