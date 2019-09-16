@@ -81,14 +81,14 @@
                             <table border="1" style="min-width: 100% !important;" name="tablaitems" id="tablaitems">
                                 <thead>
                                 <tr>
-                                    <th v-for="header in headers.map(x => x.title)">
+                                    <th class="pa-2" :style="`min-width: ${header === 'Comentarios' ? '500' : '120'}px !important;`" v-for="header in headers.map(x => x.title)">
                                         {{ header }}
                                     </th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr v-for="row in itemsEventos">
-                                    <td v-for="propiedad in headers.map(x => x.propiedad)">
+                                    <td class="pa-2" v-for="propiedad in headers.map(x => x.propiedad)">
                                         {{row[propiedad]}}
                                     </td>
                                 </tr>
@@ -126,6 +126,10 @@
             delegado: {
                 type: Boolean,
                 default: false
+            },
+            tipos: {
+                type: Object,
+                default: () => {}
             }
         },
         data: () => ({
@@ -146,10 +150,7 @@
                 {propiedad: 'downtime', title: 'Downtime'},
                 {propiedad: 'fechaInicioReparacion', title: 'Fecha inicio reparación'},
                 {propiedad: 'fechaFinReparacion', title: 'Fecha fin reparación'},
-                {propiedad: 'contractual', title: 'Es contractual'},
-                {propiedad: 'estado', title: 'Estado'},
-                {propiedad: 'usuario', title: 'Usuario registra'},
-                {propiedad: 'fechaRegistro', title: 'Fecha registra'}
+                {propiedad: 'contractual', title: 'Es contractual'}
             ],
             itemsEventos: []
         }),
@@ -294,8 +295,40 @@
                 }
             },
             resolveDataEventos () {
+                // Orden de trabajo
+                this.headers.push(
+                    {propiedad: 'ordenNumero', title: 'número orden'},
+                    {propiedad: 'ordenNumeroAviso', title: 'número aviso'},
+                    {propiedad: 'ordenPuestoTrabajo', title: 'puesto trabajo'},
+                    {propiedad: 'ordenDescripcion', title: 'descripción'}
+                )
+                // Modo de falla
+                this.headers.push(
+                    {propiedad: 'fallaSintoma', title: 'Síntoma'},
+                    {propiedad: 'fallaSistema', title: 'Sistema'},
+                    {propiedad: 'fallaParte', title: 'Parte'},
+                    {propiedad: 'fallaAccionCorrectiva', title: 'Acción correctiva'}
+                )
+                // Impactos
+                this.tipos.tiposImpacto.forEach(x => {
+                    this.headers.push({propiedad: `impacto${x.id}`, title: x.nombre})
+                })
+                // Gastos
+                this.tipos.tiposGasto.forEach(x => {
+                    this.headers.push({propiedad: `gasto${x.id}`, title: x.nombre})
+                })
+                // Registro
+                this.headers.push(
+                    {propiedad: 'comentarios', title: 'Comentarios'},
+                    {propiedad: 'estado', title: 'Estado'},
+                    {propiedad: 'usuario', title: 'Usuario registra'},
+                    {propiedad: 'fechaRegistro', title: 'Fecha registra'}
+                )
+
                 this.itemsEventos = this.eventos.map(x => {
-                    return {
+                    let orden = x.orden_trabajos.length ? x.orden_trabajos[0] : null
+                    let falla = x.fallas.length ? x.fallas[0] : null
+                    let registro = {
                         id: x.id,
                         contrato: `${x.equipo.sistema.planta.campo.contrato.numero} - ${x.equipo.sistema.planta.campo.contrato.descripcion}`,
                         campo: `${x.equipo.sistema.planta.campo.codigo} - ${x.equipo.sistema.planta.campo.nombre}`,
@@ -310,10 +343,31 @@
                         fechaInicioReparacion: x.fecha_inicio_reparacion,
                         fechaFinReparacion: x.fecha_fin_reparacion,
                         contractual: x.contractual ? 'SI' : 'NO',
+                        // Orden de trabajo
+                        ordenNumero: orden ? orden.numero_orden : null,
+                        ordenNumeroAviso: orden ? orden.numero_aviso : null,
+                        ordenPuestoTrabajo: orden ? orden.puesto_trabajo.nombre : null,
+                        ordenDescripcion: orden ? orden.descripcion : null,
+                        // Modo de falla
+                        fallaSintoma: falla ? falla.sintoma : null,
+                        fallaSistema: falla ? falla.sistema : null,
+                        fallaParte: falla ? falla.parte : null,
+                        fallaModo: falla ? falla.modo_falla.descripcion : null,
+                        fallaAccionCorrectiva: falla ? falla.accion_correctiva : null,
                         estado: x.estado,
                         usuario: x.user.name,
-                        fechaRegistro: x.fecha_registro
+                        fechaRegistro: x.fecha_registro,
+                        comentarios: x.comentarios.map(c => {
+                            return `${this.moment(c.fecha).format('YYYY-MM-DD HH-mm')} >> ${c.user.name} >> ${c.descripcion}`
+                        }).join(', ')
                     }
+                    this.tipos.tiposImpacto.forEach(y => {
+                        registro[`impacto${y.id}`] = !!x.impactos.find(z => z.tipo_impacto_id === y.id) ? (x.impactos.find(z => z.tipo_impacto_id === y.id).cantidad + ' ' + y.medida) : ''
+                    })
+                    this.tipos.tiposGasto.forEach(y => {
+                        registro[`gasto${y.id}`] = !!x.gastos.find(z => z.tipo_gasto_id === y.id) ? this.currency(x.gastos.find(z => z.tipo_gasto_id === y.id).valor) : ''
+                    })
+                    return registro
                 })
             },
             downTime (fi, ff) {

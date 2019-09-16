@@ -269,7 +269,7 @@
                         <v-flex xs12 sm12 md6>
                             <v-select
                                 label="Tipo de evento"
-                                :items="tiposEvento"
+                                :items="tipos.tiposEvento"
                                 item-value="id"
                                 item-text="nombre"
                                 v-model="data.tipoEvento"
@@ -298,7 +298,7 @@
                 <v-btn color="blue darken-1" :loading="loading" :disabled="!!eventos" class="white--text" @click="submit">Ejecutar</v-btn>
             </v-card-actions>
             <v-card-text>
-                <result-list v-if="eventos" :result="eventos"></result-list>
+                <result-list v-if="eventos" :result="eventos" :tipos="tipos"></result-list>
             </v-card-text>
         </v-card>
     </v-dialog>
@@ -325,14 +325,20 @@
             data: {
                 fechaInicio: null,
                 fechaFin: null,
-                horaInicio: null,
-                horaFin: null,
+                horaInicio: '00:00',
+                horaFin: '00:00',
                 taxonomia: null,
                 taxonomia_id: null,
                 tipoEvento: [],
                 tipoTaxonomia: 'Equipo'
             },
-            tiposEvento: []
+            tipos: {
+                tiposEvento: [],
+                modosFalla: [],
+                puestosTrabajo: [],
+                tiposGasto: [],
+                tiposImpacto: []
+            }
         }),
         watch: {
             'data.tipoTaxonomia' (val) {
@@ -354,10 +360,13 @@
             },
             'data.horaFin' (val) {
                 val && (this.eventos = null)
+            },
+            'data.tipoEvento' (val) {
+                val && (this.eventos = null)
             }
         },
         created () {
-            this.getTiposEvento()
+            this.getTipos()
         },
         methods: {
             submit () {
@@ -378,13 +387,17 @@
                     }
                 })
             },
-            getTiposEvento () {
+            getTipos () {
                 axios.post(`eventos/tipos`)
                     .then(response => {
-                        this.tiposEvento = response.data.tiposEvento
+                        this.tipos.tiposEvento = response.data.tiposEvento
+                        this.tipos.modosFalla = response.data.modosFalla
+                        this.tipos.puestosTrabajo = response.data.puestosTrabajo
+                        this.tipos.tiposGasto = response.data.tiposGasto
+                        this.tipos.tiposImpacto = response.data.tiposImpacto
                     })
                     .catch(error => {
-                        this.$store.commit('SNACKBAR', {color: 'error', message: `al traer los tipos de evento`, error: error})
+                        this.$store.commit('SNACKBAR', {color: 'error', message: `al traer los complementos de los eventos`, error: error})
                     })
             }
         }

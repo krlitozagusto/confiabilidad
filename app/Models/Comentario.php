@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\User;
 use Illuminate\Database\Eloquent\Model;
 
 class Comentario extends Model
@@ -11,8 +12,8 @@ class Comentario extends Model
         return $this->belongsTo(Evento::class);
     }
 
-    public function usuario()
+    public function user()
     {
-        return $this->belongsTo('\App\User', 'user_id', 'id');
+        return $this->belongsTo(User::class);
     }
 }

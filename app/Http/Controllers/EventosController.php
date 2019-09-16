@@ -73,7 +73,7 @@ class EventosController extends Controller
                 'eventos_hijos.equipo',
                 'eventos_hijos.tipo_evento',
                 'equipo.sistema.planta.campo',
-                'comentarios.usuario',
+                'comentarios.user',
                 'orden_trabajos.puesto_trabajo',
                 'fallas.modo_falla',
                 'impactos.tipo_impacto',
@@ -250,7 +250,7 @@ class EventosController extends Controller
             $comentario->save();
             DB::commit();
             return response()->json([
-                'comentario' => Comentario::where('id','=',$comentario->id)->with('usuario')->first()
+                'comentario' => Comentario::where('id','=',$comentario->id)->with('user')->first()
             ], 200);
         }catch (\Exception $exception) {
             DB::rollback();
@@ -353,7 +353,11 @@ class EventosController extends Controller
 
     public function getTiposEvento() {
         return response()->json([
-            'tiposEvento' => TipoEvento::all()
+            'tiposEvento' => TipoEvento::all(),
+            'puestosTrabajo' => PuestoTrabajo::all(),
+            'modosFalla' => ModoFalla::all(),
+            'tiposImpacto' => TipoImpacto::all(),
+            'tiposGasto' => TipoGasto::all()
         ], 200);
     }
     

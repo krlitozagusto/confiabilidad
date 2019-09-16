@@ -100,7 +100,18 @@ class ReportesController extends Controller
         }
         $eventos = Evento::whereIn('equipo_id',$idsEquipos)
             ->whereIn('tipo_evento_id', $requestjson->tipoEvento)
-            ->with('tipo_evento', 'tipo_mantenimiento', 'user', 'equipo.valoracion_ram', 'equipo.sistema.planta.campo.contrato')->get();
+            ->with([
+                'tipo_evento',
+                'tipo_mantenimiento',
+                'comentarios.user',
+                'fallas.modo_falla',
+                'orden_trabajos.puesto_trabajo',
+                'gastos',
+                'impactos',
+                'user',
+                'equipo.valoracion_ram',
+                'equipo.sistema.planta.campo.contrato'
+            ])->get();
 
         $eventosRango = [];
         if ($eventos->count()) {

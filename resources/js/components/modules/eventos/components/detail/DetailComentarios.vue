@@ -52,7 +52,7 @@
                                 </v-flex>
                                 <v-flex>
                                     <div class="caption">{{comentario.descripcion}}</div>
-                                    <strong>{{comentario.usuario.name}}</strong>
+                                    <strong>{{comentario.user.name}}</strong>
                                 </v-flex>
                             </v-layout>
                         </v-timeline-item>
@@ -89,7 +89,6 @@
                         this.$store.commit('LOADING', true)
                         axios.post('eventos/registercomment', {evento_id: this.value.id, descripcion: this.comentario})
                             .then(response => {
-                                console.log('el response del comentario', response)
                                 this.$store.commit('LOADING', false)
                                 this.$store.commit('SNACKBAR', {color: 'success', message: `Comentartio registrado correctamente`})
                                 let eventCopy = window.lodash.clone(this.value)
