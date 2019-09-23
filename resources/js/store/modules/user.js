@@ -3,13 +3,15 @@ import {SNACKBAR} from './general'
 export const CURRENT_USER = 'CURRENT_USER'
 export default {
 	state: {
-        currentUser: null
+        currentUser: null,
+        currentRol: null
 	},
 	getters: {
 	},
 	mutations: {
         [CURRENT_USER]: (state, data) => {
             state.currentUser = data
+            state.currentRol = data.roles[0] ? data.roles[0].id : null
         },
 	},
 	actions: {

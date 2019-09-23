@@ -10,7 +10,7 @@
                         </small>
                     </v-toolbar-title>
                     <v-spacer/>
-                    <v-tooltip top>
+                    <v-tooltip top v-if="rol === 1">
                         <v-btn icon slot="activator" @click.stop="newUser">
                             <v-icon>add</v-icon>
                         </v-btn>
@@ -36,6 +36,7 @@
     </v-layout>
 </template>
 <script>
+    import { mapState } from 'vuex'
     export default {
 		name: "Panel",
         components: {
@@ -90,10 +91,13 @@
                 ]
             }
 		}),
+        computed: mapState({
+            rol: state => state.user.currentRol
+        }),
         methods: {
             resetOptions (item) {
                 item.options = []
-                item.options.push({event: 'resetPassword', icon: 'settings_backup_restore', tooltip: 'Reestablecer contraseña', color: 'success'})
+                if (this.rol === 1) item.options.push({event: 'resetPassword', icon: 'settings_backup_restore', tooltip: 'Reestablecer contraseña', color: 'success'})
                 return item
             },
             resetPassword (item) {

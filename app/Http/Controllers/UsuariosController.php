@@ -53,7 +53,7 @@ class UsuariosController extends Controller
     public function currentUser()
     {
         return response()->json([
-            'currentUser'=> Auth::user()
+            'currentUser'=> User::find(Auth::user()->id)->with('roles')->first()
         ]);
     }
 
@@ -75,7 +75,9 @@ class UsuariosController extends Controller
             $usuario = new User();
             $usuario->fill($request->all());
             $usuario->password = Hash::make('Confiabilidad'.$request['empleado']['identificacion']);
-            $usuario->avatar = 'avatarDefault.png';
+            $usuario->avatar = $request['avatar'];
+            $usuario->save();
+            $usuario->roles()->attach(Role::where('id', $request['rol'])->first());
             $usuario->save();
             $empleado = Empleado::where('identificacion','=',$request['empleado']['identificacion'])->first();
             $empleado->user_id = $usuario->id;

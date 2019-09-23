@@ -21,7 +21,7 @@
                     slider-color="yellow"
                 >
                     <v-tab ripple>
-                        Disponibilidad
+                        {{result.request.typeKpi}}
 
                     </v-tab>
                     <v-tab-item>
@@ -43,7 +43,7 @@
                                     <template v-for="(header, hindex) in result.headers" v-if="hindex > 0">
                                         <th>MTBF</th>
                                         <th>MTTR</th>
-                                        <th>Disp.</th>
+                                        <th>{{result.request.typeKpi === 'Disponibilidad' ? 'Disp.' : 'Conf.'}}</th>
                                     </template>
                                 </tr>
                                 </thead>
@@ -73,8 +73,14 @@
                         </v-card>
                     </v-tab-item>
                     <v-tab ripple>
-                        Eventos
+                        Gráfica
 
+                    </v-tab>
+                    <v-tab-item>
+                        <apexchart v-if="grafica" width="100%" :type="result.request.rangos ? 'line' : 'bar'" :options="grafica.options" :series="grafica.series"></apexchart>
+                    </v-tab-item>
+                    <v-tab ripple>
+                        Eventos
                     </v-tab>
                     <v-tab-item>
                         <v-card flat style="overflow-x: scroll !important; overflow-y: hidden !important;">
@@ -116,6 +122,7 @@
 
 <script>
     import XLSX from 'xlsx'
+    var es = require("apexcharts/dist/locales/es.json")
     export default {
         name: 'ResultRangosMultiples',
         props: {
@@ -133,6 +140,7 @@
             }
         },
         data: () => ({
+            grafica: null,
             active: null,
             result: null,
             eventos: [],
@@ -181,9 +189,10 @@
                 let wb = XLSX.utils.book_new()
                 let sh1 = XLSX.utils.table_to_sheet(disponibilidad)
                 let sh2 = XLSX.utils.table_to_sheet(eventos)
-                XLSX.utils.book_append_sheet(wb, sh1, 'disponibilidad')
-                for (const cell in wb.Sheets['disponibilidad']) {
-                    if (wb.Sheets['disponibilidad'][cell].v && !isNaN(wb.Sheets['disponibilidad'][cell].v)) wb.Sheets['disponibilidad'][cell].z = '0.00%'
+                let name = this.result.request.typeKpi
+                XLSX.utils.book_append_sheet(wb, sh1, name)
+                for (const cell in wb.Sheets[name]) {
+                    if (wb.Sheets[name][cell].v && !isNaN(wb.Sheets[name][cell].v)) wb.Sheets[name][cell].z = '0.00%'
                 }
                 XLSX.utils.book_append_sheet(wb, sh2, 'eventos')
                 for (const cell in wb.Sheets['eventos']) {
@@ -193,7 +202,7 @@
                     }
 
                 }
-                return XLSX.writeFile(wb, 'disponibilidad.xls')
+                return XLSX.writeFile(wb, `${name}.xls`)
             },
             resolveData () {
                 if (this.value) {
@@ -292,6 +301,79 @@
                         }
                     }
                     this.result = {headers: headers, items: items, request: this.value.request}
+                    this.grafica = {
+                        series: this.result.request.rangos ? this.result.items.map(z => {return {name: z[0].title, data: z.filter(x => x.disp).map(f => f.disp)}}) : this.result.items.map(z => {return {name: z[0].title, data: [z[1].disp]}}),
+                        options: {
+                            chart: {
+                                locales: [es],
+                                defaultLocale: 'es',
+                                id: 'Chart',
+                                shadow: {
+                                    enabled: true,
+                                    color: '#000',
+                                    top: 18,
+                                    left: 7,
+                                    blur: 10,
+                                    opacity: 1
+                                },
+                                toolbar: {
+                                    show: true
+                                }
+                            },
+                            dataLabels: {
+                                enabled: true,
+                            },
+                            stroke: {
+                                curve: 'smooth'
+                            },
+                            title: {
+                                text: `${this.result.request.typeKpi} - ${this.result.request.tipoTaxonomia}: ${this.result.items[0][0].title}`,
+                                align: 'left'
+                            },
+                            grid: {
+                                borderColor: '#e7e7e7',
+                                row: {
+                                    colors: ['#f3f3f3', 'transparent'], // takes an array which will be repeated on columns
+                                    opacity: 1
+                                },
+                            },
+                            markers: {
+
+                                size: 6
+                            },
+                            xaxis: {
+                                categories: this.result.request.rangos ? this.result.headers.filter(x => x.title !== 'Taxonomía').map(a => a.title) : this.result.headers.filter((x, i) => i !== 0).map(z => z.title),
+                                title: {
+                                    text: 'Periodos'
+                                }
+                            },
+                            yaxis: {
+                                title: {
+                                    text: 'Porcentaje'
+                                }
+                            },
+                            legend: {
+                                position: 'top',
+                                horizontalAlign: 'right',
+                                floating: false,
+                                x: 10,
+                                offsetY: -10,
+                                offsetX: -10
+                            }
+                        }
+
+                        // options: {
+                        //     chart: {
+                        //         locales: [es],
+                        //         defaultLocale: 'es',
+                        //         id: 'Chart'
+                        //     },
+                        //     xaxis: {
+                        //         categories: this.result.headers.filter((x, i) => i !== 0).map(z => z.title)
+                        //     }
+                        // },
+                        // series: this.result.items.map(z => {return {name: z[0].title, data: [z[1].disp]} } )
+                    }
                 }
             },
             resolveDataEventos () {

@@ -10,7 +10,7 @@
                         </small>
                     </v-toolbar-title>
                     <v-spacer/>
-                    <v-btn color="blue-grey" @click.stop="newEvent">
+                    <v-btn v-if="rol === 1" color="blue-grey" @click.stop="newEvent">
                         <v-icon left>fas fa-calendar-plus</v-icon>
                         Crear evento
                     </v-btn>
@@ -39,6 +39,7 @@
     </v-layout>
 </template>
 <script>
+    import { mapState } from 'vuex'
     import DinamicList from './DinamicList'
     export default {
 		name: "Panel",
@@ -144,13 +145,16 @@
                 ]
             }
 		}),
+        computed: mapState({
+            rol: state => state.user.currentRol
+        }),
         methods: {
             resetOptions (item) {
                 item.options = []
                     item.options.push({event: 'detailEvent', icon: 'details', tooltip: 'Detalle evento', color: 'primary'})
-                if (item.estado === 'Registrado') item.options.push({event: 'editEvent', icon: 'edit', tooltip: 'Editar evento', color: 'warning'})
-                if (item.estado === 'Registrado') item.options.push({event: 'commentEvent', icon: 'comment', tooltip: 'Comentar evento', color: 'info'})
-                if (item.estado === 'Registrado') item.options.push({event: 'cancelEvent', icon: 'cancel', tooltip: 'Anular evento', color: 'error'})
+                if (item.estado === 'Registrado' && this.rol === 1) item.options.push({event: 'editEvent', icon: 'edit', tooltip: 'Editar evento', color: 'warning'})
+                if (item.estado === 'Registrado' && this.rol === 1) item.options.push({event: 'commentEvent', icon: 'comment', tooltip: 'Comentar evento', color: 'info'})
+                if (item.estado === 'Registrado' && this.rol === 1) item.options.push({event: 'cancelEvent', icon: 'cancel', tooltip: 'Anular evento', color: 'error'})
                 return item
             },
             detailEvent (evento) {

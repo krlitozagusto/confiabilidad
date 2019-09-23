@@ -36,12 +36,13 @@
         },
         data: () => ({
             items: [
-                {title: 'Disponibilidad', subtitle: 'Cálculo de disponibilidad, tiempo medio entre fallas y reparaciones.', ref: 'Disponibilidad' }
+                {title: 'Disponibilidad', subtitle: 'Cálculo de disponibilidad, tiempo medio entre fallas y reparaciones.', ref: 'Disponibilidad', type: 'Disponibilidad' },
+                {title: 'Confiabilidad', subtitle: 'Cálculo de confiabilidad, tiempo medio entre fallas y reparaciones.', ref: 'Disponibilidad', type: 'Confiabilidad' }
             ]
         }),
         methods: {
             ejecutarReporte (item) {
-                this.$refs[item.ref].open()
+                this.$refs[item.ref].open(item.type)
             }
         }
 	}

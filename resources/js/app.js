@@ -13,6 +13,8 @@ import store from './store/index'
 import moment from 'moment'
 import es from 'vee-validate/dist/locale/es'
 import VeeValidate, { Validator } from 'vee-validate'
+import VueApexCharts from 'vue-apexcharts'
+
 
 // axios.defaults.baseURL = 'http://confiabilidad.test/'
 axios.defaults.baseURL = window.location.origin
@@ -76,6 +78,7 @@ Vue.mixin({
     }
 })
 
+Vue.component('apexchart', VueApexCharts)
 const app = new Vue({
     el: '#app',
     store,

@@ -3,7 +3,7 @@
         <v-dialog v-model="dialog" fullscreen hide-overlay transition="dialog-bottom-transition" persistent>
             <v-card>
                 <v-card-title class="py-0">
-                    <span class="headline">Disponibilidad</span>
+                    <span class="headline">{{data.typeKpi}}</span>
                     <v-spacer></v-spacer>
                     <v-btn flat icon @click="dialog = false">
                         <v-icon>close</v-icon>
@@ -261,7 +261,7 @@
                                     </v-flex>
                                 </v-layout>
                             </v-flex>
-                            <v-flex xs12 sm12 md6>
+                            <v-flex xs12 :sm8="data.typeKpi === 'Confiabilidad'" :sm12="data.typeKpi === 'Disponibilidad'" :md4="data.typeKpi === 'Confiabilidad'" :md6="data.typeKpi === 'Disponibilidad'">
                                 <v-select
                                     label="Tipo de evento"
                                     :items="tipos.tiposEvento"
@@ -278,6 +278,18 @@
                                     hide-selected
                                     no-data-text="No hay tipos de evento para seleccionar"
                                 ></v-select>
+                            </v-flex>
+                            <v-flex v-if="data.typeKpi === 'Confiabilidad'" xs12 sm4 md2>
+                                <v-text-field
+                                    key="tiempomision"
+                                    type="number"
+                                    label="Tiempo misión"
+                                    min="1"
+                                    v-model.number="data.tiempoMision"
+                                    name="tiempo misión"
+                                    v-validate="'required|numeric|min_value:1'"
+                                    :error-messages="errors.collect('tiempo misión')"
+                                ></v-text-field>
                             </v-flex>
                             <v-flex xs12 sm4 md2>
                                 <v-switch
@@ -392,7 +404,9 @@
                 tipoResultado: 'Periódico',
                 frecuencia: '',
                 frecuenciaTipo: 'months',
-                frecuenciaCantidad: 1
+                frecuenciaCantidad: 1,
+                typeKpi: null,
+                tiempoMision: null
             },
             tipos: {
                 tiposEvento: [],
@@ -433,14 +447,21 @@
                 val && (this.result = null)
             },
             'data.tipoEvento' (val) {
-                val && (this.eventos = null)
+                if (val) {
+                    this.eventos = null
+                    this.result = null
+                }
+            },
+            'data.typeKpi' () {
+                this.result && (this.result = null)
             }
         },
         created () {
             this.getTipos()
         },
         methods: {
-		    open () {
+		    open (type) {
+		        this.data.typeKpi = type
 		        this.dialog = true
             },
             submit () {

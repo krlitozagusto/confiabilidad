@@ -4,20 +4,6 @@
             <v-card>
                 <v-card-title class="headline">{{usuario.id ? 'Edición de usuario' : 'Nuevo usuario'}}</v-card-title>
                 <v-card-text>
-                    <v-text-field
-                        label="Nombre de usuario"
-                        v-model="usuario.name"
-                        name="Nombre de usuario"
-                        v-validate="'required'"
-                        :error-messages="errors.collect('Nombre de usuario')"
-                    ></v-text-field>
-                    <v-text-field
-                        label="Correo electrónico"
-                        v-model="usuario.email"
-                        name="Correo electrónico"
-                        v-validate="'required|email'"
-                        :error-messages="errors.collect('Correo electrónico')"
-                    ></v-text-field>
                     <v-autocomplete
                         label="Empleado"
                         v-model="usuario.empleado"
@@ -49,6 +35,74 @@
                             </div>
                         </template>
                     </v-autocomplete>
+                    <template v-if="usuario.empleado">
+                        <v-select
+                            label="Rol"
+                            :items="roles"
+                            item-value="id"
+                            item-text="nombre"
+                            v-model="usuario.rol"
+                            name="rol"
+                            v-validate="'required'"
+                            :error-messages="errors.collect('rol')"
+                            no-data-text="No hay roles para seleccionar"
+                        ></v-select>
+                        <v-text-field
+                            label="Nombre de usuario"
+                            v-model="usuario.name"
+                            name="Nombre de usuario"
+                            v-validate="'required'"
+                            :error-messages="errors.collect('Nombre de usuario')"
+                        ></v-text-field>
+                        <v-text-field
+                            label="Correo electrónico"
+                            v-model="usuario.email"
+                            name="Correo electrónico"
+                            v-validate="'required|email'"
+                            :error-messages="errors.collect('Correo electrónico')"
+                        ></v-text-field>
+                        <v-autocomplete
+                            label="Avatar"
+                            v-model="usuario.avatar"
+                            :items="avatars"
+                            name="avatar"
+                            v-validate="'required'"
+                            :error-messages="errors.collect('avatar')"
+                            no-data-text="No hay resultados para mostrar"
+                        >
+                            <template slot="selection" slot-scope="data">
+                                <div style="width: 100% !important;">
+                                    <v-list-tile>
+                                        <v-list-tile-avatar size="44px">
+                                            <img
+                                                :src="`/images/avatars/${data.item.value}`"
+                                                :alt="data.item.value"
+                                            />
+                                        </v-list-tile-avatar>
+                                        <v-list-tile-content>
+                                            <v-list-tile-title>{{ data.item.nombre }}</v-list-tile-title>
+                                        </v-list-tile-content>
+                                    </v-list-tile>
+                                </div>
+                            </template>
+                            <template slot="item" slot-scope="data">
+                                <div style="width: 100% !important;">
+                                    <v-list-tile>
+                                        <v-list-tile-avatar size="44px">
+                                            <img
+                                                :src="`/images/avatars/${data.item.value}`"
+                                                :alt="data.item.value"
+                                            />
+                                        </v-list-tile-avatar>
+                                        <v-list-tile-content>
+                                            <v-list-tile-title>{{ data.item.nombre }}</v-list-tile-title>
+                                        </v-list-tile-content>
+                                    </v-list-tile>
+                                    <v-divider></v-divider>
+                                </div>
+                            </template>
+                        </v-autocomplete>
+                    </template>
                 </v-card-text>
                 <v-divider></v-divider>
                 <v-card-actions>
@@ -70,7 +124,8 @@
                 name: null,
                 email: null,
                 avatar: null,
-                empleado: null
+                empleado: null,
+                rol: null
             },
             roles: null,
             empleados: [],

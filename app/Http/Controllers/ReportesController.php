@@ -238,12 +238,15 @@ class ReportesController extends Controller
             $objeto->intervalo = $this->objectTime($minutos_intervalo * $sistemas->count());
             $objeto->falla = $this->objectTime($minutos_falla);
             $objeto->reparacion = $this->objectTime($minutos_reparacion);
-            //Disponibilidad
-            $objeto->disponibilidad = $this->calculaDisponibilidad($objeto->intervalo->total_minutos, $objeto->falla->total_minutos);
+
             //Tiempo medio entre fallas
             $objeto->mtbf = $this->calculaMtbf(($objeto->intervalo->total_minutos - $objeto->falla->total_minutos), $objeto->fallas);
+
             //Tiempo medio entre reparaciones
             $objeto->mttr = $this->calculaMttr($objeto->falla->total_minutos, $objeto->fallas);
+
+            //Disponibilidad
+            $objeto->disponibilidad = $requestjson->typeKpi === 'Disponibilidad' ? $this->calculaDisponibilidad($objeto->intervalo->total_minutos, $objeto->falla->total_minutos) : $this->calculaConfiabilidad($objeto->mtbf->total_minutos, $requestjson->tiempoMision);
             return $objeto;
         } else {
             return null;
@@ -274,12 +277,15 @@ class ReportesController extends Controller
             $objeto->falla = $this->objectTime($minutos_falla);
 //        dd($objeto->falla);
             $objeto->reparacion = $this->objectTime($minutos_reparacion);
-            //Disponibilidad
-            $objeto->disponibilidad = $this->calculaDisponibilidad($objeto->intervalo->total_minutos, $objeto->falla->total_minutos);
+
             //Tiempo medio entre fallas
             $objeto->mtbf = $this->calculaMtbf(($objeto->intervalo->total_minutos - $objeto->falla->total_minutos), $objeto->fallas);
+
             //Tiempo medio entre reparaciones
             $objeto->mttr = $this->calculaMttr($objeto->falla->total_minutos, $objeto->fallas);
+
+            //Disponibilidad
+            $objeto->disponibilidad = $requestjson->typeKpi === 'Disponibilidad' ? $this->calculaDisponibilidad($objeto->intervalo->total_minutos, $objeto->falla->total_minutos) : $this->calculaConfiabilidad($objeto->mtbf->total_minutos, $requestjson->tiempoMision);
             return $objeto;
         } else {
             return null;
@@ -342,8 +348,6 @@ class ReportesController extends Controller
                 }
             }
             if ($objeto->fallas) {
-                //Disponibilidad
-                $objeto->disponibilidad = $this->calculaDisponibilidad($objeto->intervalo->total_minutos, $total_minutos_falla_equipo);
                 //Tiempo medio entre fallas
                 $objeto->mtbf = $this->calculaMtbf(($objeto->intervalo->total_minutos - $total_minutos_falla_equipo), $objeto->fallas);
 
@@ -352,6 +356,10 @@ class ReportesController extends Controller
 
                 //Tiempo medio entre reparaciones
                 $objeto->mttr = $this->calculaMttr($total_minutos_falla_equipo, $objeto->fallas);
+
+                //Disponibilidad
+                $objeto->disponibilidad = $requestjson->typeKpi === 'Disponibilidad' ? $this->calculaDisponibilidad($objeto->intervalo->total_minutos, $total_minutos_falla_equipo) : $this->calculaConfiabilidad($objeto->mtbf->total_minutos, $requestjson->tiempoMision);
+
 
 //                //tiempo total reparaciones
 //                $objeto->reparacion = $this->objectTime($total_minutos_reparacion_equipo);
@@ -373,5 +381,10 @@ class ReportesController extends Controller
     public function calculaDisponibilidad ($minutos_intervalo, $minutos_falla) {
         if (($minutos_intervalo - $minutos_falla) === 0) return '0%';
         return round(((($minutos_intervalo - $minutos_falla) / $minutos_intervalo) * 100), 2).'%';
+    }
+
+    public function calculaConfiabilidad ($mtbf_minutos, $tiempo_mision) {
+        if ($mtbf_minutos === 0) return '0%';
+        return round(((exp(-((1/($mtbf_minutos/60)) * $tiempo_mision))) * 100), 2).'%';
     }
 }
