@@ -77,7 +77,7 @@
 
                     </v-tab>
                     <v-tab-item>
-                        <apexchart v-if="grafica" width="100%" :type="result.request.rangos ? 'line' : 'bar'" :options="grafica.options" :series="grafica.series"></apexchart>
+                        <apexchart v-if="grafica" width="70%" :type="result.request.rangos ? 'line' : 'bar'" :options="grafica.options" :series="grafica.series"></apexchart>
                     </v-tab-item>
                     <v-tab ripple>
                         Eventos

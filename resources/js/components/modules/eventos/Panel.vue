@@ -84,6 +84,12 @@
                         value: 'fecha_registro'
                     },
                     {
+                        text: 'Fecha inicio',
+                        align: 'left',
+                        sortable: false,
+                        value: 'fecha_inicio'
+                    },
+                    {
                         text: 'Ubicación',
                         align: 'left',
                         sortable: false,

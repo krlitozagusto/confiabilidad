@@ -38,6 +38,7 @@ class EventosController extends Controller
 
         $query = QueryBuilder::for(Evento::class)
             ->with('tipo_evento', 'equipo.sistema.planta.campo')
+            ->orderBy('fecha_inicio', 'desc')
             ->allowedFilters([
                 Filter::scope('search')
             ])
