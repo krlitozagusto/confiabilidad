@@ -15,7 +15,8 @@ class SistemasController extends Controller
         $query = QueryBuilder::for(Sistema::class)
             ->with('planta')
             ->allowedFilters([
-                Filter::scope('search')
+                Filter::scope('search'),
+                Filter::scope('campo')
             ]);
         return new Resource($query->get());
     }

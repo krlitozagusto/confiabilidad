@@ -55,13 +55,31 @@
             dataTable: {
                 nameItemState: 'tablaEventos',
                 route: 'eventos/panel',
+                sort: {
+                    by: 'fecha_inicio',
+                    descending: true
+                },
                 makeHeaders: [
                     {
                         text: 'Id',
                         align: 'center',
                         sortable: true,
                         value: 'id',
-                        classData: 'text-xs-center'
+                        classData: 'text-xs-center',
+                        component: {
+                            template:
+                                `
+                        <div>
+                          <v-list-tile class="content-v-list-tile-p0">
+                            <v-list-tile-content>
+                              <v-list-tile-title class="body-1"> Id: {{value.id}}</v-list-tile-title>
+                              <v-list-tile-sub-title class="caption">Tipo: {{value.tipo_evento.nombre}}</v-list-tile-sub-title>
+                            </v-list-tile-content>
+                          </v-list-tile>
+                        </div>
+                      `,
+                            props: ['value']
+                        }
                     },
                     {
                         text: 'EP',
@@ -72,22 +90,16 @@
                         tooltip: 'Evento principal'
                     },
                     {
-                        text: 'Tipo',
-                        align: 'left',
-                        sortable: false,
-                        value: 'tipo_evento.nombre'
-                    },
-                    {
-                        text: 'Fecha registro',
-                        align: 'left',
-                        sortable: false,
-                        value: 'fecha_registro'
-                    },
-                    {
                         text: 'Fecha inicio',
                         align: 'left',
-                        sortable: false,
+                        sortable: true,
                         value: 'fecha_inicio'
+                    },
+                    {
+                        text: 'Fecha fin',
+                        align: 'left',
+                        sortable: true,
+                        value: 'fecha_fin'
                     },
                     {
                         text: 'Ubicación',
@@ -138,7 +150,7 @@
                     {
                         text: 'Estado',
                         align: 'left',
-                        sortable: false,
+                        sortable: true,
                         value: 'estado'
                     },
                     {

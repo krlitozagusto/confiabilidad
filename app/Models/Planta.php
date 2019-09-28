@@ -33,4 +33,10 @@ class Planta extends Model
                 ->orWhere('emplazamiento','like','%'.$search.'%');
         });
     }
+    public function scopeCampo(Builder $builder,$campo) : Builder
+    {
+        return $builder->where(function($query) use($campo){
+            $query->where('campo_id','=',$campo);
+        });
+    }
 }

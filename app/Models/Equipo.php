@@ -60,4 +60,15 @@ class Equipo extends Model
                 ->orWhere('numero_equipo','like','%'.$search.'%');
         });
     }
+    public function scopeCampo(Builder $builder,$campo) : Builder
+    {
+        return $builder->where(function($query) use($campo){
+            $query
+                ->WhereHas('sistema',function ($query) use ($campo) {
+                    $query->WhereHas('planta',function ($query) use ($campo) {
+                        $query->where('campo_id','=',$campo);
+                    });
+                });
+        });
+    }
 }

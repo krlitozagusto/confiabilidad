@@ -114,7 +114,8 @@
                 tipo_evento: null,
                 tipo_mantenimiento: null,
                 // ayudas
-                esPrincipal: 1
+                esPrincipal: 1,
+                campo_id: null
             },
             complementos:{
                 tiposEvento: [],
@@ -122,7 +123,8 @@
                 puestosTrabajo: [],
                 modosFalla: [],
                 tiposImpacto: [],
-                tiposGasto: []
+                tiposGasto: [],
+                campos: []
             }
 		}),
 		computed: {
@@ -167,6 +169,7 @@
                                 response.data.evento.fecha_fin_reparacion = this.moment(response.data.evento.fecha_fin_reparacion).format('YYYY-MM-DD')
                             }
                             response.data.evento.esPrincipal = response.data.evento.evento_padre_id ? 0 : 1
+                            response.data.evento.campo_id = response.data.evento.equipo.sistema.planta.campo_id
                             this.evento = response.data.evento
                         }
                         this.complementos.tiposEvento = response.data.tiposEvento
@@ -175,6 +178,7 @@
                         this.complementos.modosFalla = response.data.modosFalla
                         this.complementos.tiposImpacto = response.data.tiposImpacto
                         this.complementos.tiposGasto = response.data.tiposGasto
+                        this.complementos.campos = response.data.campos
                         this.$store.commit('LOADING', false)
                         this.open = true
                         this.$nextTick(() => {
@@ -248,6 +252,7 @@
                 this.complementos.modosFalla = []
                 this.complementos.tiposImpacto = []
                 this.complementos.tiposGasto = []
+                this.complementos.campos = []
                 this.soloGuardar = 1
                 this.resetForms()
             },

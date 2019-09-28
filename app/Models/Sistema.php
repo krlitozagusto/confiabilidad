@@ -33,4 +33,12 @@ class Sistema extends Model
                 ->orWhere('tag','like','%'.$search.'%');
         });
     }
+    public function scopeCampo(Builder $builder,$campo) : Builder
+    {
+        return $builder->where(function($query) use($campo){
+                $query->WhereHas('planta',function ($query) use ($campo) {
+                    $query->where('campo_id','=',$campo);
+                });
+        });
+    }
 }

@@ -98,7 +98,11 @@ class ReportesController extends Controller
                 break;
             }
         }
-        $eventos = Evento::whereIn('equipo_id',$idsEquipos)
+        $eventos = Evento::where(function($query) use ($requestjson) {
+            if ($requestjson->contractual) {
+                $query->where('contractual', '=', 1);
+            }
+        })->whereIn('equipo_id',$idsEquipos)
             ->whereIn('tipo_evento_id', $requestjson->tipoEvento)
             ->with([
                 'tipo_evento',
@@ -148,7 +152,7 @@ class ReportesController extends Controller
             $rango = $this->singleData($requestjson);
             if ($rango->data) {
                 $rango->fecha_inicial = $requestjson->fechaInicio->format('Y-m-d H:i');
-                $rango->fecha_final = $requestjson->fechaFin->add(-1, 'day')->format('Y-m-d H:i');
+                $rango->fecha_final = $requestjson->fechaFin->format('Y-m-d H:i');
                 array_push($response->data, $rango);
             }
 //            dd($requestjson->frecuencia);
@@ -294,7 +298,11 @@ class ReportesController extends Controller
 
     public function disponibilidadRangoEquipo ($requestjson) {
         $objeto =  new disponibilidad();
-        $eventos = Evento::where('equipo_id', '=', $requestjson->taxonomia_id)
+        $eventos = Evento::where(function($query) use ($requestjson) {
+            if ($requestjson->contractual) {
+                $query->where('contractual', '=', 1);
+            }
+        })->where('equipo_id', '=', $requestjson->taxonomia_id)
             ->whereIn('tipo_evento_id', $requestjson->tipoEvento)->get();
         //tiempo total intervalo
         $objeto->intervalo = $this->objectTime($requestjson->fechaFin->diffInMinutes($requestjson->fechaInicio));

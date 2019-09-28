@@ -152,8 +152,22 @@
                                      }'
             ></postulador-v2>
         </v-flex>
-        <v-flex xs12>
+        <v-flex xs12 sm12 md6>
+            <v-select
+                label="Campo"
+                :items="complementos.campos"
+                v-model="value.campo_id"
+                item-value="id"
+                item-text="nombre"
+                name="campo"
+                v-validate="'required'"
+                :error-messages="errors.collect('campo')"
+            ></v-select>
+        </v-flex>
+        <v-flex xs12 sm12 md6>
             <postulador-v2
+                key="posequipo"
+                :disabled="!value.campo_id"
                 ref="postuladorEquipos"
                 no-data="Busqueda por nombre, tag, ubucación técnica o número de equipo."
                 item-text="nombre"
@@ -163,6 +177,7 @@
                 @changeid="val => value.equipo_id = val"
                 no-btn-create
                 no-btn-edit
+                :route-params="'filter[campo]=' + value.campo_id"
                 name="Equipo"
                 rules="required"
                 v-validate="'required'"
@@ -577,7 +592,14 @@
                 return '0'
             }
 		},
-        whatch: {
+        watch: {
+            'value.campo_id' (val, prev) {
+                if (prev) {
+                    this.value.equipo = null
+                    this.value.equipo_id = null
+                    this.$refs.postuladorEquipos.reset()
+                }
+            }
         },
 		created () {
 		},

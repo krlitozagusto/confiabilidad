@@ -40,7 +40,7 @@
                     </tr>
                     <tr v-for="row in items">
                         <td v-for="propiedad in headers.map(x => x.propiedad)">
-                            '{{row[propiedad]}}'
+                            -'-{{row[propiedad]}}-'-
                         </td>
                     </tr>
                 </table>
@@ -93,11 +93,11 @@
         methods: {
             exportar () {
                 let elt = document.getElementById('tablaitemsexcel')
-                let wb = XLSX.utils.table_to_book(elt, {sheet: 'tablaitemsexcel'})
-                for (const cell in wb.Sheets['tablaitemsexcel']) {
-                    if (wb.Sheets['tablaitemsexcel'][cell].v && wb.Sheets['tablaitemsexcel'][cell].v.indexOf(`'`) > -1) wb.Sheets['tablaitemsexcel'][cell].v = wb.Sheets['tablaitemsexcel'][cell].v.replace(new RegExp(/(')/i, 'g'), '')
-                    if (wb.Sheets['tablaitemsexcel'][cell].v && wb.Sheets['tablaitemsexcel'][cell].v.indexOf('=') > -1) {
-                        wb.Sheets['tablaitemsexcel'][cell] = { f: wb.Sheets['tablaitemsexcel'][cell].v.split('=')[1] }
+                let wb = XLSX.utils.table_to_book(elt, {sheet: 'eventos'})
+                for (let ij in wb.Sheets['eventos']) {
+                    if (wb.Sheets['eventos'][ij].v && wb.Sheets['eventos'][ij].v.indexOf(`-'-`) > -1) wb.Sheets['eventos'][ij].v = wb.Sheets['eventos'][ij].v.replace(new RegExp(/(-'-)/i, 'g'), '')
+                    if (wb.Sheets['eventos'][ij].v && wb.Sheets['eventos'][ij].v.indexOf('=') > -1) {
+                        wb.Sheets['eventos'][ij] = { f: wb.Sheets['eventos'][ij].v.split('=')[1] }
                     }
 
                 }

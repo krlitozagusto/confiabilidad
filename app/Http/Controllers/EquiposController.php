@@ -36,7 +36,8 @@ class EquiposController extends Controller
         $query = QueryBuilder::for(Equipo::class)
             ->with('sistema.planta.campo')
             ->allowedFilters([
-                Filter::scope('search')
+                Filter::scope('search'),
+                Filter::scope('campo')
             ]);
         return new Resource($query->get());
     }

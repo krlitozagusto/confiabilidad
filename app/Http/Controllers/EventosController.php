@@ -38,11 +38,10 @@ class EventosController extends Controller
 
         $query = QueryBuilder::for(Evento::class)
             ->with('tipo_evento', 'equipo.sistema.planta.campo')
-            ->orderBy('fecha_inicio', 'desc')
             ->allowedFilters([
                 Filter::scope('search')
             ])
-            ->allowedSorts('id', 'evento_padre_id', 'estado');
+            ->allowedSorts('id', 'evento_padre_id', 'estado', 'fecha_inicio', 'fecha_fin');
 
         if($perPage){
             return new Resource($query->paginate($perPage));
@@ -59,7 +58,8 @@ class EventosController extends Controller
             'puestosTrabajo'=> PuestoTrabajo::all(),
             'modosFalla'=> ModoFalla::all(),
             'tiposImpacto'=> TipoImpacto::all(),
-            'tiposGasto'=> TipoGasto::all()
+            'tiposGasto'=> TipoGasto::all(),
+            'campos'=> Campo::all()
         ]);
     }
 
@@ -102,7 +102,8 @@ class EventosController extends Controller
             'puestosTrabajo'=> PuestoTrabajo::all(),
             'modosFalla'=> ModoFalla::all(),
             'tiposImpacto'=> TipoImpacto::all(),
-            'tiposGasto'=> TipoGasto::all()
+            'tiposGasto'=> TipoGasto::all(),
+            'campos'=> Campo::all()
         ]);
     }
 
@@ -358,7 +359,8 @@ class EventosController extends Controller
             'puestosTrabajo' => PuestoTrabajo::all(),
             'modosFalla' => ModoFalla::all(),
             'tiposImpacto' => TipoImpacto::all(),
-            'tiposGasto' => TipoGasto::all()
+            'tiposGasto' => TipoGasto::all(),
+            'campos'=> Campo::all()
         ], 200);
     }
     

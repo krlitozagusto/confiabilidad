@@ -13,15 +13,29 @@
                 <v-card-text>
                     <v-container class="pa-0" fluid grid-list-md>
                         <v-layout row wrap>
-                            <v-flex xs12 sm4 md2>
+                            <v-flex xs12 sm12 md2>
                                 <v-select
                                     :items="['Equipo','Sistema', 'Planta']"
                                     label="Taxonomía"
                                     v-model="data.tipoTaxonomia"
                                 ></v-select>
                             </v-flex>
-                            <v-flex xs12 sm8 md6>
+                            <v-flex xs12 sm12 md5>
+                                <v-select
+                                    label="Campo"
+                                    :items="tipos.campos"
+                                    v-model="data.campo_id"
+                                    item-value="id"
+                                    item-text="nombre"
+                                    name="campo"
+                                    v-validate="'required'"
+                                    :error-messages="errors.collect('campo')"
+                                ></v-select>
+                            </v-flex>
+                            <v-flex xs12 sm12 md5>
                                 <postulador-v2
+                                    :disabled="!data.campo_id"
+                                    :route-params="'filter[campo]=' + data.campo_id"
                                     v-if="data.tipoTaxonomia === 'Equipo'"
                                     key="postulaEquipo"
                                     ref="postuladorEquipos"
@@ -51,6 +65,8 @@
                                      }'
                                 ></postulador-v2>
                                 <postulador-v2
+                                    :disabled="!data.campo_id"
+                                    :route-params="'filter[campo]=' + data.campo_id"
                                     v-if="data.tipoTaxonomia === 'Sistema'"
                                     key="postulaSistema"
                                     ref="postuladorSistemas"
@@ -80,6 +96,8 @@
                                      }'
                                 ></postulador-v2>
                                 <postulador-v2
+                                    :disabled="!data.campo_id"
+                                    :route-params="'filter[campo]=' + data.campo_id"
                                     v-if="data.tipoTaxonomia === 'Planta'"
                                     key="postulaPlanta"
                                     ref="postuladorPlantas"
@@ -109,7 +127,7 @@
                                      }'
                                 ></postulador-v2>
                             </v-flex>
-                            <v-flex xs12 sm12 md2>
+                            <v-flex xs12 sm6 md3>
                                 <v-layout row wrap style="position: absolute !important;">
                                     <label>Fecha inicio</label>
                                 </v-layout>
@@ -185,7 +203,7 @@
                                     </v-flex>
                                 </v-layout>
                             </v-flex>
-                            <v-flex xs12 sm12 md2>
+                            <v-flex xs12 sm6 md3>
                                 <v-layout row wrap style="position: absolute !important;">
                                     <label>Fecha fin</label>
                                 </v-layout>
@@ -261,7 +279,7 @@
                                     </v-flex>
                                 </v-layout>
                             </v-flex>
-                            <v-flex xs12 :sm8="data.typeKpi === 'Confiabilidad'" :sm12="data.typeKpi === 'Disponibilidad'" :md4="data.typeKpi === 'Confiabilidad'" :md6="data.typeKpi === 'Disponibilidad'">
+                            <v-flex xs12 sm12 md6>
                                 <v-select
                                     label="Tipo de evento"
                                     :items="tipos.tiposEvento"
@@ -291,21 +309,27 @@
                                     :error-messages="errors.collect('tiempo misión')"
                                 ></v-text-field>
                             </v-flex>
-                            <v-flex xs12 sm4 md2>
+                            <v-flex xs12 sm4 md3>
+                                <v-switch
+                                    label="Solo contractual"
+                                    v-model="data.contractual"
+                                ></v-switch>
+                            </v-flex>
+                            <v-flex xs12 sm4 md3>
                                 <v-switch
                                     label="Multiples rangos"
                                     v-model="data.rangos"
                                 ></v-switch>
                             </v-flex>
                             <template v-if="data.rangos">
-                                <v-flex xs12 sm4 md2>
+                                <v-flex xs12 sm4 md3>
                                     <v-select
                                         :items="['Acumulado','Periódico']"
                                         label="Tipo resultado"
                                         v-model="data.tipoResultado"
                                     ></v-select>
                                 </v-flex>
-                                <v-flex xs12 sm4 md2>
+                                <v-flex xs12 sm4 md3>
                                     <v-layout row wrap style="position: absolute !important;">
                                         <label>Frecuencia</label>
                                     </v-layout>
@@ -401,29 +425,50 @@
                 tipoEvento: [],
                 tipoTaxonomia: 'Equipo',
                 rangos: false,
+                contractual: false,
                 tipoResultado: 'Periódico',
                 frecuencia: '',
                 frecuenciaTipo: 'months',
                 frecuenciaCantidad: 1,
                 typeKpi: null,
-                tiempoMision: null
+                tiempoMision: null,
+                campo_id: null
             },
             tipos: {
                 tiposEvento: [],
                 modosFalla: [],
                 puestosTrabajo: [],
                 tiposGasto: [],
-                tiposImpacto: []
+                tiposImpacto: [],
+                campos: []
             }
         }),
         watch: {
-            'data.frecuencia' (val) {
+            'data.campo_id' (val) {
+                if (val) {
+                    this.data.taxonomia = null
+                    this.data.taxonomia_id = null
+                    this.result = null
+                    if (this.$refs) {
+                        if (!!this.$refs.postuladorEquipos) this.$refs.postuladorEquipos.reset()
+                        if (!!this.$refs.postuladorSistemas) this.$refs.postuladorSistemas.reset()
+                        if (!!this.$refs.postuladorPlantas) this.$refs.postuladorPlantas.reset()
+                    }
+                }
+            },
+            'data.frecuenciaCantidad' (val) {
+                val && (this.result = null)
+            },
+            'data.frecuenciaTipo' (val) {
                 val && (this.result = null)
             },
             'data.tipoResultado' (val) {
                 val && (this.result = null)
             },
             'data.rangos' (val) {
+                this.result = null
+            },
+		    'data.contractual' (val) {
                 this.result = null
             },
 		    'data.tipoTaxonomia' (val) {
@@ -472,7 +517,6 @@
                         this.data.frecuencia = `${this.data.frecuenciaCantidad} ${this.data.frecuenciaTipo}`
                         axios.post(`reportes/tiempomedio`, this.data)
                             .then(response => {
-                                console.log('el response del reporte', response.data)
                                 this.result = response.data
                                 this.loading = false
                             })
@@ -491,6 +535,7 @@
                         this.tipos.puestosTrabajo = response.data.puestosTrabajo
                         this.tipos.tiposGasto = response.data.tiposGasto
                         this.tipos.tiposImpacto = response.data.tiposImpacto
+                        this.tipos.campos = response.data.campos
                     })
                     .catch(error => {
                         this.$store.commit('SNACKBAR', {color: 'error', message: `al traer los complementos de los eventos`, error: error})

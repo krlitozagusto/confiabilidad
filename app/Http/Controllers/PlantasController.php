@@ -15,7 +15,8 @@ class PlantasController extends Controller
         $query = QueryBuilder::for(Planta::class)
             ->with('campo')
             ->allowedFilters([
-                Filter::scope('search')
+                Filter::scope('search'),
+                Filter::scope('campo')
             ]);
         return new Resource($query->get());
     }

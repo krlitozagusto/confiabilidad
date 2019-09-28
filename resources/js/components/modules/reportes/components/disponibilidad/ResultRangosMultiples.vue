@@ -26,13 +26,13 @@
                     </v-tab>
                     <v-tab-item>
                         <v-card flat style="overflow-x: scroll !important; overflow-y: hidden !important;">
-                            <table border="1" style="min-width: 100% !important;" name="tabla" id="tabla">
+                            <table border="1" style="min-width: 100% !important;" >
                                 <thead>
                                 <tr>
                                     <template v-for="(header, hindex) in result.headers">
                                         <th
                                             :width="hindex === 0 ? '300' : ''"
-                                            :colspan="hindex === 0 ? '' : '3'"
+                                            :colspan="hindex === 0 ? '' : '5'"
                                             :rowspan="hindex === 0 ? '2' : ''"
                                         >
                                             {{ header.title }}
@@ -44,6 +44,8 @@
                                         <th>MTBF</th>
                                         <th>MTTR</th>
                                         <th>{{result.request.typeKpi === 'Disponibilidad' ? 'Disp.' : 'Conf.'}}</th>
+                                        <th>Eventos</th>
+                                        <th>Downtime</th>
                                     </template>
                                 </tr>
                                 </thead>
@@ -63,6 +65,64 @@
                                                 </td>
                                                 <td :style="'background:' + col.background">
                                                     {{col.disp}}
+                                                </td>
+                                                <td :style="'background:' + col.background">
+                                                    {{col.eventos}}
+                                                </td>
+                                                <td :style="'background:' + col.background">
+                                                    {{col.downtime}}
+                                                </td>
+                                            </template>
+                                        </template>
+                                    </tr>
+                                </template>
+                                </tbody>
+                            </table>
+                            <table border="1" style="visibility: collapse !important; min-width: 100% !important;" name="tabla" id="tabla">
+                                <thead>
+                                <tr>
+                                    <template v-for="(header, hindex) in result.headers">
+                                        <th
+                                            :width="hindex === 0 ? '300' : ''"
+                                            :colspan="hindex === 0 ? '' : '5'"
+                                            :rowspan="hindex === 0 ? '2' : ''"
+                                        >
+                                            {{ header.title }}
+                                        </th>
+                                    </template>
+                                </tr>
+                                <tr>
+                                    <template v-for="(header, hindex) in result.headers" v-if="hindex > 0">
+                                        <th>MTBF</th>
+                                        <th>MTTR</th>
+                                        <th>{{result.request.typeKpi === 'Disponibilidad' ? 'Disp.' : 'Conf.'}}</th>
+                                        <th>Eventos</th>
+                                        <th>Downtime</th>
+                                    </template>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <template>
+                                    <tr v-for="(row, rindex) in result.items">
+                                        <template v-for="(col, cindex) in row">
+                                            <td width="300" v-if="cindex === 0" :style="'background:' + col.background">
+                                                {{col.title}}
+                                            </td>
+                                            <template v-else>
+                                                <td :style="'background:' + col.background">
+                                                    {{col.mtbf && col.disp !== '100%' ? `${col.mtbf.horas}H:${col.mtbf.minutos}M` : ''}}
+                                                </td>
+                                                <td :style="'background:' + col.background">
+                                                    {{col.mttr && col.disp !== '100%' ? `${col.mttr.horas}H:${col.mttr.minutos}M` : ''}}
+                                                </td>
+                                                <td :style="'background:' + col.background">
+                                                    {{`zrem${col.disp}`}}
+                                                </td>
+                                                <td :style="'background:' + col.background">
+                                                    {{col.eventos}}
+                                                </td>
+                                                <td :style="'background:' + col.background">
+                                                    {{col.downtime}}
                                                 </td>
                                             </template>
                                         </template>
@@ -108,7 +168,7 @@
                                 </tr>
                                 <tr v-for="row in itemsEventos">
                                     <td v-for="propiedad in headers.map(x => x.propiedad)">
-                                        '{{row[propiedad]}}'
+                                        -'-{{row[propiedad]}}-'-
                                     </td>
                                 </tr>
                             </table>
@@ -191,14 +251,22 @@
                 let sh2 = XLSX.utils.table_to_sheet(eventos)
                 let name = this.result.request.typeKpi
                 XLSX.utils.book_append_sheet(wb, sh1, name)
-                for (const cell in wb.Sheets[name]) {
-                    if (wb.Sheets[name][cell].v && !isNaN(wb.Sheets[name][cell].v)) wb.Sheets[name][cell].z = '0.00%'
+                for (let cell in wb.Sheets[name]) {
+                    if (wb.Sheets[name][cell].v && String(wb.Sheets[name][cell].v).includes(`zrem`)) {
+                        wb.Sheets[name][cell].v = wb.Sheets[name][cell].v.replace(new RegExp(/(zrem)/i, 'g'), '')
+                        wb.Sheets[name][cell].v = wb.Sheets[name][cell].v.replace(new RegExp(/(%)/i, 'g'), '')
+                        const xx = !!Number(wb.Sheets[name][cell].v) ? Number(wb.Sheets[name][cell].v)/100 : 0
+                        wb.Sheets[name][cell].t = 'n'
+                        wb.Sheets[name][cell].z = '0.00%'
+                        wb.Sheets[name][cell].v = xx
+                    }
+                    // if (wb.Sheets[name][cell].v && !isNaN(wb.Sheets[name][cell].v)) wb.Sheets[name][cell].z = '0.00%'
                 }
                 XLSX.utils.book_append_sheet(wb, sh2, 'eventos')
-                for (const cell in wb.Sheets['eventos']) {
-                    if (wb.Sheets['eventos'][cell].v && wb.Sheets['eventos'][cell].v.indexOf(`'`) > -1) wb.Sheets['eventos'][cell].v = wb.Sheets['eventos'][cell].v.replace(new RegExp(/(')/i, 'g'), '')
-                    if (wb.Sheets['eventos'][cell].v && wb.Sheets['eventos'][cell].v.indexOf('=') > -1) {
-                        wb.Sheets['eventos'][cell] = { f: wb.Sheets['eventos'][cell].v.split('=')[1] }
+                for (let ij in wb.Sheets['eventos']) {
+                    if (wb.Sheets['eventos'][ij].v && wb.Sheets['eventos'][ij].v.indexOf(`-'-`) > -1) wb.Sheets['eventos'][ij].v = wb.Sheets['eventos'][ij].v.replace(new RegExp(/(-'-)/i, 'g'), '')
+                    if (wb.Sheets['eventos'][ij].v && wb.Sheets['eventos'][ij].v.indexOf('=') > -1) {
+                        wb.Sheets['eventos'][ij] = { f: wb.Sheets['eventos'][ij].v.split('=')[1] }
                     }
 
                 }
@@ -216,7 +284,9 @@
                         title: `${this.value.request.tipoTaxonomia === 'Planta' ? this.value.request.taxonomia.emplazamiento : this.value.request.taxonomia.tag} - ${this.value.request.taxonomia.nombre}`,
                         mtbf: null,
                         mttr: null,
-                        disp: null
+                        disp: null,
+                        eventos: null,
+                        downtime: null
                     })
                     this.value.data.forEach(item => {
                         headers.push({title: `${item.fecha_inicial} al ${item.fecha_final}`, subtitle: ''})
@@ -225,7 +295,9 @@
                             title: null,
                             mtbf: item.data.mtbf,
                             mttr: item.data.mttr,
-                            disp: item.data.disponibilidad
+                            disp: item.data.disponibilidad,
+                            eventos: item.data.fallas,
+                            downtime: item.data.falla ? String(Math.round((item.data.falla.total_minutos / 60)*100)/100) : ''
                         })
                     })
                     items.push(cols)
@@ -239,7 +311,9 @@
                                     title: `${this.value.data[0].data.registros[j].equipo.tag} - ${this.value.data[0].data.registros[j].equipo.nombre}`,
                                     mtbf: null,
                                     mttr: null,
-                                    disp: null
+                                    disp: null,
+                                    eventos: null,
+                                    downtime: null
                                 })
                                 this.value.data.forEach(item => {
                                     colsS.push({
@@ -247,7 +321,9 @@
                                         title: null,
                                         mtbf: item.data.registros[j].data.mtbf,
                                         mttr: item.data.registros[j].data.mttr,
-                                        disp: item.data.registros[j].data.disponibilidad
+                                        disp: item.data.registros[j].data.disponibilidad,
+                                        eventos: item.data.registros[j].data.fallas,
+                                        downtime: item.data.registros[j].data.falla ? String(Math.round((item.data.registros[j].data.falla.total_minutos / 60)*100)/100) : ''
                                     })
                                 })
                                 items.push(colsS)
@@ -264,7 +340,9 @@
                                     title: `${this.value.data[0].data.registros[j].sistema.tag} - ${this.value.data[0].data.registros[j].sistema.nombre}`,
                                     mtbf: null,
                                     mttr: null,
-                                    disp: null
+                                    disp: null,
+                                    eventos: null,
+                                    downtime: null
                                 })
                                 this.value.data.forEach(item => {
                                     colsS.push({
@@ -272,7 +350,9 @@
                                         title: null,
                                         mtbf: item.data.registros[j].data.mtbf,
                                         mttr: item.data.registros[j].data.mttr,
-                                        disp: item.data.registros[j].data.disponibilidad
+                                        disp: item.data.registros[j].data.disponibilidad,
+                                        eventos: item.data.registros[j].data.fallas,
+                                        downtime: item.data.registros[j].data.falla ? String(Math.round((item.data.registros[j].data.falla.total_minutos / 60)*100)/100) : ''
                                     })
                                 })
                                 if (colsS.length) items.push(colsS)
@@ -285,14 +365,18 @@
                                         title: `${this.value.data[0].data.registros[j].data.registros[z].equipo.tag} - ${this.value.data[0].data.registros[j].data.registros[z].equipo.nombre}`,
                                         mtbf: null,
                                         mttr: null,
-                                        disp: null
+                                        disp: null,
+                                        eventos: null,
+                                        downtime: null
                                     })
                                     this.value.data.forEach(item => {
                                         colsSE.push({
                                             title: null,
                                             mtbf: item.data.registros[j].data.registros[z].data.mtbf,
                                             mttr: item.data.registros[j].data.registros[z].data.mttr,
-                                            disp: item.data.registros[j].data.registros[z].data.disponibilidad
+                                            disp: item.data.registros[j].data.registros[z].data.disponibilidad,
+                                            eventos: item.data.registros[j].data.registros[z].data.fallas,
+                                            downtime: item.data.registros[j].data.registros[z].data.falla ? String(Math.round((item.data.registros[j].data.registros[z].data.falla.total_minutos / 60)*100)/100): ''
                                         })
                                     })
                                     if(colsSE.length) items.push(colsSE)
