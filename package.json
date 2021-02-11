@@ -27,7 +27,7 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
-        "apexcharts": "^3.8.6",
+        "apexcharts": "^3.24.0",
         "material-design-icons-iconfont": "^3.0.3",
         "moment": "^2.24.0",
         "screenfull": "^4.2.0",
